@@ -22,78 +22,76 @@
 ** Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 function identify_function_getposts () {
-$help = '
-<p>the {getposts} function is used to retrieve a blog post or posts. <br />
-It takes the following parameters:<br />
-<br />
-<ul>
-<li>assign: variable to assign data to ( defaults to "posts", or "post" if postid is given) e.g. assign="posts"</li>
-<li>postid: to get one post e.g. postid=1</li>
-<li>archive: to get ascending sorted results ( older posts first )</li>
-<li>num: for number of entries to return, e.g. num=10</li>
-<li>section: to request recent items in a section, e.g. section="news"</li>
-<li>sectionid: to request recent items in a section, by specifing the sectionid instead of the name</li>
-<li>skip: number of entries to skip, e.g. {getposts section=news num=10 skip=10} will return 10 posts, but not the first ten but the second ten. for use with paging</li>
-<li>home : if this is set with home=true, posts that have the "do not show on homepage" option set will not show</li>
-<li>year: year of posts, e.g. year=2003 will only show posts for year 2003</li>
-<li>month: month of posts</li>
-<li>day: day of posts</li>
-<li>hour: hour of posts</li>
-<li>minute: minute of posts</li>
-<li>second: second of posts</li>
-</ul>
-<p>For more detailed help, see the bBlog template manual</p>
-';
-
-  return array (
-    'name'           =>'getposts',
-    'type'             =>'function',
-    'nicename'     =>'Get Posts',
-    'description'   =>'Retrieves blog posts',
-    'authors'        =>'Eaden McKee, Reverend Jim',
-    'licence'         =>'GPL',
-    'help'   => $help
-  );
+    $help = '
+    <p>the {getposts} function is used to retrieve a blog post or posts. <br />
+    It takes the following parameters:<br />
+    <br />
+    <ul>
+    <li>assign: variable to assign data to ( defaults to "posts", or "post" if postid is given) e.g. assign="posts"</li>
+    <li>postid: to get one post e.g. postid=1</li>
+    <li>archive: to get ascending sorted results ( older posts first )</li>
+    <li>num: for number of entries to return, e.g. num=10</li>
+    <li>section: to request recent items in a section, e.g. section="news"</li>
+    <li>sectionid: to request recent items in a section, by specifing the sectionid instead of the name</li>
+    <li>skip: number of entries to skip, e.g. {getposts section=news num=10 skip=10} will return 10 posts, but not the first ten but the second ten. for use with paging</li>
+    <li>home : if this is set with home=true, posts that have the "do not show on homepage" option set will not show</li>
+    <li>year: year of posts, e.g. year=2003 will only show posts for year 2003</li>
+    <li>month: month of posts</li>
+    <li>day: day of posts</li>
+    <li>hour: hour of posts</li>
+    <li>minute: minute of posts</li>
+    <li>second: second of posts</li>
+    </ul>
+    <p>For more detailed help, see the bBlog template manual</p>
+    ';
+    
+      return array (
+        'name'           =>'getposts',
+        'type'             =>'function',
+        'nicename'     =>'Get Posts',
+        'description'   =>'Retrieves blog posts',
+        'authors'        =>'Eaden McKee, Reverend Jim',
+        'licence'         =>'GPL',
+        'help'   => $help
+      );
 }
 
 function smarty_function_getposts($params, &$bBlog) {
-  $ar = array();
-  $opt = array();
-        if(is_numeric($params['postid']) && $params['postid'] > 0) {
-	        $postid = $params['postid'];
-	} else {
-	        $postid = FALSE;
+    $ar = array();
+    $opt = array();
+    $ph = $bBlog->_ph;
+    if(is_numeric($params['postid']) && $params['postid'] > 0) {
+	   $postid = $params['postid'];
+	}
+    else {
+	   $postid = FALSE;
 	}
 	// If "assign" is not set... we'll establish a default.
 	if($params['assign'] == '') {
-	        if($postid) $params['assign'] = 'post';
-		else $params['assign'] = 'posts';
+        if($postid)
+            $params['assign'] = 'post';
+		else
+            $params['assign'] = 'posts';
 	}
 
-        if($postid) {   //we've been given a post id so we'll just get it and get outta here.
-	        $q = $bBlog->make_post_query(array("postid"=>$params['postid']));
-                $ar['posts'] = $bBlog->get_posts($q);
-                // No post.
-                if(!is_array($ar['posts'])) {
-		        return false;
-	        }
-	        $ar['posts'][0]['newday'] = 'yes';
-	        $ar['posts'][0]['newmonth'] = 'yes';
-	        $bBlog->assign($params['assign'],$ar['posts'][0]);
-	        return ''; // so if postid is given this is the last line processed
-	}
-
+    if($postid && is_int($postid)){
+        $ar['posts'] = $ph->get_post($postid);
+        if(!is_array($ar['posts']))
+            return false;
+        $ar['posts'][0]['newday'] = 'yes';
+        $ar['posts'][0]['newmonth'] = 'yes';
+        $bBlog->assign($params['assign'],$ar['posts'][0]);
+        return;
+    }
+    #$q = $ph->make_post_query(array("postid"=>$params['postid']));
 	// If "archive" is set, order them ASCENDING by posttime.
 	if($params['archive']) {
 		$opt['order']=" ORDER BY posttime ";
 	}
-
-
 	// If num is set, we'll only get that many results in return
 	if(is_numeric($params['num'])) {
 		$opt['num'] = $params['num'];
 	}
-
 	// If skip is set, we'll skip that many results
 	if(is_numeric($params['skip'])) {
 		$opt['skip'] = $params['skip'];
@@ -157,36 +155,35 @@ function smarty_function_getposts($params, &$bBlog) {
 
 	$opt['home'] = $params['home'];
 
-  $q = $bBlog->make_post_query($opt);
+    #$q = $ph->make_post_query($opt);
 
-  $ar['posts'] = $bBlog->get_posts($q);
-        
+    #$ar['posts'] = $ph->get_posts($q);
+    $ar['posts'] = $ph->get_posts($opt);    
 	// No posts.
-  if(!is_array($ar['posts'])) {
-	return '';
-  }
-
-  $lastmonth = 0;
-  $lastdate = 0;
-
-  foreach($ar['posts'] as $key => $value) {
-
-    /* check if new day  - used by block.newday.php */
-    if(date('Ymd',$ar['posts'][$key]['posttime']) != $lastdate) {
-      $ar['posts'][$key]['newday'] = TRUE;
+    if(!is_array($ar['posts'])) {
+	   return;
     }
-    $lastdate = date('Ymd',$ar['posts'][$key]['posttime']);
 
-    /* check if new month - use by block.newmonth.php */
-    if(date('Fy',$ar['posts'][$key]['posttime']) != $lastmonth) {
-      $ar['posts'][$key]['newmonth'] = TRUE;
+    $lastmonth = 0;
+    $lastdate = 0;
+
+    foreach($ar['posts'] as $key => $value) {
+        /* check if new day  - used by block.newday.php */
+        if(date('Ymd',$ar['posts'][$key]['posttime']) != $lastdate) {
+          $ar['posts'][$key]['newday'] = TRUE;
+        }
+        $lastdate = date('Ymd',$ar['posts'][$key]['posttime']);
+    
+        /* check if new month - use by block.newmonth.php */
+        if(date('Fy',$ar['posts'][$key]['posttime']) != $lastmonth) {
+          $ar['posts'][$key]['newmonth'] = TRUE;
+        }
+        $lastmonth = date('Fy',$ar['posts'][$key]['posttime']);
     }
-    $lastmonth = date('Fy',$ar['posts'][$key]['posttime']);
-  }
 
-  $bBlog->assign($params['assign'],$ar['posts']);
+    $bBlog->assign($params['assign'],$ar['posts']);
 
-  return '';
+    return;
 	
 }
 

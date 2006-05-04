@@ -22,24 +22,25 @@
 ** Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 function identify_function_getpost () {
-$help = '
-<p>The {getpost} function is used to retrieve a single post. It takes the following parameters:<br />
-<br />
-assign: variable to assign data to<br />
-postid: to request a SINGLE post';
-
-  return array (
-    'name'           =>'getpost',
-    'type'             =>'function',
-    'nicename'     =>'GetPost',
-    'description'   =>'Gets a single blog post',
-    'authors'        =>'Reverend Jim <jim@revjim.net>',
-    'licence'         =>'GPL',
-    'help'   => $help
-  );
+    $help = '
+    <p>The {getpost} function is used to retrieve a single post. It takes the following parameters:<br />
+    <br />
+    assign: variable to assign data to<br />
+    postid: to request a SINGLE post';
+    
+      return array (
+        'name'           =>'getpost',
+        'type'             =>'function',
+        'nicename'     =>'GetPost',
+        'description'   =>'Gets a single blog post',
+        'authors'        =>'Reverend Jim <jim@revjim.net>',
+        'licence'         =>'GPL',
+        'help'   => $help
+      );
 }
 function smarty_function_getpost($params, &$bBlog) {
-  $ar = array();
+    $ar = array();
+    $ph = $bBlog->_ph;
 
 	// If "assign" is not set... we'll establish a default.
 	if($params['assign'] == '') {
@@ -50,22 +51,21 @@ function smarty_function_getpost($params, &$bBlog) {
 		return '';
 	}
 
-	$q = $bBlog->make_post_query(array("postid"=>$params['postid']));
+	$q = $ph->make_post_query(array("postid"=>$params['postid']));
 
-	$ar['posts'] = $bBlog->get_posts($q);
+	$ar['posts'] = $ph->get_post($params['postid']);
         
 	// No posts.
-  if(!is_array($ar['posts'])) {
+    if(!is_array($ar['posts'])) {
 		return false;
 	}
 
 	$ar['posts'][0]['newday'] = 'yes';
 	$ar['posts'][0]['newmonth'] = 'yes';
 
-	$bBlog->assign($params['assign'],$ar['posts'][0]);
+	$bBlog->assign($params['assign'],$ar['posts']);
 
-	return '';
-        
+	return;
 }
 
 ?>
