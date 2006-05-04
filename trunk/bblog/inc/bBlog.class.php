@@ -38,51 +38,44 @@ class bBlog extends Smarty {
 	var $template;
 	var $num_homepage_entries = 20;
 	var $templatepage = "index.html";
-    	// for comments
+    // for comments
 	var $highestlevel = 0;
 	var $com_order_array = array();
 	var $com_finalar;
     ////
     // !bBlog constructor function
-	function bBlog () {
-
-
-          // initilize smarty by calling the smarty constructor class
-          parent::Smarty();
-
-          // connect to database
-	 			  $this->db = new db(DB_USERNAME, DB_PASSWORD, DB_DATABASE, DB_HOST);
-          $this->num_rows =& $this->db->num_rows;
-	  			$this->insert_id     =& $this->db->insert_id;
-
-          // get config from the database
-          $config_rows = $this->get_results('select * from '.T_CONFIG);
-          // loop through and define the config
-          foreach($config_rows as $config_row) {
-          	$const_name = 'C_'.$config_row->name;;
-          	if (!defined($const_name)) { define($const_name, $config_row->value); }
-          }
-          $this->assign('blogname',C_BLOGNAME);
-          $this->assign('blogdescription',C_BLOG_DESCRIPTION);
-          $this->assign('blogurl',BLOGURL);
-	  			$this->assign('bblogurl',BBLOGURL);
-	  			$this->assign('metakeywords',C_META_KEYWORDS);
-	  			$this->assign('metadescription',C_META_DESCRIPTION);
-					$this->assign('charset',C_CHARSET);
-					$this->assign('direction', C_DIRECTION);
+	function bBlog() {
+        // initilize smarty by calling the smarty constructor class
+        parent::Smarty();
+        // connect to database
+	 	$this->db = new db(DB_USERNAME, DB_PASSWORD, DB_DATABASE, DB_HOST);
+        $this->num_rows =& $this->db->num_rows;
+        $this->insert_id =& $this->db->insert_id;
+        
+        //Load the config
+        $config =& new configHandler($this->db);
+        $config->loadConfig();
+        $this->assign('blogname',C_BLOGNAME);
+        $this->assign('blogdescription',C_BLOG_DESCRIPTION);
+        $this->assign('blogurl',BLOGURL);
+	  	$this->assign('bblogurl',BBLOGURL);
+	  	$this->assign('metakeywords',C_META_KEYWORDS);
+	  	$this->assign('metadescription',C_META_DESCRIPTION);
+		$this->assign('charset',C_CHARSET);
+		$this->assign('direction', C_DIRECTION);
  
-          // initial time from config table, based on last updated stuff.
-          // this is just the initial value.
-          $this->lastmodified = C_LAST_MODIFIED;
-          $this->register_postfilter("update_when_compiled");
-          // load up the sections
-          $this->get_sections();
+        // initial time from config table, based on last updated stuff.
+        // this is just the initial value.
+        $this->lastmodified = C_LAST_MODIFIED;
+        $this->register_postfilter("update_when_compiled");
+        // load up the sections
+        $this->get_sections();
 
-          //start the session that we need so much ;)
-	  if(!session_id()) {         
-	  	session_start();
-	  }
-
+        //start the session that we need so much ;)
+        if(!session_id()) {         
+	  	    session_start();
+	    }
+        $this->_ph =& new postHandler(&$this->db);
 	} // end of function bBlog
 
     // database stuff
@@ -91,58 +84,16 @@ class bBlog extends Smarty {
    function get_row ($query,$output=OBJECT,$y=0) { return $this->db->get_row($query,$output,$y); }
    function get_var ($query,$x=0,$y=0) { return $this->db->get_var($query,$x,$y); }
 
+    /**
+     * A place holder for calling $this->_ph->new_post
+     */
+    function new_post($post){
+        $pid = $this->_ph->new_post($post);
+        if(is_int($pid) && $pid > 0)
+            $this->modifiednow();
+    }
 
-
-    ////
-    // !inserts a new entry
-    // returns the new entryid on success
-    // error message on fail
-    // assumes that my_addslashes() has already been applied and data is safe.
-	function new_post($post) {
-          $this->modifiednow();
-          $now = time();
-	  $section = '';
-	  if(sizeof($post->sections)>0) {
-		  $sections = implode(":",$post->sections);
-		  // We add an extra ":" at the begging and end
-		  // of this string to ensure that we can locate
-		  // the sections properly.
-        	  $section_q = " sections =':$sections:', ";
-	  }
-          if (!isset($post->ownerid)) {
-              $post->ownerid = $_SESSION['user_id'];
-          }
-
-   	  if($post->hidefromhome == 'hide')
-	  	$hidefromhome_q = " hidefromhome='1', ";
-	  else $hidefromhome_q = " hidefromhome='0', ";
-
-	  if($post->allowcomments == ('allow' or 'disallow' or 'timed'))
-	  	$allowcomments_q = " allowcomments='{$post->allowcomments}', ";
-
-	  if(is_numeric($post->autodisabledate))
-	  	$autodisable_q = " autodisabledate='{$post->autodisabledate}', ";
-
-          $q_insert = "INSERT INTO ".T_POSTS." SET
-			title		='$post->title',
-			body		='$post->body',
-            posttime    ='$now',
-            modifytime  ='$now',
-            status      ='$post->status',
-            $section_q
-	    $hidefromhome_q
-	    $allowcomments_q
-	    $autodisable_q
-            modifier	='$post->modifier',
-            ownerid    ='$post->ownerid'
-            ";
-            
-            $this->query($q_insert);
-            $postid = $this->insert_id;
-	    if($postid > 0) return $postid;
-	    else return false;
-		
-	} // end of function new_entry
+    
 	
 	/**********************************************************************
 	** get_archives
