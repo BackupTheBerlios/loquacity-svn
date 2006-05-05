@@ -75,15 +75,10 @@ function smarty_function_getposts($params, &$bBlog) {
 	}
 
     if($postid && is_int($postid)){
-        $ar['posts'] = $ph->get_post($postid);
-        if(!is_array($ar['posts']))
-            return false;
-        $ar['posts'][0]['newday'] = 'yes';
-        $ar['posts'][0]['newmonth'] = 'yes';
-        $bBlog->assign($params['assign'],$ar['posts'][0]);
+        $bBlog->assign($params['assign'],get_single_post($bBlog, $ph, $postid));
         return;
     }
-    #$q = $ph->make_post_query(array("postid"=>$params['postid']));
+
 	// If "archive" is set, order them ASCENDING by posttime.
 	if($params['archive']) {
 		$opt['order']=" ORDER BY posttime ";
@@ -107,57 +102,24 @@ function smarty_function_getposts($params, &$bBlog) {
 
 	if(is_numeric($params['year'])) {
 		if(strlen($params['year']) != 4) {
-			$bBlog->trigger_error('getposts: year parameter requires a 4 digit month');
-			return '';
+			$bBlog->trigger_error('getposts: year parameter requires a 4 digit year');
+			return;
 		}
 		$opt['year'] = $params['year'];
 	}
 
-	if(is_numeric($params['month'])) {
-		if(strlen($params['month']) != 2) {
-			$bBlog->trigger_error('getposts: month parameter requires a 2 digit month');
-			return '';
-		}
-		$opt['month'] = $params['month'];
-	}
-
-	if(is_numeric($params['day'])) {
-		if(strlen($params['day']) != 2) {
-			$bBlog->trigger_error('getposts: day parameter requires a 2 digit day');
-			return '';
-		}
-		$opt['day'] = $params['day'];
-	}
-
-	if(is_numeric($params['hour'])) {
-		if(strlen($params['hour']) != 2) {
-			$bBlog->trigger_error('getposts: hour parameter requires a 2 digit hour');
-			return '';
-		}
-		$opt['hour'] = $params['hour'];
-	}
-
-	if(is_numeric($params['minute'])) {
-		if(strlen($params['minute']) != 2) {
-			$bBlog->trigger_error('getposts: minute parameter requires a 2 digit minute');
-			return '';
-		}
-		$opt['minute'] = $params['minute'];
-	}
-
-	if(is_numeric($params['second'])) {
-		if(strlen($params['second']) != 2) {
-			$bBlog->trigger_error('getposts: second parameter requires a 2 digit second');
-			return '';
-		}
-		$opt['second'] = $params['second'];
-	}
+    foreach(array('month', 'day', 'hour', 'minute', 'second') as $type){
+        if(is_numeric($params[$type])) {
+            if(strlen($params[$type]) != 2) {
+                $bBlog->trigger_error('getposts: '.$type.' parameter requires a 2 digit month');
+                return;
+            }
+            $opt[$type] = $params[$type];
+        }
+    }
 
 	$opt['home'] = $params['home'];
 
-    #$q = $ph->make_post_query($opt);
-
-    #$ar['posts'] = $ph->get_posts($q);
     $ar['posts'] = $ph->get_posts($opt);    
 	// No posts.
     if(!is_array($ar['posts'])) {
@@ -180,11 +142,42 @@ function smarty_function_getposts($params, &$bBlog) {
         }
         $lastmonth = date('Fy',$ar['posts'][$key]['posttime']);
     }
-
+    $posts = apply_modifier(&$bBlog, $ar['posts']);
     $bBlog->assign($params['assign'],$ar['posts']);
 
     return;
 	
 }
 
+function get_single_post(&$bBlog, &$ph, $postid){
+    $post = $ph->get_post($postid);
+    if(!is_array($post))
+        return false;
+    $post = apply_modifier(&$bBlog, array($post));
+    $post = $post[0];
+    $post['newday'] = 'yes';
+    $post['newmonth'] = 'yes';
+    
+    return $post;
+}
+
+/**
+ * Loads and applies a Smarty based modifier to a post
+ * 
+ * @param array $posts
+ * @return array
+ */
+function apply_modifier(&$bBlog, $posts){
+    if(is_array($posts)){
+        foreach($posts as $post){
+            if(array_key_exists('modifier', $post)){
+                require_once( $bBlog->_get_plugin_filepath('modifier', $post['modifier']));
+                $mod_func = 'smarty_modifier_'.$post['modifier'];
+                $post['body'] = $mod_func($post['body']);
+                $post['applied_modifier'] = $post['modifier'];
+            }
+        }
+    }
+    return $posts;
+}
 ?>
