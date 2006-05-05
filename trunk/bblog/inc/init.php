@@ -42,7 +42,7 @@ define('T_RSS',TBL_PREFIX.'rss');
 // prevent errors when _open_basedir is set
 ini_set('include_path','./:../');
 
-define('SMARTY_DIR',	BBLOGROOT.'libs/');
+define('SMARTY_DIR', BBLOGROOT.'libs/');
 
 // include  needed files
 include BBLOGROOT.'libs/Smarty.class.php';
@@ -63,7 +63,7 @@ $bBlog->begintime = $mtime[1] + $mtime[0];
 //$bBlog->clear_compiled_tpl();
 
 
-$bBlog->template_dir 	= BBLOGROOT.'templates/'.C_TEMPLATE;
+$bBlog->template_dir = BBLOGROOT.'templates/'.C_TEMPLATE;
 $bBlog->compile_dir = BBLOGROOT.'compiled_templates/';
 
 if(defined('IN_BBLOG_ADMIN')) {

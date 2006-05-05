@@ -64,36 +64,45 @@ class postHandler {
     ////
     // !Gets blog entries from the db from a query.
     // if apply mods is true, it will apply the modifiers
-    function get_posts ($q=FALSE,$raw=FALSE) {
-        // to make it easier for development, this function can take no query
-        if(!$q)
-            $q = "select posts.*, authors.nickname, authors.email, authors.fullname from ".T_POSTS." as posts left join ".T_AUTHORS." as authors ON posts.ownerid = authors.id where status like 'live' order by posttime desc limit 0,20";
-
-        $posts = $this->_db->get_results($q); // $posts returned as an object
-
-        if($this->_db->num_rows > 0){
-            if($raw)
-                return $posts;
-            else {
-                //load required plugins
-                foreach($posts as $post) {
-                      // this looks a bit wacky, but i think it works well..
-                      $modifiers[$post->modifier] = $post->modifier;
+    /**
+     * Retrieve one or most posts based upon criteria
+     * 
+     * @param array $crit Hash of selection criteria
+     * @param bool $raw If false return in a format sufficient for browser display
+     * @return array
+     */
+    function get_posts($crit, $raw=FALSE) {
+        if(is_array($crit)){
+            $posts = $this->_db->get_results($this->make_post_query($crit));
+            if($this->_db->num_rows > 0){
+                if($raw)
+                    return $posts;
+                else {
+                    //load required plugins/modifiers
+                    //Defer to pre_post stage
+                    /*foreach($posts as $post) {
+                          // this looks a bit wacky, but i think it works well..
+                          $modifiers[$post->modifier] = $post->modifier;
+                    }
+                    if(sizeof($modifiers) > 0) {
+                          foreach ($modifiers as $modifier) {
+                             require_once $this->_get_plugin_filepath('modifier',$modifier);
+                          }
+                    }*/
+                    $finalposts = array();
+                    foreach ($posts as $post) {
+                             $finalposts[] = $this->prep_post($post);
+                    }
+                    return $finalposts;
                 }
-                if(sizeof($modifiers) > 0) {
-                      foreach ($modifiers as $modifier) {
-                         require_once $this->_get_plugin_filepath('modifier',$modifier);
-                      }
-                }
-                $finalposts = array();
-                foreach ($posts as $post) {
-                         $finalposts[] = $this->prep_post($post);
-                }
-                return $finalposts;
             }
+            else
+                return array(array("title"=>"No posts found"));
         }
-        else
-            return array(array("title"=>"No posts found"));
+        else{
+            return array(array("title"=>"No selection cirteria supplied"));
+        }
+        #$posts = $this->_db->get_results($q); // $posts returned as an object
     }
 
     ////
@@ -107,12 +116,12 @@ class postHandler {
 
         $npost['id'] = $post->postid;
         $npost['postid'] = $post->postid;
-        $npost['permalink'] = $this->_get_entry_permalink($post->postid);
-        $npost['trackbackurl'] = $this->_get_post_trackback_url($post->postid);
+        $npost['permalink'] = (defined('CLEANURLS')) ? str_replace('%postid%',$post->postid,URL_POST) : BLOGURL.'?postid='.$post->postid;
+        $npost['trackbackurl'] = BBLOGURL.'trackback.php/'.$post->postid.'/';
         $npost['title'] = $post->title;
          
         // do the body text
-        if($post->modifier != '') {
+        /*if($post->modifier != '') {
              // apply a smarty modifier to the body
              // in the future we could have multi modifiers
              // but I decided agains that for now, you can always make a
@@ -121,10 +130,12 @@ class postHandler {
              $npost['body'] = $mod_func($post->body);
              $npost['applied_modifier'] = $post->modifier;
         }
-        else {
-             $npost['body'] = $post->body;
-             $npost['applied_modifier'] = 'none';
-        }
+        else {*/
+        if($post->modifier !== '')
+            $npost['modifier'] = $post->modifier;
+         $npost['body'] = $post->body;
+             #$npost['applied_modifier'] = 'none';
+        //}
         if(USE_SMARTY_TAGS_IN_POST == TRUE) {
             $this->assign('smartied_post', $npost['body']);
             $tmptemplatedir = $this->template_dir;
@@ -220,9 +231,15 @@ class postHandler {
     }
     
     
-    ////
-    // !gets one post
-    function get_post ($postid, $draftok = FALSE, $raw = FALSE) {
+    /**
+     * Retrieves a single post
+     * 
+     * @param int $postid
+     * @param bool $draftok If true, its ok to retrieve a draft post
+     * @param bool $raw If true, don't prepare for display
+     * @return mixed
+     */
+    function get_post ($postid, $draftok = FALSE, $raw = FALSE){
         // this makes it safe for general use.
         // we don't want ppl being able to view drafts.
         if (!$draftok)
@@ -238,10 +255,11 @@ class postHandler {
             
         $q = "SELECT posts.*, authors.nickname, authors.email, authors.fullname FROM ".T_POSTS." AS posts LEFT JOIN ".T_AUTHORS." AS authors ON posts.ownerid = authors.id WHERE posts.postid='$postid' $draft_q LIMIT 0,1";
         $post = $this->_db->get_row($q);
-        if ($this->_db->num_rows > 0) {
-            if ($raw) return $post;
+        if(isset($post)){
+            if ($raw)
+                return $post;
             else{
-                require_once $this->_get_plugin_filepath('modifier', $post->modifier);
+                #require_once $this->_get_plugin_filepath('modifier', $post->modifier);
                 return $this->prep_post($post);
             }
         }
