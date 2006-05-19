@@ -40,7 +40,7 @@ define('DB_USERNAME','root');
 define('DB_PASSWORD','');
 
 // MySQL database name
-define('DB_DATABASE','powerblog');
+define('DB_DATABASE','bblogRevamped');
 
 // MySQL hostname
 define('DB_HOST','localhost');
@@ -54,14 +54,14 @@ define('TBL_PREFIX','bB_');
 
 // Full path of the directory where you've installed bBlog
 // ( i.e. the bblog folder )
-define('BBLOGROOT','C:\XAMPP\xampp\htdocs\PowerBlog\trunk\bblog/');
+define('BBLOGROOT','/home/kpower/public_html/blog/bblog/');
 
 /* URL config */
 
 // URL to your blog ( one folder below the 'bBlog' folder )
 // e.g, if your bBlog folder is at www.example.com/blog/bblog, your
 // blog will be at www.example.com/blog/
-define('BLOGURL','http://localhost/PowerBlog/trunk/');
+define('BLOGURL','http://localhost/~kpower/blog/');
 
 // URL to the bblog folder via the web.
 // Becasue if you're using clean urls and news.php as your BLOGURL,
@@ -70,8 +70,8 @@ define('BBLOGURL',BLOGURL.'bblog/');
 
 // Clean or messy urls ? ( READ README-URLS.txt ! )
 //define('CLEANURLS',TRUE);
-//define('URL_POST','http://localhost/PowerBlog/trunk/item/%postid%/');
-//define('URL_SECTION','http://localhost/PowerBlog/trunk/section/%sectionname%/');
+//define('URL_POST','http://localhost/~kpower/blog/item/%postid%/');
+//define('URL_SECTION','http://localhost/~kpower/blog/section/%sectionname%/');
 
 
 
