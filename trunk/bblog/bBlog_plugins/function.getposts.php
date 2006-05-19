@@ -143,7 +143,7 @@ function smarty_function_getposts($params, &$bBlog) {
         $lastmonth = date('Fy',$ar['posts'][$key]['posttime']);
     }
     $posts = apply_modifier(&$bBlog, $ar['posts']);
-    $bBlog->assign($params['assign'],$ar['posts']);
+    $bBlog->assign($params['assign'],$posts);
 
     return;
 	
@@ -169,12 +169,12 @@ function get_single_post(&$bBlog, &$ph, $postid){
  */
 function apply_modifier(&$bBlog, $posts){
     if(is_array($posts)){
-        foreach($posts as $post){
+        foreach($posts as $key => $post){
             if(array_key_exists('modifier', $post)){
                 require_once( $bBlog->_get_plugin_filepath('modifier', $post['modifier']));
                 $mod_func = 'smarty_modifier_'.$post['modifier'];
-                $post['body'] = $mod_func($post['body']);
-                $post['applied_modifier'] = $post['modifier'];
+                $posts[$key]['body'] = $mod_func($post['body']);
+                $posts[$key]['applied_modifier'] = $post['modifier'];
             }
         }
     }

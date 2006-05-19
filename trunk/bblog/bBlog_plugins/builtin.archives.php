@@ -37,6 +37,7 @@ function identify_admin_archives ()
 $bBlog->assign('form_type','edit');
 $bBlog->get_modifiers();
 
+$ph = $bBlog->_ph;
 if (isset($_GET['delete']) or isset($_POST['delete'])){
     if ($_POST['confirm'] == "cd".$_POST['delete'] && is_numeric($_POST['delete'])){
         $res = $bBlog->delete_post($_POST['delete']);
@@ -58,7 +59,7 @@ if (isset($_GET['delete']) or isset($_POST['delete'])){
 }
 
 if (isset($_POST['edit']) && is_numeric($_POST['edit'])){
-    $epost = $bBlog->get_post($_POST['edit'],TRUE,TRUE);
+    $epost = $ph->get_post($_POST['edit'], true, true);
     $bBlog->assign('title_text',htmlspecialchars($epost->title));
     $bBlog->assign('body_text',htmlspecialchars($epost->body));
     $bBlog->assign('selected_modifier',$epost->modifier);
@@ -157,7 +158,10 @@ if ((isset($_POST['postedit'])) && ($_POST['postedit'] == 'true')){
         "timestamp" => $timestamp
     );
 
-    $bBlog->edit_post($params);
+    //$bBlog->edit_post($params);
+    if($ph->edit_post($params)){
+        $bBlog->modifiednow();
+    }
 
     if ((isset($_POST['send_trackback'])) && ($_POST['send_trackback'] == "TRUE")){
         // send a trackback
@@ -203,10 +207,8 @@ if (isset($_POST['allowcomments']) && (is_numeric($_POST['allowcomments']) === t
     $bBlog->query($sql);
 }
 else{
-	$searchopts['wherestart'] = ' WHERE 1 ';	
-    $q = $bBlog->make_post_query($searchopts);
-	$archives = $bBlog->get_posts($q); // ,TRUE);
-    //var_dump($archives);
+	$searchopts['wherestart'] = ' WHERE 1 ';
+    $archives = $ph->get_posts($searchopts);
 }
 
 $bBlog->assign('postmonths',get_post_months());
