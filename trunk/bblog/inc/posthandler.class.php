@@ -286,42 +286,34 @@ class postHandler {
     ////
     // !edits a post
     function edit_post($params) {
-        // we're changing a post so the blog has been modified.
-        //print_r($params);
-        //$this->debugging=TRUE;
-        //$this->assign('post_edit',$params);
-        $this->modifiednow();
         $now = time();
-        extract($params);
-        if(!is_numeric($postid)) return false;
+        if(!is_numeric($params['postid'])) return false;
         
-        $q = "update ".T_POSTS." set title='$title', body='$body' ";
+        $q = 'UPDATE '.T_POSTS.' SET title="'.$params['title'].'", body="'.$params['body'].'" ';
         $q .= ", modifytime='$now'";
-        if($sections) {
-        // We place a ":" at the beginning and end of the sections
-        // string to ensure that we can locate the sections
-        // properly.
-        $q .= ", sections=':$sections:' ";
+        if($params['sections']) {
+            // We place a ":" at the beginning and end of the sections
+            // string to ensure that we can locate the sections
+            // properly.
+            $q .= ', sections=";'.$params['sections'].':"';
         }
-        elseif ($edit_sections) {
+        elseif ($params['edit_sections']) {
             $q .=", sections='' ";
         }
-        if($hidefromhome == 'hide') $q .= ", hidefromhome='1'";
-        if($hidefromhome == 'donthide') $q .= ", hidefromhome='0'";
+        if($params['hidefromhome'] == 'hide') $q .= ", hidefromhome='1'";
+        if($params['hidefromhome'] == 'donthide') $q .= ", hidefromhome='0'";
 
-        if($allowcomments == ('allow' or 'disallow' or 'timed' ))
-        $q .= ", allowcomments='$allowcomments'";
+        if($params['allowcomments'] == ('allow' or 'disallow' or 'timed' )){
+            $q .= ', allowcomments="'.$params['allowcomments'].'"';
+            if($params['allowcomments'] == 'timed' && is_numeric($params['autodisabledate']))
+                $q .= ', autodisabledate="'.$params['autodisabledate'].'"';
+        }
+        if($params['status'])   $q .= ', status="'.$params['status'].'"';
+        if($params['modifier']) $q .= ',modifier="'.$params['modifier'].'"';
+        if($params['timestamp']) $q .= ',posttime="'.$params['timestamp'].'"';
+        $q .=' WHERE postid='.$params['postid'];
 
-        if($allowcomments == 'timed' && is_numeric($autodisabledate))
-        $q .= ", autodisabledate='$autodisabledate'";
-
-        if($status)   $q .= ", status='$status'";
-        if($modifier) $q .= ",modifier='$modifier'";
-        if($timestamp) $q .= ",posttime='$timestamp'";
-        $q .=" where postid='$postid'";
-        //$this->assign('post_edit_q',$q);
-
-        $res = $this->query($q);
+        $res = $this->_db->query($q);
         return true;
     }
 }
