@@ -31,8 +31,6 @@ if (!defined("OBJECT"))     define("OBJECT","OBJECT",true);
 if (!defined("ARRAY_A"))    define("ARRAY_A","ARRAY_A",true);
 if (!defined("ARRAY_N"))    define("ARRAY_N","ARRAY_N",true);
 
-// main core bBlog code
-// extends the smarty class, so $Smarty->things become $bBlog->things
 class bBlog extends Smarty {
 
 	var $template;
@@ -68,8 +66,8 @@ class bBlog extends Smarty {
  
         // initial time from config table, based on last updated stuff.
         // this is just the initial value.
-        $this->lastmodified = C_LAST_MODIFIED;
-        $this->register_postfilter("update_when_compiled");
+        //$this->lastmodified = C_LAST_MODIFIED;
+        //$this->register_postfilter("update_when_compiled");
         // load up the sections
         $this->get_sections();
 
@@ -318,7 +316,7 @@ class bBlog extends Smarty {
     // !modifiednow should be called in responce to a direct user action  changing data
     // resulting in the site being modified, e.g. a new post, an editied post,
     // new link category, new comment etc
-    function modifiednow() {
+    function modified_now() {
           $now = time();
           $this->query("update ".T_CONFIG." set value='$now' where name='LAST_MODIFIED'");
           $this->setmodifytime($now);

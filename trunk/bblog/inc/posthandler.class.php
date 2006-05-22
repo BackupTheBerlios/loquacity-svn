@@ -136,16 +136,6 @@ class postHandler {
          $npost['body'] = $post->body;
              #$npost['applied_modifier'] = 'none';
         //}
-        if(USE_SMARTY_TAGS_IN_POST == TRUE) {
-            $this->assign('smartied_post', $npost['body']);
-            $tmptemplatedir = $this->template_dir;
-            $tmpcompileid = $this->compile_id;
-            $this->template_dir = BBLOGROOT.'inc/admin_templates';
-            $this->compile_id = 'internal';
-            $npost['body'] = $this->fetch('smartypost.html');
-            $this->template_dir = $tmptemplatedir;
-            $this->compile_id = $tmpcompileid;
-        }
         $npost['status'] = $post->status;
 
         // in the future

@@ -42,10 +42,10 @@ define('T_RSS',TBL_PREFIX.'rss');
 // prevent errors when _open_basedir is set
 ini_set('include_path','./:../');
 
-define('SMARTY_DIR', BBLOGROOT.'libs/');
+define('SMARTY_DIR', BBLOGROOT.'libs/smarty/libs/');
 
 // include  needed files
-include_once(BBLOGROOT.'libs/Smarty.class.php');
+include_once(SMARTY_DIR.'Smarty.class.php');
 include_once(BBLOGROOT.'libs/adodb/adodb.inc.php');
 include_once(BBLOGROOT.'libs/ez_sql.php');
 include_once(BBLOGROOT.'inc/stringhandling.class.php');
@@ -75,24 +75,10 @@ if(defined('IN_BBLOG_ADMIN')) {
 	$bBlog->compile_id = C_TEMPLATE;
 }
 
-$bBlog->plugins_dir = array(BBLOGROOT.'bBlog_plugins',BBLOGROOT.'smarty_plugins');
+$bBlog->plugins_dir = array(BBLOGROOT.'bBlog_plugins', BBLOGROOT.'bBlog_plugins/smarty',BBLOGROOT.'libs/smarty/libs/plugins');
 $bBlog->use_sub_dirs	= FALSE; // change to true if you have a lot of templates
 
-define('BBLOG_VERSION',"0.7.6");
+define('BBLOG_VERSION',"0.8-alpha1");
 $bBlog->assign("bBlog_version",BBLOG_VERSION);
-
-// if you want debugging, this is the place
-// you'd turn on debugging by adding ?gdb=true to the end of a url
-// it's disabled by default for security reasons
-// if($_GET['gdb']) $bBlog->debugging=TRUE;
-
-// if you want to use php in your templates
-// $bBlog->php_handling=SMARTY_PHP_ALLOW;
-
-// change this to false for a peformance increase,
-// but you won't be able to use smarty tags in posts.
-// disabled by default as you may have use { or } in posts which will confuse everything
-define('USE_SMARTY_TAGS_IN_POST',FALSE);
-
 
 ?>

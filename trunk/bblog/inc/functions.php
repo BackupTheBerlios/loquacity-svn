@@ -38,19 +38,6 @@ function ping() {
 
 
 ////
-// !This fixes double slashes
-// check to see if magic_quotes_gpc is set or not
-// and excape accordingly
-function my_addslashes ($data) {
-	if (get_magic_quotes_gpc()) {
-		return $data;
-	} else {
-		return addslashes($data);
-	}
-} // end of my_addslashes()
-
-
-////
 // !runs my_addslashes on an array item
 // used by my_addslashes_array_walk
 function my_addslashes_array(&$item,$key) {
@@ -67,12 +54,9 @@ function my_addslashes_array_walk($array) {
 
 
 function update_when_compiled($tpl_source, &$bBlog) {
-    global $bBlog; // prevent parse error ? wtf ??
-                   // well that worked. WTF?
     if(!defined('IN_BBLOG_ADMIN')) {
-      $bBlog->modifiednow();
+      //$bBlog->modified_now();
     }
-    
     return $tpl_source;
 }
 ?>
