@@ -40,6 +40,7 @@
 <!-- comments: -->
 {getcomments assign=comments}
 {foreach from=$comments item=comment}
+
 <div class="box1">
     {if $comment.deleted eq "true"}
 	    this comment has been deleted
@@ -51,18 +52,18 @@
 	    <div style="margin-left: {$comment.level25}px;" class="comments-head">{$comment.title|nohtml}</div>
 	    <div class="comments-body" style="margin-left: {$comment.level25}px;">
 	 
-	    {$comment.body|kses|nl2br}
+	    {$comment.commenttext}
 	 	  <div class="comments-post">
 	    	{if $comment.type eq 'trackback'}
-	    		Trackback from <a href="{$comment.websiteurl}">{$comment.author}</a> {$comment.posted|date_format:since} &#8226;   {$comment.replylink}
+	    		Trackback from <a href="{$comment.websiteurl}">{$comment.postername}</a> {$comment.posttime|date_format:since} &#8226;   {$comment.replylink}
 	    	{else}
-	    		<br /> {$comment.posted|date_format:"%Y/%m/%d"} by {$comment.author}
+	    		<br /> {$comment.posttime|date_format:"%Y/%m/%d"} by {$comment.postername}
 	    		 <!-- we don't need no spam, so why would we need the email to be public?
 	    		 &#8226; {* $comment.emaillink *}
 	    		 -->
-	    		  &#8226; {$comment.websitelink} &#8226; {$comment.replylink}
+	    		  &#8226; {$comment.posterwebsite} &#8226; <a href="replyto={$comment.commentid}#commentform">Reply</a>
 	    	{/if}
-	   	<br />Comment Trackback URL : {$comment.trackbackurl}</div>
+	   	<br />Comment Trackback URL : BBLOGURL.trackback.php/.{$comment.postid}/{$comment.commentid}/</div>
 	   	</div><!-- .comments-body -->
 	   	
 
