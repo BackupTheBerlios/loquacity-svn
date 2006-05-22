@@ -45,13 +45,16 @@ ini_set('include_path','./:../');
 define('SMARTY_DIR', BBLOGROOT.'libs/');
 
 // include  needed files
-include BBLOGROOT.'libs/Smarty.class.php';
-include BBLOGROOT.'libs/ez_sql.php';
+include_once(BBLOGROOT.'libs/Smarty.class.php');
+include_once(BBLOGROOT.'libs/adodb/adodb.inc.php');
+include_once(BBLOGROOT.'libs/ez_sql.php');
+include_once(BBLOGROOT.'inc/stringhandling.class.php');
 include_once(BBLOGROOT.'inc/confighandler.class.php');
 include_once(BBLOGROOT.'inc/posthandler.class.php');
-include BBLOGROOT.'inc/bBlog.class.php';
-include BBLOGROOT.'inc/functions.php';
-include BBLOGROOT.'inc/templates.php';
+include_once(BBLOGROOT.'inc/commenthandler.class.php');
+include_once(BBLOGROOT.'inc/bBlog.class.php');
+include_once(BBLOGROOT.'inc/functions.php');
+include_once(BBLOGROOT.'inc/templates.php');
 
 
 // start your engines

@@ -48,6 +48,8 @@ class bBlog extends Smarty {
         // initilize smarty by calling the smarty constructor class
         parent::Smarty();
         // connect to database
+        $this->_adb = NewADOConnection('mysql://'.DB_USERNAME.':'.DB_PASSWORD.'@'.DB_HOST.'/'.DB_DATABASE.'?persist');
+        
 	 	$this->db = new db(DB_USERNAME, DB_PASSWORD, DB_DATABASE, DB_HOST);
         $this->num_rows =& $this->db->num_rows;
         $this->insert_id =& $this->db->insert_id;
@@ -394,6 +396,9 @@ class bBlog extends Smarty {
     	$page = $this->fetch('standalone_message.html');
     	echo $page;
     	die();
+    }
+    function get_comment_handler($postid){
+        return new commentHandler(&$this->_adb, $postid);
     }
 
 } // end of bBlog class

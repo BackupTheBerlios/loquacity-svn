@@ -7,25 +7,60 @@
  * 
  * A class to manage all comment related functions
  */
-class comments {
+ /**
+ * Beginnings of comment handling consolidation
+ *
+ * @package bBlog
+ * @author Kenneth Power <kenneth.power@gmail.com>, http://www.bblog.com/ - last modified by $LastChangedBy: $
+ * @version $Id: $
+ * @copyright Kenneth Power <kenneth.power@gmail.com>
+ * @license http://www.gnu.org/licenses/gpl.html GNU General Public License
+ */
+
+ 
+class commentHandler {
 
     var $_post = null;
     /**
      * Constructor
      * Supplying a postid means we are working with a saved post
      */
-    function comments(&$db, $postid=null) {
+    function commentHandler(&$db, $postid=null) {
+        $postid = intval($postid);
         $this->_db = $db;
-        if(!isnull($postid)){
+        if(!is_null($postid) && $postid > 0){
+            //$this->_db->debug = true;
             $this->_post = $postid;
             $sql = 'SELECT * from `'.T_COMMENTS.'` WHERE postid='.$this->_post;
+            $rs = $this->_db->Execute($sql);
+            while($row = $rs->FetchRow()){
+                $this->_comments[$row[0]] = array(
+                    'parentid'       => $row[1],
+                    'title'          => $row[3],
+                    'type'           => $row[4],
+                    'posttime'       => $row[5],
+                    'postername'     => $row[6],
+                    'posteremail'    => $row[7],
+                    'posterwebsite'  => $row[8],
+                    'posternotify'   => $row[9],
+                    'pubemail'       => $row[10],
+                    'pubwebsite'     => $row[11],
+                    'ip'             => $row[12],
+                    'commenttext'    => $row[13],
+                    'delete'         => $row[14],
+                    'onhold'         => $row[15]
+                );
+            }
         }
     }
     /**
      * Retrieve all comments for the specific post
      */
-    function get_comments($postid=null){
-        if(!is_null($postid)){
+    function get_comments($fordisplay=false){
+        if($fordisplay){
+            return;
+        }
+        else{
             return $this->_comments;
         }
     }
@@ -37,171 +72,338 @@ class comments {
                 return;
         }
     }
-    function new_comment($postid,$replyto = 0) {
-
-        $post = $this->_ph->get_post($postid,FALSE,TRUE);
-        if(!$post){
-            // this needs to be fixed...
-             $this->standalone_message("Error adding comment","couldn't find post id $postid");
-        }
-        elseif($post->allowcomments == ('disallow') or ($post->allowcomments == 'timed' and $post->autodisabledate < time() )){
-            $this->standalone_message("Error adding comment","Comments have been turned off for this post");
-        }
-        else {
-            $postername = my_addslashes(htmlspecialchars($_POST["name"]));
-            if($postername == '')
-                 $postername = "Anonymous";
-            $posteremail = my_addslashes(htmlspecialchars($_POST["email"]));
-            $title = my_addslashes(htmlspecialchars($_POST["title"]));
-            $posterwebsite = my_addslashes(htmlspecialchars($_POST["website"]));
-            if((substr(strtolower($posterwebsite),0,7) != 'http://') && $posterwebsite !='') {
-                $posterwebsite = 'http://'.$posterwebsite;
+    /**
+    * Add a new comment to an article
+    *
+    * @param object $authImage AuthImage instance
+    * @param object $post The post receiving the comment
+    * @param int    $replyto The ID of the parent comment
+    * @param array  $post_vars $_POST
+    */
+    function new_comment($post, $replyto, $post_vars) {
+        $result = $this->canProceed(&$post, $post_vars['spam_code'], $post_vars['comment']);
+        if($result['proceed'] === true){
+            unset($result);
+            $vars = $this->prepFieldsForDB($post_vars, $post->postid, $replyto);
+            if ($post_vars['set_cookie']) {
+                $this->setCommentCookie($vars['postername'], $vars['posteremail'], $vars['posterwebsite']);
             }
-            $comment = my_addslashes($_POST["comment"]);
-            if($_POST["public_email"] == 1) $pubemail = 1; else $pubemail = 0;
-            if($_POST["public_website"] == 1) $pubwebsite = 1; else $pubwebsite = 0;
-            if($_POST["notify"] == 1) $notify = 1; else $notify = 0;
-            $now = time();
-            $remaddr = $_SERVER['REMOTE_ADDR'];
-    
-            if ($_POST['set_cookie']) {
-                $value = base64_encode(serialize(array('web' => $posterwebsite, 'mail' => $posteremail, 'name' => $postername)));
-                setcookie ("bBcomment", $value, time() + (86400 * 360));
-            }
-    
-            $moderated = FALSE;
-            $onhold = '0';
-            if(C_COMMENT_MODERATION == 'all') {
-                $moderated = TRUE;
-            } elseif (C_COMMENT_MODERATION == 'urlonly') {
-                if($comment != preg_replace('!<[^>]*?>!', ' ', $comment)) {
-                    // found html tags
-                    $moderated = TRUE;
-                }
-                if($comment != preg_replace("#([\t\r\n ])([a-z0-9]+?){1}://([\w\-]+\.([\w\-]+\.)*[\w]+(:[0-9]+)?(/[^ \"\n\r\t<]*)?)#i", '\1<a href="\2://\3" target="_blank">\2://\3</a>', $comment)) {
-                    $moderated = TRUE;
-                }
-                if($comment != preg_replace("#([\t\r\n ])(www|ftp)\.(([\w\-]+\.)*[\w]+(:[0-9]+)?(/[^ \"\n\r\t<]*)?)#i", '\1<a href="http://\2.\3" target="_blank">\2.\3</a>', $comment)) {
-                    $moderated = TRUE;
-                }
-            }
-        
-            if($moderated == TRUE) $onhold='1';
             
-            if(C_COMMENT_TIME_LIMIT >0) {
-                $fromtime = $now - (C_COMMENT_TIME_LIMIT * 60);
-                $this->query("select * from ".T_COMMENTS." where ip='$remaddr' and posttime > $fromtime");
-                if($this->num_rows >0) {
-                    $this->standalone_message("Comment Flood Protection", "Error adding comment. You have tried to make a comment too soon after your last one. Please try again later. This is a bBlog spam prevention mesaure");
-                    
+            $id = $this->saveComment($vars);
+            if($id > 0){
+                if(C_NOTIFY == true){
+                    $this->notify($vars['postername'], $post->permalink,$vars['onhold'], $vars['commenttext']);
                 }
-        
-            }
-        
-            if($replyto > 0 && is_numeric($replyto)) $parentidq = " parentid='$replyto', ";
-            $q = "insert into ".T_COMMENTS."
-                    set $parentidq
-                    postid='$postid',
-                    title='$title',
-                    posttime='$now',
-                    postername='$postername',
-                    posteremail='$posteremail',
-                    posterwebsite='$posterwebsite',
-                    posternotify='$notify',
-                    pubemail='$pubemail',
-                    pubwebsite='$pubwebsite',
-                    ip='$remaddr',
-                    commenttext='$comment',
-                    onhold='$onhold',
-                    type='comment'";
-            $this->query($q);
-            $insid = $this->insert_id;
-            if($insid < 1) {
-                $this->standalone_message("Error", "Error inserting comment : ".mysql_error());
-            } else {
-                // notify
-                include_once(BBLOGROOT."inc/mail.php");
-                $message = htmlspecialchars($postername)." has posted a comment in reply to your blog entry at ".$this->_get_entry_permalink($postid)."\n";
-                if($onhold == 1) $message .= "You have selected comment moderation and this comment will not appear until you approve it, so please visit your blog and log in to approve or reject any comments\n";
-                notify_owner("New comment on your blog",$message);
-        
-                    $newnumcomments = $this->get_var("SELECT count(*) as c FROM ".T_COMMENTS." WHERE postid='$postid' and deleted='false' group by postid");
-                $this->query("update ".T_POSTS." set commentcount='$newnumcomments' where postid='$postid'");
-                    $this->modifiednow();
-        
-                // This is used when an alternate location is desired as the result of a successful post.
-                if(isset($_POST['return_url'])) {
-                    $ru = str_replace('%commentid%',$insid,$_POST['return_url']);
-                    header("Location: ".$ru);
-                } else {
-                    header("Location: ".$this->_get_entry_permalink($postid)."#comment".$insid);
+                $rs = $this->_db->Execute('SELECT count(*) as c FROM `'.T_COMMENTS.'` WHERE postid='.$post->postid.' and deleted="false" group by postid');
+                if($rs !== false){
+                    $newnumcomments = $rs->fields[0];
+                    $this->_db->Execute('UPDATE `'.T_POSTS.'` SET commentcount='.$newnumcomments.' WHERE postid='.$post->postid);
                 }
-                    ob_end_clean(); // or here.. hmm.
-                    exit;
+                $result = $id;
+            }
+            else{
+                $result['error'] = true;
+                $result['message'][] = array("Error", "Error inserting comment for post ".$post->title);
+                error_log(mysql_error(), 0);
             }
         }
-    
-    } // end function new_comment
-    function get_comments ($postid,$replyto=FALSE) {
-        $this->com_order_array = array();
-        if(is_numeric($replyto)) {
-            $commentidq = " AND commentid='$replyto' ";
-        }
-        
-        $commentids = $this->get_results("select *
-        FROM ".T_COMMENTS."
-        where postid='$postid'
-        $commentidq
-        order by commentid");
-                                             
-        if($this->num_rows > 0) { // there are coments!
-            foreach($commentids as $row ) {
-                $table[$row->parentid][$row->commentid] = $row->commentid;
-            }
-    
-            // get the actual comments
-            //$comments=$bBlog->get_results("SELECT * FROM ".T_COMMENTS." WHERE postid='$postid' $commentidq ");
-        
-            // make an array of comments, with the commentid as the key - there must be a better way!
-            foreach($commentids as $comment) {
-                $this->com_finalar[$comment->commentid] = $comment;
-            }
-            // populate $this->com_order_array with the comments in order!
-            $this->makethread(0,$table,0);
-            
-            $commentsfinalarray = array();
-            // the function that displays comments!
-            foreach($this->com_order_array as $comment) {
-                $commentsfinalarray[] = $this->format_comment($comment);
-            }
-        }
-        $this->assign("commentreplytitle","Re: ".$this->get_var("select title from ".T_POSTS." where postid='$postid'"));
-        return $commentsfinalarray;
+        return $result;
     }
-    // due to some weird bug with the recursive function,
-    // there is a bit of duplicated code here for the meantime
     
-    function get_comment ($postid,$replyto=FALSE,$raw = FALSE) {
-        if(is_numeric($replyto)) $commentidq = " AND commentid='$replyto' ";
-        $comment['data'] = $this->get_row("select *
-                                             FROM ".T_COMMENTS."
-                                             where postid='$postid'
-                                             $commentidq
-                                             order by commentid");
+    /**
+     * Prepare comment data for storage in the database
+     * 
+     * Nothing peculiar to HTML display is done at this stage. Essentially the
+     * comment is stored raw, for later manipulation for the display purposes.
+     * 
+     * @param array $vars The comment data
+     * @param int   $id The post id receiving this comment
+     * @param int   $replyto If supplied, the id of the comment being replied to
+     */
+    function prepFieldsForDB($vars, $id, $replyto = 0){
+        $rval['postername'] = StringHandling::addslashes($vars["name"]);
+        if (empty($rval['postername']))
+            $rval['postername'] = "Anonymous";
+        $rval['posteremail'] = StringHandling::addslashes($vars["email"]);
+        $rval['title'] = StringHandling::addslashes($vars["title"]);
+        $rval['posterwebsite'] = StringHandling::addslashes($vars["website"]);
+        $rval['commenttext'] = StringHandling::addslashes($vars["comment"]);
+        $rval['pubemail'] = ($vars["public_email"] == 1) ? 1 : 0;
+        $rval['pubwebsite'] = ($vars["public_website"] == 1) ? 1 : 0;
+        $rval['posternotify'] = ($vars["notify"] == 1) ? 1 : 0;
+        $rval['posttime'] = time();
+        $rval['ip'] = $_SERVER['REMOTE_ADDR'];
+        $rval['onhold'] = ($this->needsModeration($rval['commenttext'])) ? 1 : 0;
+        $rval['postid'] = $id;
+        if ($replyto > 0)
+            $rval['parentid'] = $replyto;
+        $rval['type'] = 'comment';
+        return $rval;
+    }
     
-        if($this->num_rows != 1) return FALSE;
-        if($raw) return $comment['data'];
-        $comment['level'] = 0; // not displaying one comment in a thread
-        $commentsfinalarray[] = $this->format_comment($comment);
-        if($replyto) {
-            if(substr($commentsfinalarray[0]['title'],0,3) == 'Re:') {
-                $this->assign("commentreplytitle",$commentsfinalarray[0]['title']);
-            } else {
-                $this->assign("commentreplytitle","Re: ".$commentsfinalarray[0]['title']);
+    function prepFieldsForDisplay($vars, $id, $replyto=0){
+        $rval['postername'] = htmlspecialchars($vars["name"]);
+        if (empty($rval['postername']))
+            $rval['postername'] = "Anonymous";
+        $rval['posteremail'] = htmlspecialchars(stripslashes($vars["email"]));
+        $rval['title'] = htmlspecialchars($vars["title"]);
+        $rval['posterwebsite'] = StringHandling::transformLinks(htmlspecialchars(stripslashes($vars["website"])));
+        $rval['commenttext'] = $this->processCommentText(stripslashes($vars["comment"]));
+        $rval['pubemail'] = ($vars["public_email"] == 1) ? 1 : 0;
+        $rval['pubwebsite'] = ($vars["public_website"] == 1) ? 1 : 0;
+        $rval['posternotify'] = ($vars["notify"] == 1) ? 1 : 0;
+        $rval['posttime'] = time();
+        $rval['ip'] = $_SERVER['REMOTE_ADDR'];
+        $rval['onhold'] = ($this->needsModeration($rval['commenttext'])) ? 1 : 0;
+        $rval['postid'] = $id;
+        if ($replyto > 0)
+            $rval['parentid'] = $replyto;
+        $rval['type'] = 'comment';
+        return $rval;
+    }
+    /**
+    * Save the comment/trackback
+    *
+    * The SQL statement for saving data is built based upon the values of
+    * `$vars`. It is an associative array where the keys are the `T_CONFIG`
+    * field names and the elements are values for the fields. On success, the
+    * row id(integer) is returned, on failure either false (boolean) or
+    * an error message (string) is returned.
+    *
+    * @param array $vars An associative array
+    * @return mixed
+    */
+    function saveComment($vars){
+        $rval = false;
+        if(is_array($vars)){
+            $q = 'INSERT INTO `'.T_COMMENTS.'` SET ';
+            foreach($vars as $fld=>$val)
+                $q .= $fld."='".$val."',";
+            $sql = substr($q, 0, -1);
+            if($this->_db->Execute($sql))
+                $rval = $this->_db->insert_id();
+            else
+                $rval = mysql_error();
+        }
+        return $rval;
+    }
+    
+    /**
+    * Tests comment text against moderation criteria
+    *
+    * @param string $comment The comment text
+    * @return bool
+    */
+    function needsModeration($comment){
+        $rval = false;
+        $comment = strtolower($comment);
+        if (C_COMMENT_MODERATION == 'all') {
+            $rval = true;
+        }
+        elseif (C_COMMENT_MODERATION == 'urlonly') {
+            if(strpos($comment, '<a') !== false)
+                $rval = true;
+        }
+        return $rval;
+    }
+    
+    /**
+    * Initiates a variety of tests
+    *
+    * An array is returned with the following fields
+    * and values:
+    * +=============================================+
+    * | proceed    |  true if all passed all tests  |
+    * |            |  false if failed any test      |
+    * +============+================================+
+    * | message    | An array of error messages:    |
+    * |            | array(message_title,           |
+    * |            |   message_text);               |
+    * +============+================================+
+    *
+    * @param object $post The article receiving the comment
+    * @param object $authImage AuthImage instance
+    * @param string $code Captcha code as typed by the user
+    * @param string $comment Comment text
+    * @return array
+    */
+    function canProceed(&$post, $code, $comment){
+        $rval['proceed'] = true;
+        $rval['message'] = array();
+        if($this->isFlooding( $_SERVER['REMOTE_ADDR'], time())){
+            $rval['proceed'] = false;
+            $rval['message'][] = array("Comment Flood Protection", "Error adding comment. You have tried to make a comment too soon after your last one. Please try again later. This is a bBlog spam prevention measure");
+        }
+        if($this->isDisabled(&$post)){
+            $rval['proceed'] = false;
+            $rval['message'][] = array("Error adding comment", "Comments have been turned off for this post");
+        }
+        return $rval;
+    }
+    
+    /**
+    * Checks whether commenting is disabled for this post
+    *
+    * @param object $post
+    * @return bool
+    */
+    function isDisabled(&$post){
+        $rval = false;
+        if ($post->allowcomments == ('disallow') or ($post->allowcomments == 'timed' and $post->autodisabledate < time()))
+            $rval = true;
+        return $rval;
+    }
+    
+    /**
+    * Performs various transformations on text. Hyperlinks have
+    * the redirector added and are wrapped in A tags (if not already wrapped).
+    * Special characters are transformed into HTML entities.
+    *
+    * @param string $comment Comment text
+    * @return string
+    */
+    function processCommentText($comment){
+        //Policy: only a, b, i, strong, code, acrynom, blockquote, abbr are allowed
+        $comment = StringHandling::removeTags($comment, '<a><b><i><strong><code><acronym><blockquote><abbr>');
+        /*if(StringHandling::containsLinks($comment)){
+            $comment = StringHandling::transformLinks($comment);
+        }*/
+        //Policy: translate HTML special characters to their HTML entities
+        $comment = $this->encodeHTML($comment);
+        //Policy: line breaks converted automatically
+        return nl2br($comment);
+    }
+    
+    /**
+    * Checks whether an attempt at comment flooding is being made
+    *
+    * @param string $ip IP Address of commentor
+    * @param int $now Unix Timestamp of current time
+    */
+    function isFlooding($ip, $now){
+        $rval = false;
+        if (C_COMMENT_TIME_LIMIT > 0) {
+            $fromtime = $now - (C_COMMENT_TIME_LIMIT * 60);
+            $rs = $this->_db->Execute("select * from ".T_COMMENTS." where ip='".$ip."' and posttime > ".$fromtime);
+            if ($rs !== false && $rs->RecordCount() > 0) {
+                $rval = true;
             }
         }
-        return $commentsfinalarray;
+        return $rval;
     }
+    
+    /**
+    * Saves comment details in a cookie
+    *
+    * @param string $name Commentors name
+    * @param string $email Commentors email address
+    * @param string $website Commentors website
+    * @return void
+    */
+    function setCommentCookie($name, $email, $website){
+        $ctime = time()+3600*24*30;
+        setcookie("postername", $name, $ctime);
+        setcookie("posteremail", $email, $ctime);
+        setcookie("posterwebsite", $website, $ctime);
+        $value = base64_encode(serialize(array ('web' => $website, 'mail' => $email, 'name' => $name)));
+        setcookie("bBcomment", $value, time() + (86400 * 360));
+    }
+    
+    /**
+    * Tests what user typed against the captcha
+    *
+    * @param object $authImage Instance of AuthImage
+    * @param string $code Captcha code typed by user
+    * @return bool
+    */
+    function failsCaptcha(&$authImage, $code){
+        $rval = false;
+        if(C_IMAGE_VERIFICATION == 'true' && !empty($code)) { //Some templates may not have the iamge verification enabled
+            if(!$authImage->checkAICode($code)){
+                $rval = true;
+            }
+        }
+        return $rval;
+    }
+    
+    /**
+    * Notifies blog author of new comment
+    *
+    * @param string $name Commentors name
+    * @param string $link Link to comment entry
+    * @param int    $onhold Whether or not comment requires moderation
+    * @param string $comment Text of the comment
+    * @return void
+    */
+    function notify($name, $link, $onhold, $comment){
+        include_once (BBLOGROOT."inc/mail.php");
+        $message = $name." has posted a comment in reply to your blog entry at ".$link."\n\nComment: ".$comment."\n\n";
+        if ($onhold == 1)
+            $message .= "You have selected comment moderation and this comment will not appear until you approve it, so please visit your blog and log in to approve or reject any comments\n";
+        notify_owner("New comment on your blog", $message);
+    }
+    
+    /**
+     * Updates the number of comments for a post in the post table
+     * @deprecated This will go away soon. It can easily be obtained when by a query, removing this step
+     * 
+     */
+    function updateCommentCount($postid){
+        $rs = $this->_db->Execute("SELECT count(*) as c FROM ".T_COMMENTS." WHERE postid='$postid' and deleted='false' group by postid");
+        if($rs !== false){
+            $newnumcomments = $rs->fields[0];
+            $this->_db->Execute("update ".T_POSTS." set commentcount='$newnumcomments' where postid='$postid'");
+        }
+    }
+    
+    /**
+     * Enforces HTML Encoding policy on comment text
+     * 
+     * Policy states HTML special characters (&, ", etc) be translated to
+     * their HTML entity equivalents for HTML display purposes. In doing this,
+     * we must maintain the HTML tags (a, b, i, strong, code, acrynom, blockquote,
+     * abbr) policy allows.
+     */
+    function encodeHTML($comment){
+        //Make certain we don't encode the allowed tags
+        //Policy: only a, b, i, strong, code, acrynom, blockquote, abbr are allowed
+        
+        $comment = str_replace("\r\n", '%%%COMMENT:TRANSFORM:NEWLINE:%%% ', $comment);
+        $comment = str_replace("\n", '%%%COMMENT:TRANSFORM:NEWLINE:%%% ', $comment);
+        $_blocks = array(
+            'a' => array('pattern'=>'/<a[^>]{0,}>.*?<\/a>/is'),
+            'abbr' => array('pattern'=>'/<abbr[^>]{0,}>.*?<\/abbr>/is'),
+            'b' => array('pattern'=>'/<b>.*?<\/b>/is'),
+            'i' => array('pattern'=>'/<i>.*?<\/i>/is'),
+            'strong' => array('pattern'=>'/<strong>.*?<\/strong>/is'),
+            'em' => array('pattern' => '/<em>.*?<\/em>/is'),
+            'code' => array('pattern' => '/<code[^>]{0,}>.*?<\/code>/is'),
+            'acronym' => array('pattern' => '/<acronym[^>]{0,}>.*?<\/acronym>/is'),
+            'blockquote' => array('pattern' => '/<blockquote[^>]{0,}>.*?<\/blockquote>/is')
+            );
+        foreach($_blocks as $tag=>$arr){
+            $match = array();
+            preg_match_all($arr['pattern'], $comment, $match);
+            $_blocks[$tag]['match'] = $match;
+            $replace = '%%%COMMENT:TRANSFORM:'.strtoupper($tag).'%%% ';
+            $comment = preg_replace($arr['pattern'], $replace, $comment);
+        }
+        $comment = htmlspecialchars($comment);
+        foreach($_blocks as $tag=>$arr){
+            $search_str= '%%%COMMENT:TRANSFORM:'.strtoupper($tag).'%%%';
+            $_len = strlen($search_str);
+            $_pos = 0;
+            for ($_i=0, $_count=count($arr['match']); $_i<$_count; $_i++)
+                if (($_pos=strpos($comment, $search_str, $_pos))!==false)
+                    $comment = substr_replace($comment, $arr['match'][$_i], $_pos, $_len);
+                else
+                    break;
+        }
+        //$comment = str_replace('%%%COMMENT:TRANSFORM:NEWLINE:%%%', "\r\n", $comment);
+        $comment = str_replace('%%%COMMENT:TRANSFORM:NEWLINE:%%%', "\n", $comment);
+        return $comment;
+    }
+    
     ////
     // !changes the array type and sets some default values for each comment
     function format_comment ($comment) {
@@ -248,13 +450,13 @@ class comments {
                     
         $commentr['replylinkurl'] = $this->_get_entry_permalink($postid);
         
-            if(substr_count($commentr['replylinkurl'],"?") == 1) {
-                    $commentr['replylinkurl'] .= "&amp;";
-            } else {
-                $commentr['replylinkurl'] .= "?";
-            }
+        if(substr_count($commentr['replylinkurl'],"?") == 1) {
+                $commentr['replylinkurl'] .= "&amp;";
+        } else {
+            $commentr['replylinkurl'] .= "?";
+        }
     
-            $commentr['replylinkurl'] .= "replyto={$comment['data']->commentid}#commentform";
+        $commentr['replylinkurl'] .= "replyto={$comment['data']->commentid}#commentform";
         
         $commentr['replylink'] = "<a href='".$commentr['replylinkurl']."'>Reply</a>";
     
@@ -291,15 +493,12 @@ class comments {
     
         $commentr['trackbackurl']  = $this->_get_comment_trackback_url($postid,$comment['data']->commentid);
     
-    return $commentr;
+        return $commentr;
     
     }
     
-    
-    
     function makethread($parcat,$table,$level){
-    
-    // recursive function! Get your head around this! :
+        // recursive function! Get your head around this! :
         global $finalar;
         if($level > $this->highestlevel) $this->highestlevel = $level;
         $list=$table[$parcat];
@@ -311,5 +510,10 @@ class comments {
         }
         return true;
     } // end function makethread
+    function debug($msg){
+        echo '<pre>';
+        var_dump($msg);
+        echo '</pre>';
+    }
 }
 ?>
