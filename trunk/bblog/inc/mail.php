@@ -1,4 +1,4 @@
-<?
+<?php
 // mail.php - send notifications and the like
 // mail.php - author: Eaden McKee
 

@@ -1,6 +1,4 @@
 <?php
-// block.comments.php - BBlog comments
-// block.comments.php - author: Eaden McKee <email@eadz.co.nz>
 /*
 ** bBlog Weblog http://www.bblog.com/
 ** Copyright (C) 2003  Eaden McKee <email@eadz.co.nz>
@@ -58,8 +56,7 @@ function smarty_function_getcomments($params, &$bBlog) {
         $rt = $_GET['replyto'];
         $cs = $ch->get_comment($_REQUEST['postid'],$rt);
     } else {
-        $cs = $ch->get_comments();
-        
+        $cs = $ch->get_comments(true);
     }
     /* assign loop variable */
     $bBlog->assign($assign, $cs);

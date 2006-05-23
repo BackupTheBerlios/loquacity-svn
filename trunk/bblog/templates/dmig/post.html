@@ -42,7 +42,7 @@
 {foreach from=$comments item=comment}
 
 <div class="box1">
-    {if $comment.deleted eq "true"}
+    {if $comment.deleted eq true}
 	    this comment has been deleted
     {elseif $comment.onhold}
     <div style="margin-left: {$comment.level25}px;" class="comments-head">...</div>
@@ -61,12 +61,10 @@
 	    		 <!-- we don't need no spam, so why would we need the email to be public?
 	    		 &#8226; {* $comment.emaillink *}
 	    		 -->
-	    		  &#8226; {$comment.posterwebsite} &#8226; <a href="replyto={$comment.commentid}#commentform">Reply</a>
+	    		  &#8226; {$comment.posterwebsite} &#8226; <a href="replyto={$comment.id}#commentform">Reply</a>
 	    	{/if}
-	   	<br />Comment Trackback URL : BBLOGURL.trackback.php/.{$comment.postid}/{$comment.commentid}/</div>
+	   	<br />Comment Trackback URL : BBLOGURL.trackback.php/{$comment.postid}/{$comment.id}/</div>
 	   	</div><!-- .comments-body -->
-	   	
-
     {/if}
 </div><!-- .box1 -->    
 {/foreach}
@@ -81,75 +79,72 @@
 <form method="post" action="{$commentformaction}" style="margin: 0px; padding: 0px; border: 0px;">
 {$commentformhiddenfields}
 <div class="form">
-<div class="box1">	
+	<div class="box1">
 		<div class="clear">&nbsp;</div>
 		<div class="formleft">Comment Title</div>
 		<div class="formright">
-			
-		<div class="formfieldcontainer">	
-			<div class="box">
-				<input name="title" type="text" id="title" value="{$commentreplytitle}" class="formfield"/>
-			</div><!-- .box -->
-		</div><!-- formfieldcomtainer -->
-			
-			
+			<div class="formfieldcontainer">	
+				<div class="box">
+					<input name="title" type="text" id="title" value="{$commentreplytitle}" class="formfield"/>
+				</div><!-- .box -->
+			</div><!-- formfieldcomtainer -->
 		</div>
 		<div class="clear">&nbsp;</div>
 		<div class="formleft">Your Name: </div>
 		<div class="formright">
-			
-		<div class="formfieldcontainer">	
-			<div class="box">
-				<input name="name" type="text" id="author" class="formfield"/>
-			</div><!-- .box -->
-		</div><!-- formfieldcomtainer -->
-			
-			
+			<div class="formfieldcontainer">	
+				<div class="box">
+					<input name="name" type="text" id="author" class="formfield"/>
+				</div><!-- .box -->
+			</div><!-- formfieldcomtainer -->
 		</div>
 		<div class="clear">&nbsp;</div>
 		<div class="formleft">Email Address: (will never be shown)</div>
 		<div class="formright">
-		
-		<div class="formfieldcontainer">	
-			<div class="box">
-				<input name="email" type="text" id="email" class="formfield"/>
-			</div><!-- .box -->
-		</div><!-- formfieldcomtainer -->			 
-
-			 <!-- again: we need no mail spam and none of the people that leave comments!
-			 Make Public? <input class="checkbox" name="public_email" type="checkbox" id="public_email" value="0" checked="checked"/> (not recommended because of spam!)
-			 -->
-			 </div>
+			<div class="formfieldcontainer">	
+				<div class="box">
+					<input name="email" type="text" id="email" class="formfield"/>
+				</div><!-- .box -->
+			</div><!-- formfieldcomtainer -->			 
+		</div>
 		<div class="clear">&nbsp;</div>
 		<div class="formleft">Website: </div>
 		<div class="formright">
-			
 			<div class="formfieldcontainer">
 				<div class="box">
 					<input name="website" type="text" id="url" class="formfield" />
 				</div><!-- .box -->
 			</div><!-- .formfieldcomtainer -->
-			
-			 Make Public? <input class="checkbox" name="public_website" type="checkbox" id="public_website" value="1" checked="checked" />		
+			 Make Public? <input class="checkbox" name="public_website" type="checkbox" id="public_website" value="1" checked="checked" />
 			</div>
 		<div class="clear">&nbsp;</div>
-</div><!-- box1 -->
-		
-		<div class="box1">
-		<div class="formleft">Comment:</div>
-		</div>
+		<div class="formleft">Captcha: </div>
 		<div class="formright">
-			<div class="box1">
+			<div class="formfieldcontainer">
+				<div class="box">
+					<img src="visualcaptcha.php" width="200" height="60" alt="Visual CAPTCHA" class="formfield" />
+				</div>
+				Text: <input name="imagecode" id="imagecode" type="text" class="formfield" />
+			</div>
+		</div>
+	</div><!-- box1 -->	
+	<div class="box1">
+		<div class="formleft">Comment:</div>
+	</div>
+	<div class="formright">
+		<div class="box1">
+			<div class="formfieldcontainer">
 				<div class="box">  
-					<textarea name="comment" rows="6" id="text" class="commentsfield"></textarea>			
+					<textarea name="comment" rows="5" id="text" class="commentsfield"></textarea>			
 				</div>
 				<div class="clear"><p><i>Allowed XHTML tags : a, b, i, strong, code, acrynom, blockquote, abbr. Linebreaks will be converted automatically.</i></p></div>
 				<div class="formright">
-						<input name="submit" type="submit" id="submit" value="Submit Comment" class="box1" style="padding: 3px;"/> 
+					<input name="submit" type="submit" id="submit" value="Submit Comment" class="box1" style="padding: 3px;"/> 
 					<input type="hidden" name="do" value="submitcomment" />
 				</div><!-- .box -->
 			 </div><!-- .box1 -->
-		 </div><!-- .formright -->
+	 	</div><!-- .formright -->
+	</div>
 </div><!-- .form --> 
 </form>
 {else}

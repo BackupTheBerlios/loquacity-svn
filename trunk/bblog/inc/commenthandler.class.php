@@ -33,23 +33,26 @@ class commentHandler {
             $this->_post = $postid;
             $sql = 'SELECT * from `'.T_COMMENTS.'` WHERE postid='.$this->_post;
             $rs = $this->_db->Execute($sql);
-            while($row = $rs->FetchRow()){
-                $this->_comments[$row[0]] = array(
-                    'parentid'       => $row[1],
-                    'title'          => $row[3],
-                    'type'           => $row[4],
-                    'posttime'       => $row[5],
-                    'postername'     => $row[6],
-                    'posteremail'    => $row[7],
-                    'posterwebsite'  => $row[8],
-                    'posternotify'   => $row[9],
-                    'pubemail'       => $row[10],
-                    'pubwebsite'     => $row[11],
-                    'ip'             => $row[12],
-                    'commenttext'    => $row[13],
-                    'delete'         => $row[14],
-                    'onhold'         => $row[15]
-                );
+            if($rs){
+                while($row = $rs->FetchRow()){
+                    $this->_comments[$row[0]] = array(
+                        'id'             => $row[0],
+                        'parentid'       => $row[1],
+                        'title'          => $row[3],
+                        'type'           => $row[4],
+                        'posttime'       => $row[5],
+                        'postername'     => $row[6],
+                        'posteremail'    => $row[7],
+                        'posterwebsite'  => $row[8],
+                        'posternotify'   => $row[9],
+                        'pubemail'       => $row[10],
+                        'pubwebsite'     => $row[11],
+                        'ip'             => $row[12],
+                        'commenttext'    => $row[13],
+                        'delete'         => $row[14],
+                        'onhold'         => $row[15]
+                    );
+                }
             }
         }
     }
@@ -58,7 +61,10 @@ class commentHandler {
      */
     function get_comments($fordisplay=false){
         if($fordisplay){
-            return;
+            foreach($this->_comments as $id=>$comment){
+                $this->_comments[$id] = $this->prepFieldsForDisplay($comment);
+            }
+            return $this->_comments;
         }
         else{
             return $this->_comments;
@@ -81,29 +87,24 @@ class commentHandler {
     * @param array  $post_vars $_POST
     */
     function new_comment($post, $replyto, $post_vars) {
-        $result = $this->canProceed(&$post, $post_vars['spam_code'], $post_vars['comment']);
+        $result = $this->canProceed(&$post, $post_vars['imagecode'], $post_vars['comment']);
         if($result['proceed'] === true){
             unset($result);
-            $vars = $this->prepFieldsForDB($post_vars, $post->postid, $replyto);
+            $vars = $this->prepFieldsForDB($post_vars, $post['postid'], $replyto);
             if ($post_vars['set_cookie']) {
                 $this->setCommentCookie($vars['postername'], $vars['posteremail'], $vars['posterwebsite']);
             }
             
             $id = $this->saveComment($vars);
-            if($id > 0){
+            if($id !== false && $id > 0){
                 if(C_NOTIFY == true){
-                    $this->notify($vars['postername'], $post->permalink,$vars['onhold'], $vars['commenttext']);
-                }
-                $rs = $this->_db->Execute('SELECT count(*) as c FROM `'.T_COMMENTS.'` WHERE postid='.$post->postid.' and deleted="false" group by postid');
-                if($rs !== false){
-                    $newnumcomments = $rs->fields[0];
-                    $this->_db->Execute('UPDATE `'.T_POSTS.'` SET commentcount='.$newnumcomments.' WHERE postid='.$post->postid);
+                    $this->notify($vars['postername'], $post['permalink'],$vars['onhold'], $vars['commenttext']);
                 }
                 $result = $id;
             }
             else{
                 $result['error'] = true;
-                $result['message'][] = array("Error", "Error inserting comment for post ".$post->title);
+                $result['message'][] = array("Error", "Error inserting comment for post ".$post['title']);
                 error_log(mysql_error(), 0);
             }
         }
@@ -141,26 +142,7 @@ class commentHandler {
         return $rval;
     }
     
-    function prepFieldsForDisplay($vars, $id, $replyto=0){
-        $rval['postername'] = htmlspecialchars($vars["name"]);
-        if (empty($rval['postername']))
-            $rval['postername'] = "Anonymous";
-        $rval['posteremail'] = htmlspecialchars(stripslashes($vars["email"]));
-        $rval['title'] = htmlspecialchars($vars["title"]);
-        $rval['posterwebsite'] = StringHandling::transformLinks(htmlspecialchars(stripslashes($vars["website"])));
-        $rval['commenttext'] = $this->processCommentText(stripslashes($vars["comment"]));
-        $rval['pubemail'] = ($vars["public_email"] == 1) ? 1 : 0;
-        $rval['pubwebsite'] = ($vars["public_website"] == 1) ? 1 : 0;
-        $rval['posternotify'] = ($vars["notify"] == 1) ? 1 : 0;
-        $rval['posttime'] = time();
-        $rval['ip'] = $_SERVER['REMOTE_ADDR'];
-        $rval['onhold'] = ($this->needsModeration($rval['commenttext'])) ? 1 : 0;
-        $rval['postid'] = $id;
-        if ($replyto > 0)
-            $rval['parentid'] = $replyto;
-        $rval['type'] = 'comment';
-        return $rval;
-    }
+    
     /**
     * Save the comment/trackback
     *
@@ -176,14 +158,9 @@ class commentHandler {
     function saveComment($vars){
         $rval = false;
         if(is_array($vars)){
-            $q = 'INSERT INTO `'.T_COMMENTS.'` SET ';
-            foreach($vars as $fld=>$val)
-                $q .= $fld."='".$val."',";
-            $sql = substr($q, 0, -1);
-            if($this->_db->Execute($sql))
-                $rval = $this->_db->insert_id();
-            else
-                $rval = mysql_error();
+            if($this->_db->AutoExecute(T_COMMENTS, $vars, 'INSERT')){
+                $rval = $this->_db->Insert_Id();
+            }
         }
         return $rval;
     }
@@ -238,6 +215,10 @@ class commentHandler {
             $rval['proceed'] = false;
             $rval['message'][] = array("Error adding comment", "Comments have been turned off for this post");
         }
+        if($this->failsCaptcha($code)){
+            $rval['proceed'] = false;
+            $rval['message'][] = array('Error adding comment', 'Supplied text does not match what was on the image');
+        }
         return $rval;
     }
     
@@ -249,7 +230,7 @@ class commentHandler {
     */
     function isDisabled(&$post){
         $rval = false;
-        if ($post->allowcomments == ('disallow') or ($post->allowcomments == 'timed' and $post->autodisabledate < time()))
+        if ($post['allowcomments'] == ('disallow') or ($post['allowcomments'] == 'timed' and $post['autodisabledate'] < time()))
             $rval = true;
         return $rval;
     }
@@ -312,14 +293,14 @@ class commentHandler {
     /**
     * Tests what user typed against the captcha
     *
-    * @param object $authImage Instance of AuthImage
     * @param string $code Captcha code typed by user
     * @return bool
     */
-    function failsCaptcha(&$authImage, $code){
+    function failsCaptcha($code){
+        require_once(BBLOGROOT.'libs/captcha/php-captcha.inc.php');
         $rval = false;
         if(C_IMAGE_VERIFICATION == 'true' && !empty($code)) { //Some templates may not have the iamge verification enabled
-            if(!$authImage->checkAICode($code)){
+            if (!PhpCaptcha::Validate($code)){
                 $rval = true;
             }
         }
@@ -404,49 +385,51 @@ class commentHandler {
         return $comment;
     }
     
+    function prepFieldsForDisplay($vars, $replyto=0){
+        $rval['id'] = $vars['id'];
+        $rval['postername'] = htmlspecialchars($vars["postername"]);
+        if (empty($rval['postername']))
+            $rval['postername'] = "Anonymous";
+        $rval['posteremail'] = htmlspecialchars(stripslashes($vars["posteremail"]));
+        $rval['title'] = htmlspecialchars($vars["title"]);
+        $rval['posterwebsite'] = StringHandling::transformLinks(htmlspecialchars(stripslashes($vars["posterwebsite"])));
+        $rval['commenttext'] = $this->processCommentText(stripslashes($vars["commenttext"]));
+        $rval['pubemail'] = ($vars["pubemail"] == 1) ? true : false;
+        $rval['pubwebsite'] = ($vars["pubwebsite"] == 1) ? true : false;
+        $rval['posternotify'] = ($vars["posternotify"] == 1) ? true : false;
+        $rval['posttime'] = $vars['posttime'];
+        $rval['ip'] = $vars['ip'];
+        $rval['onhold'] = ($this->needsModeration($rval['commenttext'])) ? true : false;
+        $rval['postid'] = $this->_post;
+        $rval['replyto'] = ($vars['parentid'] > 0) ? $vars['parentid'] : false;
+        $rval['type'] = $vars['type'];
+        $rval['deleted'] = ($vars['deleted'] == 1) ? true : false;
+        return $rval;
+    }
     ////
     // !changes the array type and sets some default values for each comment
     function format_comment ($comment) {
-        $postid = $comment['data']->postid;
-        if($comment['data']->deleted == "true") {
-            $commentr['deleted'] = TRUE;
-        }
-        
-        $commentr['body']     = $comment['data']->commenttext;
-        $commentr['posttime'] = $comment['data']->posttime;
-            $commentr['posted'] = $comment['data']->posttime;
-        
-        $commentr['name'] = $comment['data']->postername;
-        $commentr['author'] = $comment['data']->postername;
-        $commentr['title'] = $comment['data']->title;
-        $commentr['type'] = $comment['data']->type;
-    
-        if($comment['data']->onhold == 1) $commentr['onhold'] =TRUE;
-    
-            if($comment['data']->pubemail > 0) {
-            $commentr['email'] = $comment['data']->posteremail;
+        if($comment['data']['pubemail'] > 0) {
+            $commentr['email'] = $comment['data']['posteremail'];
         }
                     
-        if($comment['data']->pubwebsite > 0) {
+        if($comment['data']['pubwebsite'] > 0) {
             $commentr['website'] = $comment['data']->posterwebsite;
         }
-    
-    
-    
-        if($comment['data']->pubemail > 0 && $comment['data']->posteremail != '') {
-            $commentr['emaillink'] = "<a href='mailto:".$comment['data']->posteremail."'>@</a>";
+        if($comment['data']['pubemail'] > 0 && $comment['data']['posteremail'] != '') {
+            $commentr['emaillink'] = "<a href='mailto:".$comment['data']['posteremail']."'>@</a>";
         } else $commentr['emaillink'] = '';
         
                 
-        if($comment['data']->pubwebsite > 0 && $comment['data']->posterwebsite != '') {
-            $commentr['websitelink'] = "<a href='".$comment['data']->posterwebsite."'>www</a>";
+        if($comment['data']['pubwebsite'] > 0 && $comment['data']['posterwebsite'] != '') {
+            $commentr['websitelink'] = $comment['data']['posterwebsite'];
         } else $commentr['websitelink'] = '';
                 
-        $commentr['websiteurl'] = $comment['data']->posterwebsite;
-        $commentr['permalink'] = "<a name='comment{$comment['data']->commentid}'></a>
-                          <a href='".$this->_get_comment_permalink($postid,$comment['data']->commentid)."'>#</a>";
+        $commentr['websiteurl'] = $comment['data']['posterwebsite'];
+        $commentr['permalink'] = "<a name='comment{$comment['data']['commentid']}'></a>
+                          <a href='".$this->_get_comment_permalink($postid,$comment['data']['commentid'])."'>#</a>";
     
-        $commentr['permalinkurl'] = $this->_get_comment_permalink($postid,$comment['data']->commentid);
+        $commentr['permalinkurl'] = $this->_get_comment_permalink($postid,$comment['data']['commentid']);
                     
         $commentr['replylinkurl'] = $this->_get_entry_permalink($postid);
         
@@ -456,11 +439,11 @@ class commentHandler {
             $commentr['replylinkurl'] .= "?";
         }
     
-        $commentr['replylinkurl'] .= "replyto={$comment['data']->commentid}#commentform";
+        $commentr['replylinkurl'] .= "replyto={$comment['data']['commentid']}#commentform";
         
         $commentr['replylink'] = "<a href='".$commentr['replylinkurl']."'>Reply</a>";
     
-        $commentr['commentid'] = $comment['data']->commentid;
+        $commentr['commentid'] = $comment['data']['commentid'];
         $commentr['postid'] = $postid;
     
         if($comment['level'] > 0 ) {
