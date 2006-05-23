@@ -175,13 +175,16 @@ function smarty_function_nextprev($params, &$bBlog) {
     }
     else {
        // invariant: Need to query the database and count
-       $countArray = $bBlog->get_results( "select count(*) as nElements from ".T_POSTS." where status = 'live' $QuerySection;" );
-       if ( $bBlog->num_rows <= 0 ) {
-          $entryCount = 0;
-       } else {
-          foreach ( $countArray as $cnt ) {
-              $entryCount = $cnt->nElements;
-          }
+       $rs = $bBlog->_adb->Execute( "select count(*) as nElements from ".T_POSTS." where status = 'live' $QuerySection" );
+       if($rs !== false && !$rs->EOF){
+           if($rs->RecordCount() == 0){
+               $entryCount = 0;
+           }
+           else{
+               while($cnt = $rs->FetchRow()){
+                   $entrCount .= $cnt['nElements'];
+               }
+           }
        }
     }
 
@@ -244,4 +247,3 @@ function smarty_function_nextprev($params, &$bBlog) {
     }
 }
 ?>
-

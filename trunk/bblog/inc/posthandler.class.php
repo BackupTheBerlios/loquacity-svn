@@ -25,7 +25,7 @@ class postHandler {
             $post->ownerid = $_SESSION['user_id'];
         }
 
-        $hidefromhome_q = ($post->hidefromhome == 'hide') ? " hidefromhome='1', " : " hidefromhome='0', ";
+        $hidefromhome_q = ($post->hidefromhome == 'hide') ? " hidefromhome=1, " : " hidefromhome=0, ";
 
         if($post->allowcomments == ('allow' or 'disallow' or 'timed'))
             $allowcomments_q = " allowcomments='{$post->allowcomments}', ";
@@ -73,24 +73,13 @@ class postHandler {
      */
     function get_posts($crit, $raw=FALSE) {
         if(is_array($crit)){
-            $posts = $this->_db->get_results($this->make_post_query($crit));
-            if($this->_db->num_rows > 0){
+            $rs = $this->_db->Execute($this->make_post_query($crit));
+            if($rs !== false && !$rs->EOF){
                 if($raw)
-                    return $posts;
+                    return $rs;
                 else {
-                    //load required plugins/modifiers
-                    //Defer to pre_post stage
-                    /*foreach($posts as $post) {
-                          // this looks a bit wacky, but i think it works well..
-                          $modifiers[$post->modifier] = $post->modifier;
-                    }
-                    if(sizeof($modifiers) > 0) {
-                          foreach ($modifiers as $modifier) {
-                             require_once $this->_get_plugin_filepath('modifier',$modifier);
-                          }
-                    }*/
                     $finalposts = array();
-                    foreach ($posts as $post) {
+                    while($post = $rs->FetchRow()){
                              $finalposts[] = $this->prep_post($post);
                     }
                     return $finalposts;
@@ -102,7 +91,6 @@ class postHandler {
         else{
             return array(array("title"=>"No selection cirteria supplied"));
         }
-        #$posts = $this->_db->get_results($q); // $posts returned as an object
     }
 
     ////
@@ -114,11 +102,11 @@ class postHandler {
     function prep_post(&$post) {
         //first do the basics
 
-        $npost['id'] = $post->postid;
-        $npost['postid'] = $post->postid;
-        $npost['permalink'] = (defined('CLEANURLS')) ? str_replace('%postid%',$post->postid,URL_POST) : BLOGURL.'?postid='.$post->postid;
-        $npost['trackbackurl'] = BBLOGURL.'trackback.php/'.$post->postid.'/';
-        $npost['title'] = $post->title;
+        $npost['id'] = $post['postid'];
+        $npost['postid'] = $post['postid'];
+        $npost['permalink'] = (defined('CLEANURLS')) ? str_replace('%postid%',$post['postid'],URL_POST) : BLOGURL.'?postid='.$post['postid'];
+        $npost['trackbackurl'] = BBLOGURL.'trackback.php/'.$post['postid'].'/';
+        $npost['title'] = $post['title'];
          
         // do the body text
         /*if($post->modifier != '') {
@@ -131,33 +119,33 @@ class postHandler {
              $npost['applied_modifier'] = $post->modifier;
         }
         else {*/
-        if($post->modifier !== '')
-            $npost['modifier'] = $post->modifier;
-         $npost['body'] = $post->body;
+        if($post['modifier'] !== '')
+            $npost['modifier'] = $post['modifier'];
+         $npost['body'] = $post['body'];
              #$npost['applied_modifier'] = 'none';
         //}
-        $npost['status'] = $post->status;
+        $npost['status'] = $post['status'];
 
         // in the future
-        $npost['posttime'] = $post->posttime;
-        $npost['modifytime'] = $post->modifytime;
+        $npost['posttime'] = $post['posttime'];
+        $npost['modifytime'] = $post['modifytime'];
 
         // what we need here is that the date format
         // is available in the control panel as an option
         // this is only here as a convience, the date_format modifier should be used.
-        $npost['posttime_f'] = date("D M j G:i:s T Y",$post->posttime);
-        $npost['modifytime_f'] = date("D M j G:i:s T Y",$post->modifytime);
+        $npost['posttime_f'] = date("D M j G:i:s T Y",$post['posttime']);
+        $npost['modifytime_f'] = date("D M j G:i:s T Y",$post['modifytime']);
         $npost['sections']   = array();
-        switch($post->commentcount) {
+        switch(intval($post['NUMCOMMENTS'])) {
              case 1 : $npost['commenttext'] = "One comment"; break;
-             case 0 : $npost['commenttext'] = "Comment"; break;
-             default: $npost['commenttext'] = $post->commentcount." comments"; break;
+             case 0 : $npost['commenttext'] = "Add Comment"; break;
+             default: $npost['commenttext'] = $post['NUMCOMMENTS'] ." comments"; break;
         }
-        $npost['commentcount'] = $post->commentcount;
-        if($post->sections != '') {
+        $npost['commentcount'] = $post['NUMCOMMENTS'];
+        if($post['sections'] != '') {
               // we are assuming that there is at least one section
               // becasue you shouldnt' have ":" or something in there !
-              $tmp_sec_ar = explode(":",$post->sections);
+              $tmp_sec_ar = explode(":",$post['sections']);
               foreach ($tmp_sec_ar as $tmp_sec) {
               // Make sure it isn't the empty section at
               // the beginning and end of each section list.
@@ -173,13 +161,13 @@ class postHandler {
         }
         //add the author info
         $npost['author'] = array(
-             'id' => $post->ownerid,
-             'nickname' => $post->nickname,
-             'email' => $post->email,
-             'fullname' => $post->fullname);
-        $npost['hidefromhome'] = $post->hidefromhome;
-        $npost['autodisabledate'] = $post->autodisabledate;
-        if($post->allowcomments == 'disallow' or ($post->allowcomments == 'timed' and $post->autodisabledate < time())){
+             'id' => $post['ownerid'],
+             'nickname' => $post['nickname'],
+             'email' => $post['email'],
+             'fullname' => $post['fullname']);
+        $npost['hidefromhome'] = $post['hidefromhome'];
+        $npost['autodisabledate'] = $post['autodisabledate'];
+        if($post['allowcomments'] == 'disallow' or ($post['allowcomments'] == 'timed' and $post['autodisabledate'] < time())){
             $npost['allowcomments'] = FALSE;
         }
         else {
@@ -215,8 +203,8 @@ class postHandler {
         // any sections list
         if ((isset($sectionid)) && ($sectionid != FALSE))   $where .= " AND sections like '%:$sectionid:%' ";
 
-        if($home) $where .= " AND hidefromhome='0' ";
-        $q = "SELECT posts.$what, authors.nickname, authors.email, authors.fullname FROM ".T_POSTS." AS posts LEFT JOIN ".T_AUTHORS." AS authors ON posts.ownerid = authors.id $wherestart $where $order $limit ";
+        if($home) $where .= " AND hidefromhome=0 ";
+        $q = "SELECT posts.$what, authors.nickname, authors.email, authors.fullname, COUNT(`comments`.`commentid`) AS NUMCOMMENTS FROM ".T_POSTS." AS posts LEFT JOIN ".T_AUTHORS." AS authors ON posts.ownerid = authors.id LEFT JOIN `".T_COMMENTS."` as comments ON posts.postid = comments.postid $wherestart $where GROUP BY posts.postid $order $limit";
         return $q;
     }
     
@@ -230,30 +218,24 @@ class postHandler {
      * @return mixed
      */
     function get_post ($postid, $draftok = FALSE, $raw = FALSE){
+        if (!is_numeric($postid))
+            return false;
         // this makes it safe for general use.
         // we don't want ppl being able to view drafts.
         if (!$draftok)
             $draft_q = "AND posts.status='live' ";
         else
             $draft_q = '';
-            
-        // php doesnt have an unless function :
-        // unless(is_numeric($postid)) return false
-        // so OR does the trick :) ( and it's cleaner. )
-        if (!is_numeric($postid))
-            return false;
+        
             
         $q = "SELECT posts.*, authors.nickname, authors.email, authors.fullname FROM ".T_POSTS." AS posts LEFT JOIN ".T_AUTHORS." AS authors ON posts.ownerid = authors.id WHERE posts.postid='$postid' $draft_q LIMIT 0,1";
-        $post = $this->_db->get_row($q);
-        if(isset($post)){
-            if ($raw)
-                return $post;
-            else{
-                #require_once $this->_get_plugin_filepath('modifier', $post->modifier);
-                return $this->prep_post($post);
-            }
+        $post = $this->_db->GetRow($q);
+        if($raw)
+            return $post;
+        else{
+            #require_once $this->_get_plugin_filepath('modifier', $post->modifier);
+            return $this->prep_post($post);
         }
-            else return FALSE;
     }   
     
     ////
@@ -263,14 +245,10 @@ class postHandler {
         $this->modifiednow();
         // delete comments
         $q1 = "DELETE FROM ".T_COMMENTS." WHERE postid='$postid'";
-        $this->_db->query($q1);
+        $this->_db->Execute($q1);
         // delete post
         $q2 = "DELETE FROM ".T_POSTS." WHERE postid='$postid'";
-        $this->_db->query($q2);
-        if($this->rows_affected  == 1)
-            return true;
-        else 
-            return false;
+        $this->_db->Execute($q2);
     }
     
     ////
@@ -290,8 +268,8 @@ class postHandler {
         elseif ($params['edit_sections']) {
             $q .=", sections='' ";
         }
-        if($params['hidefromhome'] == 'hide') $q .= ", hidefromhome='1'";
-        if($params['hidefromhome'] == 'donthide') $q .= ", hidefromhome='0'";
+        if($params['hidefromhome'] == 'hide') $q .= ", hidefromhome=1";
+        if($params['hidefromhome'] == 'donthide') $q .= ", hidefromhome=0";
 
         if($params['allowcomments'] == ('allow' or 'disallow' or 'timed' )){
             $q .= ', allowcomments="'.$params['allowcomments'].'"';
@@ -303,8 +281,16 @@ class postHandler {
         if($params['timestamp']) $q .= ',posttime="'.$params['timestamp'].'"';
         $q .=' WHERE postid='.$params['postid'];
 
-        $res = $this->_db->query($q);
+        $res = $this->_db->Execute($q);
         return true;
+    }
+    function get_post_permalink($postid){
+        if(defined('CLEANURLS')){
+            return str_replace('%postid%',$postid,URL_POST);
+        }
+        else{
+            return BLOGURL.'?postid='.$postid;
+        }
     }
 }
 ?>

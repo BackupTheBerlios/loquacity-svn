@@ -268,7 +268,7 @@ if ((isset($_POST['submit'])) && ($_POST['submit'] == 'Save Options')) {
    var_dump($sql);
    //var_dump($update);
    echo "</pre>";*/
-   $bBlog->query($sql);
+   $bBlog->_adb->Execute($sql);
    } // foreach
    $bBlog->assign("showmessage",TRUE);
    $bBlog->assign("showoptions",'no');

@@ -450,7 +450,7 @@ $q[] = "INSERT INTO `{$pfx}sections` (`sectionid`, `nicename`, `name`) VALUES (1
 				$i++;
 				echo $i." ";
 				//echo "<pre>$q2do</pre>";
-				$db->query($q2do);
+				$db->Execute($q2do);
 			}
 			echo ' done.<input type="submit" name="submit" value="Next &gt;" /></p>';
 			$step = 5;
@@ -494,7 +494,7 @@ $q[] = "INSERT INTO `{$pfx}sections` (`sectionid`, `nicename`, `name`) VALUES (1
 					help='".addslashes($newplugin['help'])."',
 					authors='".addslashes($newplugin['authors'])."',
 					licence='".$newplugin['licence']."'";
-			 		$db->query($q);
+			 		$db->Execute($q);
 			 		echo '<tr><td>'.$newplugin['nicename'].'</td><td>..........Loaded</td></tr>';
 
 				} // end if function exists

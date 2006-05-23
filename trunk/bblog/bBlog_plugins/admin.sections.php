@@ -42,7 +42,7 @@ else { $sectdo = ''; }
 
 switch($sectdo) {
 	case 'new' :  // sections are being editied
-		$bBlog->query("insert into ".T_SECTIONS."
+		$bBlog->_adb->Execute("insert into ".T_SECTIONS."
 			set nicename='".my_addslashes($_POST['nicename'])."',
 			name='".my_addslashes($_POST['urlname'])."'");
 		$insid = $bBlog->insert_id;
@@ -65,14 +65,14 @@ switch($sectdo) {
 				}
                                 $newsects = implode(":",$tmpr);
 				// update the posts to remove the section
-                                $bBlog->query("update ".T_POSTS." set sections='$newsects'
+                                $bBlog->_adb->Execute("update ".T_POSTS." set sections='$newsects'
                                 	where postid='{$post->postid}'");
 
                             } // end foreach ($post_in_section as $post)
 			} // end if($posts_in_section) 
                         // delete the section
-                        //$bBlog->get_results("delete from ".T_SECTIONS." where sectionid='$sect_id'");
-                        $bBlog->query("delete from ".T_SECTIONS." where sectionid='$sect_id'");
+                        
+                        $bBlog->_adb->Execute("delete from ".T_SECTIONS." where sectionid='$sect_id'");
 			//echo "delete from ".T_SECTIONS." where sectionid='$sect_id'";
 			$bBlog->get_sections();
 			//$bBlog->debugging=TRUE;
@@ -81,9 +81,8 @@ switch($sectdo) {
 	case "Save" :
  		$sect_id = $bBlog->sect_by_name[$_POST['sname']];
                 if($sect_id < 1) break;
-                $bBlog->query("update ".T_SECTIONS
-                	." set nicename='".my_addslashes($_POST['nicename'])."'
-                        where sectionid='$sect_id'");
+                $sql = "update ".T_SECTIONS ." set nicename='".my_addslashes($_POST['nicename'])."' where sectionid='$sect_id'";
+                $bBlog->_adb->Execute($sql);
                 $bBlog->get_sections(); // update section cache
         	break;
 

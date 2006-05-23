@@ -47,7 +47,7 @@
 		('', 'DIRECTION', 'LTR')";
 		
 		//just do it
-		$bBlog->query($q);
+		$bBlog->_adb->Execute($q);
 	}//else	
 
 
@@ -62,12 +62,12 @@
 	if(isset($ver)) {
 		// update
 		echo "Found a previous version. Updating to 0.7.6 now<br /><br />";
-		$bBlog->query("UPDATE ".T_CONFIG." SET VALUE='".$newVer."' WHERE `name`='VERSION'");
+		$bBlog->_adb->Execute("UPDATE ".T_CONFIG." SET VALUE='".$newVer."' WHERE `name`='VERSION'");
 	} 
 	else {
 		// otherwise, write a new one 
 		echo "No VERSION value found. Creating 0.76 now...<br /><br />";
-		$bBlog->query("INSERT INTO `".T_CONFIG."` (`id`, `name`, `value`) VALUES
+		$bBlog->_adb->Execute("INSERT INTO `".T_CONFIG."` (`id`, `name`, `value`) VALUES
 			('', 'VERSION', '$newVer')");
 	}
 		

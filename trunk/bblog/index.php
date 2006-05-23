@@ -80,14 +80,16 @@ $menu[1]['url']='index.php?b=archives';
 $menu[1]['title']='Edit past entries and change properties';
 $bindex['archives']=1;
 
-$plugins = $bBlog->get_results("select * from ".T_PLUGINS." where type='admin' order by ordervalue");
-$i = 2;
-foreach($plugins as $plugin) {
-	$menu[$i]['name'] = $plugin->nicename;
-	$menu[$i]['url']  = 'index.php?b=plugins&amp;p='.$plugin->name;
-	$menu[$i]['title'] = $plugin->description;
-	$pindex[$plugin->name] = $i;
-	$i++;
+$rs = $bBlog->_adb->Execute("select * from ".T_PLUGINS." where type='admin' order by ordervalue");
+if($rs !== false && !$rs->EOF){
+    $i = 2;
+    while($plugin = $rs->FetchRow()){
+        $menu[$i]['name'] = $plugin['nicename'];
+        $menu[$i]['url']  = 'index.php?b=plugins&amp;p='.$plugin['name'];
+        $menu[$i]['title'] = $plugin['description'];
+        $pindex[$plugin['name']] = $i;
+        $i++;
+    }
 }
 
 

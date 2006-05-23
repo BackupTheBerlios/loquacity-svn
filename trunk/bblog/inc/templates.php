@@ -25,7 +25,10 @@
 // !Custom Smarty template handler for use with database templates
 function db_get_template ($tpl_name, &$tpl_source, &$smarty_obj) {
     Global $bBlog;
-    $tpl_source = $bBlog->get_var("select template from ".T_TEMPLATES." where templatename='$tpl_id'");
+    $rs = $bBlog->_adb->Execute("select template from ".T_TEMPLATES." where templatename='$tpl_id'");
+    if($rs !== false && !$rs->EOF){
+        $tpl_source = $rs->fields[0];
+    }
     return true;
 }
 
@@ -34,7 +37,10 @@ function db_get_template ($tpl_name, &$tpl_source, &$smarty_obj) {
 function db_get_timestamp($tpl_name, &$tpl_timestamp, &$smarty_obj) {
     // do database call here to populate $tpl_timestamp.
     Global $bBlog;
-    $tpl_timestamp = $bBlog->get_var("select compiletime from ".T_TEMPLATES." where templatename='$tpl_id'");
+    $rs = $bBlog->_adb->Execute("select compiletime from ".T_TEMPLATES." where templatename='$tpl_id'");
+    if($rs !== flase && !$rs->EOF){
+        $tpl_timestamp = $rs->fields[0];
+    }
     return true;
 }
 

@@ -91,7 +91,6 @@ function smarty_function_getposts($params, &$bBlog) {
 	if(is_numeric($params['skip'])) {
 		$opt['skip'] = $params['skip'];
 	}
-     
 	if ($params['section'] != '') {
 		  $opt['sectionid'] = $bBlog->sect_by_name[$params['section']];
 	}

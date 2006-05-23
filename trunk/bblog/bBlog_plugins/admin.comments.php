@@ -60,7 +60,7 @@ function admin_plugin_comments_run(&$bBlog) {
         case "Approve":
             if(is_array($_POST['commentid'])){
                 foreach($_POST['commentid'] as $key=>$val)
-                    $bBlog->query("UPDATE ".T_COMMENTS." SET onhold='0' WHERE commentid='".intval($val)."'");
+                    $bBlog->_adb->Execute("UPDATE ".T_COMMENTS." SET onhold='0' WHERE commentid='".intval($val)."'");
             }
             break;
         case "filter":
@@ -78,12 +78,12 @@ function deleteComment(&$bBlog, $id){
   $postid = $bBlog->get_var('select postid from '.T_COMMENTS.' where commentid="'.$id.'"');
   $childcount = $bBlog->get_var('select count(*) as c from '.T_COMMENTS .' where parentid="'.$id.'" group by commentid');
   if($childcount > 0) { // there are replies to the comment so we can't delete it.
-    $bBlog->query('update '.T_COMMENTS.' set deleted="true", postername="", posteremail="", posterwebsite="", pubemail=0, pubwebsite=0, commenttext="Deleted Comment" where commentid="'.$id.'"');
+    $bBlog->_adb->Execute('update '.T_COMMENTS.' set deleted="true", postername="", posteremail="", posterwebsite="", pubemail=0, pubwebsite=0, commenttext="Deleted Comment" where commentid="'.$id.'"');
   } else { // just delete the comment
-    $bBlog->query('delete from '.T_COMMENTS.' where commentid="'.$id.'"');
+    $bBlog->_adb->Execute('delete from '.T_COMMENTS.' where commentid="'.$id.'"');
   }
   $newnumcomments = $bBlog->get_var('SELECT count(*) as c FROM '.T_COMMENTS.' WHERE postid="'.$postid.'" and deleted="false" group by postid');
-  $bBlog->query('update '.T_POSTS.' set commentcount="'.$newnumcomments.'" where postid="'.$postid.'"');
+  $bBlog->_adb->Execute('update '.T_POSTS.' set commentcount="'.$newnumcomments.'" where postid="'.$postid.'"');
   $bBlog->modifiednow();
 }
 
@@ -112,7 +112,7 @@ function saveEdit(&$bBlog){
   $body = my_addslashes($_POST['body']);
   if($rval === true){
     $q = "update ".T_COMMENTS." set title='$title', postername='$author', posterwebsite='$websiteurl', posteremail='$email', commenttext='$body' where commentid='{$_POST['commentid']}'";
-    if($bBlog->query($q) === true)
+    if($bBlog->_adb->Execute($q) === true)
       $bBlog->assign('message', 'Comment <em>'.$title.'</em> saved');
   }
   return $rval;
@@ -139,7 +139,10 @@ function retrieveComments(&$bBlog, $amount, $article){
     WHERE deleted="false"
     AND '.T_COMMENTS.'.postid '.$filter.'
     ORDER BY '.T_COMMENTS.'.posttime DESC';
-    $bBlog->assign('comments',$bBlog->get_results($sql));
+    $rs = $bBlog->_adb->Execute($sql);
+    if($rs !== false && !$rs->EOF){
+        $bBlog->assign('comments',$rs->GetRows(-1));
+    }
     $bBlog->assign('commentAmount', $amount);
     $bBlog->assign('commentPosts', $article);
 }
@@ -151,7 +154,9 @@ function populateSelectList(&$bBlog){
 //  $posts_with_comments_q = "SELECT ".T_POSTS.".postid, ".T_POSTS.".title, count(*) c FROM ".T_COMMENTS.",  ".T_POSTS." 	WHERE ".T_POSTS.".postid = ".T_COMMENTS.".postid GROUP BY ".T_POSTS.".postid ORDER BY ".T_POSTS.".posttime DESC  LIMIT 0 , 30 ";  
 //removed the LIMIT parameter as it was unnecessary
   
-  $posts_with_comments = $bBlog->get_results($posts_with_comments_q,ARRAY_A);
-  $bBlog->assign("postselect",$posts_with_comments);
+  $rs = $bBlog->_adb->Execute($posts_with_comments_q,ARRAY_A);
+  if($rs !== false && !$rs->EOF){
+    $bBlog->assign('postselect', $rs->GetRows(-1));
+  }
 }
 ?>

@@ -93,7 +93,7 @@ if(isset($_POST['url']) && is_numeric($tbpost)) {
 			title='$title',
 			commenttext='$excerpt',
 			type='trackback'";
-	$bBlog->query($q);
+	$bBlog->_adb->Execute($q);
 	$insid = $bBlog->insert_id;
 	
 	if($insid < 1) { 
@@ -108,7 +108,7 @@ if(isset($_POST['url']) && is_numeric($tbpost)) {
 		// , but trackbacks are really comments, so I decided against this. 
 		
 	        $newnumcomments = $bBlog->get_var("SELECT count(*) as c FROM ".T_COMMENTS." WHERE postid='$tbpost' and deleted='false' group by postid");
-		$bBlog->query("update ".T_POSTS." set commentcount='$newnumcomments' where postid='$tbpost'");
+		$bBlog->_adb->Execute("update ".T_POSTS." set commentcount='$newnumcomments' where postid='$tbpost'");
 	        $bBlog->modifiednow();
 		trackback_response(0,"");
 

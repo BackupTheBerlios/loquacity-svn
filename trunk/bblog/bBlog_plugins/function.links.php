@@ -92,32 +92,35 @@ function smarty_function_links($params, &$bBlog) {
     } else {
        $max = "20";
     }
-
+    $db = $bBlog->_adb;
     if(isset($params['cat'])) {
-       $cat = $bBlog->get_var("select categoryid from ".T_CATEGORIES." where name='".$params['cat']."'");
+        $rs = $db->Execute("select categoryid from ".T_CATEGORIES." where name='".$params['cat']."'");
+        if($rs !== false && !$rs->EOF){
+            $cat = $rs->fields[0];
+        }
     }
 
     if(isset($params['notcat'])) {
-       $notcat = $bBlog->get_var("select categoryid from ".T_CATEGORIES." where name='".$params['notcat']."'");
+        $rs = $db->Execute("select categoryid from ".T_CATEGORIES." where name='".$params['notcat']."'");
+        if($rs !== false && $rs->EOF){
+            $notcat = $rs->fields[0];
+        }
     }
 
-    if ($cat) {
-       $links = $bBlog->get_results("select * from ".T_LINKS." where category='".$cat."' order by ".$order." ".$asde." limit ".$max);    
-    } elseif ($notcat) {
-       $links = $bBlog->get_results("select * from ".T_LINKS." where category !='".$notcat."' order by ".$order." ".$asde." limit ".$max);    
-    } else {
-       $links = $bBlog->get_results("select * from ".T_LINKS." order by ".$order." ".$asde." limit ".$max);    
+    $sql = 'SELECT nicename, url FROM `'.T_LINKS.'` ';
+    if($cat){
+        $sql .=' WHERE category='.$cat;
     }
-
-
-    if(!empty($links)) {
-      foreach ($links as $link) {
-              $url = $link->url;
-              $nicename = $link->nicename;
-              $markedlinks .= $presep.'<a href="'.$url.'">'.$nicename.'</a>'.$sep;
+    if($notcat){
+        $sql .=' WHERE category!='.$notcat;
+    }
+    $sql .=' ORDER BY '.$order.' '.$asde.' LIMIT '.$max;
+    $links = $db->Execute($sql);
+    if($links !== false && !$links->EOF){
+        while($l = $links->FetchRow()){
+            $markedlinks .= $presep.'<a href="'.$l['url'].'">'.$l['nicename'].'</a>'.$sep;
       }
     }
-
     return $markedlinks;
 }
 

@@ -30,16 +30,22 @@ $help = '
 function smarty_function_getrss($params, &$bBlog) { 
 	$outputcharset='UTF8';
 	if(isset($params['id'])) {
-		$rssrow = $bBlog->get_row("select * from ".T_RSS." where url<>'' and id='".$params['id']."'");
-	} else { // get random one
-		$rssrow = $bBlog->get_row("select * from ".T_RSS." where url<>'' order by rand(".time().") limit 0,1");
-
+        $rs = $bBlog->_adb->Execute("select * from ".T_RSS." where url<>'' and id='".$params['id']."'");
+        if($rs !== false && !$rs->EOF){
+            $rssrow = $rs->FetchRow();
+        }
+	}
+    else { // get random one
+        $rs = $bBlog->_adb->Execute("select * from ".T_RSS." where url<>'' order by rand(".time().") limit 0,1");
+        if($rs !== false && !$rs->EOF){
+            $rssrow = $rs->FetchRow();
+        }
 	}
 
 	if (!isset ($params['limit']))
 		$params['limit'] = 20;
 
-	return get_rss($rssrow->url,$rssrow->input_charset,$outputcharset,$params['limit']);
+	return get_rss($rssrow['url'],$rssrow['input_charset'],$outputcharset,$params['limit']);
 
 }
 

@@ -204,7 +204,7 @@ if ((isset($_POST['filter'])) && ($_POST['filter'] == 'true')){
 }
 if (isset($_POST['allowcomments']) && (is_numeric($_POST['allowcomments']) === true)){
     $sql = 'UPDATE '.T_POSTS.' SET allowcomments=IF(allowcomments="allow", "disallow", "allow") WHERE postid='.intval($_POST['allowcomments']);
-    $bBlog->query($sql);
+    $bBlog->_adb->Execute($sql);
 }
 else{
 	$searchopts['wherestart'] = ' WHERE 1 ';
@@ -218,19 +218,22 @@ $bBlog->display('archives.html');
 function get_post_months() 
 {
 	global $bBlog;
-	$months_tmp = $bBlog->get_results("SELECT FROM_UNIXTIME(posttime,'%Y%m') yyyymm,  posttime from ".T_POSTS." group by yyyymm order by yyyymm");
-	$months=array();
-	foreach($months_tmp as $month) 
-	{
-		$nmonth['desc'] = date('F Y',$month->posttime);
-		$nmonth['numeric'] = date('m-Y',$month->posttime);
-		$months[]  = $nmonth;
-	}
-	return $months;
+    $rs = $bBlog->_adb->Execute("SELECT FROM_UNIXTIME(posttime,'%Y%m') yyyymm,  posttime from ".T_POSTS." group by yyyymm order by yyyymm");
+    if($rs !== false && !$rs->EOF){
+        $months = array();
+        while($month = $rs->FetchRow()){
+            $nmonth['desc'] = date('F Y',$month['posttime']);
+            $nmonth['numeric'] = date('m-Y',$month['posttime']);
+            $months[]  = $nmonth;
+        }
+        return $months;
+    }
+    else{
+        return false;
+    }
 }
 
-function timestampform($ts) 
-{
+function timestampform($ts){
 	$day = date('j',$ts);
 	$month = date('m',$ts);
 	$year = date('Y',$ts);
@@ -250,12 +253,8 @@ function timestampform($ts)
 	return $o;
 }
 
-function maketimestamp($day,$month,$year,$hour,$minute) 
-{
-	// make timestamp format of YYYYMMDDHHMMSS
-	$string = $year.$month.$day.$hour.$minute.'00';
-    $timestamp = mktime(substr($string,8,2),substr($string,10,2),substr($string,12,2), substr($string,4,2),substr($string,6,2),substr($string,0,4));
-	return $timestamp;
+function maketimestamp($day,$month,$year,$hour,$minute){
+    return mktime($hour, $minute, 00, $month, $day, $year);
 }
 
 ?>

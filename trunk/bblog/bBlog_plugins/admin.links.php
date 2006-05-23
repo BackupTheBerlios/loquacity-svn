@@ -49,7 +49,7 @@ switch($linkdo) {
 	case "New" :  // add new link
 		$maxposition = $bBlog->get_var("select position from ".T_LINKS." order by position desc limit 0,1");
 		$position = $maxposition + 10;
-		$bBlog->query("insert into ".T_LINKS."
+		$bBlog->_adb->Execute("insert into ".T_LINKS."
             set nicename='".my_addslashes($_POST['nicename'])."',
             url='".my_addslashes($_POST['url'])."',
             category='".my_addslashes($_POST['category'])."',
@@ -57,24 +57,24 @@ switch($linkdo) {
 		break;
 
 	case "Delete" : // delete link
-            $bBlog->query("delete from ".T_LINKS." where linkid=".$_POST['linkid']);
+            $bBlog->_adb->Execute("delete from ".T_LINKS." where linkid=".$_POST['linkid']);
             break;
 
 	case "Save" : // update an existing link
-            $bBlog->query("update ".T_LINKS."
+            $bBlog->_adb->Execute("update ".T_LINKS."
             set nicename='".my_addslashes($_POST['nicename'])."',
             url='".my_addslashes($_POST['url'])."',
             category='".my_addslashes($_POST['category'])."'
             where linkid=".$_POST['linkid']);
         	break;
 	case "Up" :
-		$bBlog->query("update ".T_LINKS." set position=position-15 where linkid=".$_POST['linkid']);
+		$bBlog->_adb->Execute("update ".T_LINKS." set position=position-15 where linkid=".$_POST['linkid']);
 		reorder_links();
 
 		break;
 
 	case "Down" :
-		$bBlog->query("update ".T_LINKS." set position=position+15 where linkid=".$_POST['linkid']);
+		$bBlog->_adb->Execute("update ".T_LINKS." set position=position+15 where linkid=".$_POST['linkid']);
 		reorder_links();
 		break;
 	default : // show form
@@ -87,20 +87,20 @@ switch($linkdo) {
 	
 switch($catdo) {
 	case "New" :  // add new category
-		$bBlog->query("insert into ".T_CATEGORIES."
+		$bBlog->_adb->Execute("insert into ".T_CATEGORIES."
             set name='".my_addslashes($_POST['name'])."'");
 		break;
 
 	case "Delete" : // delete category
 		// have to remove all references to the category in the links
-            $bBlog->query("update ".T_LINKS."
+            $bBlog->_adb->Execute("update ".T_LINKS."
             set linkid=0 where linkid=".$_POST['categoryid']);
             // delete the category
-            $bBlog->query("delete from ".T_CATEGORIES." where categoryid=".$_POST['categoryid']);
+            $bBlog->_adb->Execute("delete from ".T_CATEGORIES." where categoryid=".$_POST['categoryid']);
             break;
 
 	case "Save" : // update an existing category
-            $bBlog->query("update ".T_CATEGORIES."
+            $bBlog->_adb->Execute("update ".T_CATEGORIES."
             set name='".my_addslashes($_POST['name'])."'
             where categoryid=".$_POST['categoryid']);
         	break;
@@ -109,20 +109,26 @@ switch($catdo) {
         	break;
 	}
 
-        $bBlog->assign('ecategories',$bBlog->get_results("select * from ".T_CATEGORIES));
-        $bBlog->assign('elinks',$bBlog->get_results("select * from ".T_LINKS." order by position"));
-
+$rs = $bBlog->_adb->Execute("select * from ".T_CATEGORIES);
+if($rs !== false && !$rs->EOF){
+    $bBlog->assign('ecategories',$rs->GetRows(-1));
+}
+$rs = $bBlog->_adb->Execute("select * from ".T_LINKS." order by position");
+if($rs !== false && !$rs->EOF){
+    $bBlog->assign('elinks',$rs->GetRows(-1));
+}
 
 }
 function reorder_links () {
 	global $bBlog;
 	$i = 20;
-	$links = $bBlog->get_results("select * from ".T_LINKS." order by position");
-	foreach($links as $link) {
-		$bBlog->query("update ".T_LINKS." set position='$i' where linkid='{$link->linkid}'");
-		$i += 10;
-	}
+    $rs = $bBlog->_adb->Execute("select * from ".T_LINKS." order by position");
+    if($rs !== false && !$rs->EOF){
+        while($link = $rs->fetchRow()){
+            $bBlog->_adb->Execute("update ".T_LINKS." set position='$i' where linkid='{".$link['linkid']."}'");
+            $i += 10;
+        }
+    }
 }
-
 
 ?>

@@ -148,7 +148,7 @@
 			$this->flush();
 
 			// Log how the function was called
-			$this->func_call = "\$db->query(\"$query\")";
+			$this->func_call = "\$db->Execute(\"$query\")";
 
 			// Keep track of the last query for debug..
 			$this->last_query = $query;
@@ -229,7 +229,7 @@
 					// If debug ALL queries
 					$this->debug_all ? $this->debug() : null ;
 
-					// If there were results then return true for $db->query
+					// If there were results then return true for $db->Execute
 					if ( $i )
 					{
 						return true;

@@ -18,13 +18,17 @@ function identify_admin_plugins () {
 // PLUGINS : 
 
 function scan_for_plugins () {
-  global $bBlog;
-  $newplugincount = 0;
-  $newpluginnames = array();
-  $have_plugins = array();
-  $plugins = $bBlog->get_results("select * from ".T_PLUGINS);
-  if(is_array($plugins)) foreach($plugins as $plugin)
-                           $have_plugins[$plugin->type][$plugin->name] = TRUE;
+    global $bBlog;
+    $newplugincount = 0;
+    $newpluginnames = array();
+    $have_plugins = array();
+    $rs = $bBlog->_adb->Execute("select * from ".T_PLUGINS);
+    if($rs !== false && !$rs->EOF){
+        while($plugin = $rs->FetchRow()){
+            $have_plugins[$plugin['type']][$plugin['name']] = TRUE;
+        }
+    }
+                           
             
   $plugin_files=array();
   $dir="./bBlog_plugins";
@@ -52,7 +56,7 @@ function scan_for_plugins () {
                          help='".addslashes($newplugin['help'])."',
                          authors='".addslashes($newplugin['authors'])."',
                          licence='".$newplugin['licence']."'";
-			 $bBlog->query($q);
+			 $bBlog->_adb->Execute($q);
 			 $newplugincount++;
 			 $newpluginnames[]=$newplugin['nicename'];
 
@@ -68,29 +72,30 @@ function scan_for_plugins () {
 if(isset($_POST['scan'])) $np = scan_for_plugins();
 
 if(isset($_POST['scan_refresh'])) {
-	$bBlog->query("delete  from ".T_PLUGINS);
+	$bBlog->_adb->Execute("delete  from ".T_PLUGINS);
 	$np = scan_for_plugins();
 	$bBlog->assign('np',"<b style='color: red;'>$np</b><br />");
 }
 
 
 
-
-$plugins_from_db = $bBlog->get_results("select * from ".T_PLUGINS." order by type");
-foreach($plugins_from_db as $plugin_from_db) {
-   $plugins[$plugin_from_db->type][$plugin_from_db->name]= array( 
-	"name"=>$plugin_from_db->name,
-	"id" => $plugin_from_db->id,
-	"type"=>$plugin_from_db->type,
-	"displayname"=>$plugin_from_db->nicename,
-	"description"=>$plugin_from_db->description,
-	"file"=>$plugin_from_db->type.".".$plugin_from_db->name.".php",
-	"template"=>$plugin_from_db->template,
-	"author"=>$plugin_from_db->authors,
-	"licence"=>$plugin_from_db->licence,
-	"help"=>$plugin_from_db->help
-	);
-   $plugin_ar[] = $plugins[$plugin_from_db->type][$plugin_from_db->name];
+$rs = $bBlog->_adb->Execute("select * from ".T_PLUGINS." order by type");
+if($rs !== false && !$rs->EOF){
+    while($plugin = $rs->FetchRow()){
+        $plugins[$plugin['type']][$plugin['name']]= array( 
+            "name"=>$plugin['name'],
+            "id" => $plugin['id'],
+            "type"=>$plugin['type'],
+            "displayname"=>$plugin['nicename'],
+            "description"=>$plugin['description'],
+            "file"=>$plugin['type'].".".$plugin['name'].".php",
+            "template"=>$plugin['template'],
+            "author"=>$plugin['authors'],
+            "licence"=>$plugin['licence'],
+            "help"=>$plugin['help']
+        );
+       $plugin_ar[] = $plugins[$plugin['type']][$plugin['name']];
+    }
 }
 // other plugin :
 

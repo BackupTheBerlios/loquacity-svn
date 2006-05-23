@@ -32,7 +32,7 @@ function identify_function_getcomments () {
         'help'   => $help
     );
 }
-function smarty_function_getcomments ($params, &$bBlog) {
+function smarty_function_getcomments($params, &$bBlog) {
 	$assign="comments";
 	$postid=$bBlog->show_post;
 	$replyto = $_REQUEST['replyto'];
@@ -72,8 +72,9 @@ function prep_form(&$bBlog, $postid, $replyto){
     if(is_numeric($replyto)) {
           $commentformhiddenfields .= '<a name="commentform"></a><input type="hidden" name="replytos" value="'.$replyto.'" />';
     }
+    $ph = $bBlog->_ph;
     $bBlog->assign("commentformhiddenfields",$commentformhiddenfields);
-    $bBlog->assign("commentformaction",$bBlog->_get_entry_permalink($postid));
+    $bBlog->assign("commentformaction",$ph->get_post_permalink($postid));
     
 }
 

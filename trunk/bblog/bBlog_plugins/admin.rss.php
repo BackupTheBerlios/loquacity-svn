@@ -32,16 +32,20 @@ function admin_plugin_rss_run(&$bBlog) {
 			$id = $_POST[id.$i];
 			$ch = $_POST[ch.$i];
 			$update_query = "UPDATE ".T_RSS." SET `url` = '".$id."',`input_charset` = '".$ch."' WHERE `id` = '".$i."' LIMIT 1 ;";
-			$bBlog->query($update_query);
+			$bBlog->_adb->Execute($update_query);
 		}
 
+        $row = array();
 		$query = "select * from ".T_RSS." where id=".$i.";";
-		$row = $bBlog->get_row($query);
-		$rssurl = $row->url;
+        $rs = $bBlog->_adb->Execute($query);
+        if($rs !== false && !$rs->EOF){
+            $row = $rs->FetchRow();
+        }
+		$rssurl = $row['url'];
 		$w1250 = "";
-		if ($row->input_charset=="W1250") {$w1250=" selected";}
+		if ($row['input_charset']=="W1250") {$w1250=" selected";}
 		$utf8 = "";		
-		if ($row->input_charset=="UTF8") {$utf8=" selected";}
+		if ($row['input_charset']=="UTF8") {$utf8=" selected";}
 
 		if ($i / 2 == floor($i /2)) $class = 'high';
 		else $class = 'low';

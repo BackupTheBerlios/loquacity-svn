@@ -229,7 +229,7 @@ function blogger_setTemplate ($params) {
 		if(is_owner_of_blog($parmas[2],$params[1])) {
 			$tpl =addslashes($params[4]);
 			$templateid = $db->get_var("select templateid from blogs where blogid=$params[1]");
-			$db->query("update templates set template='$tpl', tpltimestamp=NOW() where id=$templateid");
+			$db->Execute("update templates set template='$tpl', tpltimestamp=NOW() where id=$templateid");
 			XMLRPC_response(XMLRPC_prepare("1"),WEBLOG_XMLPRPC_USERAGENT);
 		} else {
 			XMLRPC_error("302", "You do not have edit access to the template of this blog.", WEBLOG_XMLRPC_USERAGENT);	
