@@ -37,8 +37,8 @@ function PluginHelp(mod){
 <div class="frame">
   <select name="modifier" id="modifier">
   {section name=mods loop=$modifiers}
-    <option value="{$modifiers[mods]->name}" {if $modifiers[mods]->name eq $selected_modifier}selected="selected"{/if}/>
-      {$modifiers[mods]->nicename}
+    <option value="{$modifiers[mods].name}" {if $modifiers[mods].name eq $selected_modifier}selected="selected"{/if}/>
+      {$modifiers[mods].nicename}
     </option>
   {/section}
   </select> <input type='button' class='submit' name='showhelp' value='Show Modifier Help'  onClick="PluginHelp( document.forms.post.elements['modifier'].value);" />
@@ -50,8 +50,8 @@ function PluginHelp(mod){
 <ul class="form">
 {section name=s loop=$sections}
   <li>
-    <input class="checkbox" type="checkbox" id="s{$sections[s]->sectionid}" name="sections[]" value="{$sections[s]->sectionid}" {if $sections[s]->checked}checked='checked'{/if}/>
-    <label for="s{$sections[s]->sectionid}">{$sections[s]->nicename}</label>
+    <input class="checkbox" type="checkbox" id="s{$sections[s].sectionid}" name="sections[]" value="{$sections[s].sectionid}" {if $sections[s].checked}checked="checked"{/if}/>
+    <label for="s{$sections[s]->sectionid}">{$sections[s].nicename}</label>
   </li>
 {/section}
 </ul>

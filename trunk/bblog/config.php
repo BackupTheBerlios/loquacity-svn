@@ -69,12 +69,9 @@ define('BLOGURL','http://localhost/~kpower/blog/');
 define('BBLOGURL',BLOGURL.'bblog/');
 
 // Clean or messy urls ? ( READ README-URLS.txt ! )
-//define('CLEANURLS',TRUE);
-//define('URL_POST','http://localhost/~kpower/blog/item/%postid%/');
-//define('URL_SECTION','http://localhost/~kpower/blog/section/%sectionname%/');
-
-
-
+define('CLEANURLS',TRUE);
+define('URL_POST','http://localhost/~kpower/blog/item/%postid%/');
+define('URL_SECTION','http://localhost/~kpower/blog/section/%sectionname%/');
 
 // ---- end of config ----
 // leave this line alone

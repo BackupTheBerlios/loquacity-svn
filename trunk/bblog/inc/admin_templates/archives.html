@@ -32,7 +32,7 @@ Show
 <select name='showsection'>
  <option value='any'>Any</option>
  {foreach from=$sections item=section}
- <option value='{$section->sectionid}' {if $smarty.post.showsection eq $section->sectionid} selected{/if}>{$section->nicename}</option>
+ <option value='{$section.sectionid}' {if $smarty.post.showsection eq $section.sectionid} selected{/if}>{$section.nicename}</option>
  {/foreach}
  </select>
  section, 
@@ -94,4 +94,3 @@ Show
 
 {include file="common/layout_stop.html"}
 {include file="common/html_stop.html"}
-

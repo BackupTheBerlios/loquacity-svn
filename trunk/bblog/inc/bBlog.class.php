@@ -177,7 +177,7 @@ class bBlog extends Smarty {
      * @param bool   $setcookie If true, set a cookie
 	 */
     function userauth($user, $pass, $setcookie = FALSE) {
-        $query = "SELECT `id` FROM `".T_AUTHORS."` WHERE `nickname`='".StringHandling::addslashes($user)."' AND `password`='".StringHandling::addslashes($pass)."'";
+        $query = "SELECT `id` FROM `".T_AUTHORS."` WHERE `nickname`='".StringHandling::removeMagicQuotes(&$user)."' AND `password`='".StringHandling::removeMagicQuotes(&$pass)."'";
         $rs = $this->_adb->GetRow($query);
         if($rs){
             $_SESSION['user_id'] = $rs[0];
@@ -231,10 +231,8 @@ class bBlog extends Smarty {
         $sects = $this->_adb->Execute("SELECT * FROM `".T_SECTIONS."` ORDER BY name");
         if($sects !== false && !$sects->EOF){
              $nsects = array();
+             $ids = array();
              while($sect = $sects->FetchRow()){
-                   // we'll make an array just like the one from the database
-                   // but with URL's
-                   // make some useful lookup tables
                    if(!is_null($sect['sectionid'])){
                        $nsects[$sect['sectionid']] = array(
                            'id'        => $sect['sectionid'],
@@ -243,12 +241,14 @@ class bBlog extends Smarty {
                            'url'       => (defined('CLEANURLS')) ? str_replace('%sectionname%',$sect['name'],URL_SECTION) : BLOGURL.'?sectionid='.$sect['sectionid'],
                            'feed'      => BLOGURL.'rss.php?sectionid='.$sect['sectionid']
                        );
+                       $ids[strtolower($sect['name'])] = $sect['sectionid'];
                    }
              }
              // now the section array is available in any template
              $this->assign_by_ref('sections',$nsects);
              // we use $this->sections array a lot.
              $this->sections = $nsects;
+             $this->section_ids_by_name = $ids;
         }
         else{
             return FALSE;

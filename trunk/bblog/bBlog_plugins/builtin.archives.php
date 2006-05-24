@@ -60,54 +60,74 @@ if (isset($_GET['delete']) or isset($_POST['delete'])){
 
 if (isset($_POST['edit']) && is_numeric($_POST['edit'])){
     $epost = $ph->get_post($_POST['edit'], true, true);
-    $bBlog->assign('title_text',htmlspecialchars($epost->title));
-    $bBlog->assign('body_text',htmlspecialchars($epost->body));
-    $bBlog->assign('selected_modifier',$epost->modifier);
+    $bBlog->assign('title_text',htmlspecialchars($epost['title']));
+    $bBlog->assign('body_text',htmlspecialchars($epost['body']));
+    $bBlog->assign('selected_modifier',$epost['modifier']);
     $bBlog->assign('editpost',TRUE);
     $bBlog->assign('showarchives','no');
     $bBlog->assign('postid',$_POST['edit']);
-    $bBlog->assign('timestampform',timestAmpform($epost->posttime));
+    $bBlog->assign('timestampform',timestAmpform($epost['posttime']));
 
     // to hide a post from the homepage
-    if($epost->hidefromhome == 1) $bBlog->assign('hidefromhomevalue'," checked='checked' ");
+    if($epost['hidefromhome'] == 1){
+        $bBlog->assign('hidefromhomevalue'," checked='checked' ");
+    }
 
     // to disable comments either now or in the future
-    if($epost->allowcomments == 'timed') $bBlog->assign('commentstimedvalue'," checked='checked' ");
-    elseif($epost->allowcomments == 'disallow') $bBlog->assign('commentsdisallowvalue'," checked='checked' ");
+    if($epost['allowcomments'] == 'timed') $bBlog->assign('commentstimedvalue'," checked='checked' ");
+    elseif($epost['allowcomments'] == 'disallow') $bBlog->assign('commentsdisallowvalue'," checked='checked' ");
     else $bBlog->assign('commentsallowvalue'," checked='checked' ");
 
 
-    if($epost->status == 'draft') $bBlog->assign('statusdraft','checked="checked"');
+    if($epost['status'] == 'draft') $bBlog->assign('statusdraft','checked="checked"');
     else $bBlog->assign('statuslive','checked="checked"');
 
-    $_post_secs = explode(":",$epost->sections);
-
-    if(is_array($_post_secs))
-    {
-        foreach($_post_secs as $_post_sec)
-        {
-            $editpostsections[$_post_sec] = TRUE;
+    $sects = $bBlog->sections;
+    $editpostsections = array();
+    $_post_sects = (strlen($epost['sections']) > 1) ? explode(":",$epost['sections']) : array($epost['sections']);
+    foreach($sects as $id=>$sect){
+        if(in_array($id, $_post_sects)){
+            $sect['checked'] = true;
+            $sects[$id] = $sect;
         }
-        $bBlog->assign('editpostsections',$editpostsections);
     }
-
+    //var_dump($epost);
+/*        if(isset($editpostsections[$sect['sectionid']])){
+            $sect['checked'] = TRUE;
+            $nsects[] = $sect;
+        }
+    }
+    
+    if(strlen($epost['sections']) > 1){
+        $_post_secs = explode(":",$epost['sections']);
+        if(is_array($_post_secs)){
+            foreach($_post_secs as $_post_sec){
+                if(!empty($_post_sec)){
+                    $editpostsections[$_post_sec] = TRUE;
+                }
+            }
+        }
+    }
+    else{
+        $editpostsections[$epost['sections']] = true;
+    }
+    $bBlog->assign('editpostsections',$editpostsections);
     $sects = $bBlog->sections;
     $nsects = array();
-
-    foreach($sects as $sect)
-    {
-       if(isset($editpostsections[$sect->sectionid])) $sect->checked = TRUE;
-       $nsects[] = $sect;
+    foreach($sects as $sect){
+        if(isset($editpostsections[$sect['sectionid']])){
+            $sect['checked'] = TRUE;
+            $nsects[] = $sect;
+        }
     }
-
-    $bBlog->assign("sections",$nsects);
-    $bBlog->assign_by_ref("sections",$nsects);
+    var_dump($nsects);*/
+    $bBlog->assign("sections",$sects);
+    //$bBlog->assign_by_ref("sections",$nsects);
 }
 
 if ((isset($_POST['postedit'])) && ($_POST['postedit'] == 'true')){
     // a post to be editited has been submitted
-    if ((isset($_POST['postedit'])) && (!is_numeric($_POST['postid'])))
-    {
+    if ((isset($_POST['postedit'])) && (!is_numeric($_POST['postid']))){
         echo "Provided PostID value is not a Post ID. (Fatal error)";
         die;
     }

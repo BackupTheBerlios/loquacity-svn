@@ -206,6 +206,7 @@ class StringHandling{
                 array_walk($data, array('StringHandling', 'removeMagicQuotes'));
             }
         }
+        return $data;
     }
     /**
      * Returns cleaned user input.
