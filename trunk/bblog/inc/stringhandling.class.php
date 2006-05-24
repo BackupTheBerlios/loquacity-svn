@@ -10,9 +10,9 @@
 * serves to centralize various string handling functions, such as
 * transforming typed hyperlinks into clickable links.
 *
-* @author Kenneth Power <kenneth.power@gmail.com>
-* $LastModified$
-* $Revision$
+* Some code is borrowed from the Seagull project, according to the terms of the
+* BSD license. Such code is:
+* Copyright (c) 2006, Demian Turner
 */
 class StringHandling{
     /**
@@ -190,12 +190,73 @@ class StringHandling{
         return preg_replace("/http:\/\//i","http://www.google.com/url?sa=D&q=http://", $str);
     }
     /**
-    * !This fixes double slashes
-    * check to see if magic_quotes_gpc is set or not
-    * and excape accordingly
+    * Removes slashes added by magic_quotes
+    * 
+    * Borrowed from the Seagull project
     */
-    function addslashes ($data) {
-        return (get_magic_quotes_gpc()) ? $data : addslashes($data);
+    function removeMagicQuotes(&$data) {
+        static $magicQuotes;
+        if (!isset($magicQuotes)) {
+            $magicQuotes = get_magic_quotes_gpc();
+        }
+        if ($magicQuotes) {
+            if (!is_array($data)) {
+                $var = stripslashes($data);
+            } else {
+                array_walk($data, array('StringHandling', 'removeMagicQuotes'));
+            }
+        }
+    }
+    /**
+     * Returns cleaned user input.
+     *
+     * Instead of addslashing potential ' and " chars, let's remove them and get
+     * rid of any magic quoting which is enabled by default.  Also removes any
+     * html tags and ASCII zeros
+     *
+     * @access  public
+     * @param   string $var  The string to clean.
+     * @return  string       $cleaned result.
+     */
+    function clean($var){
+        if (isset($var)) {
+            if (!is_array($var)) {
+                $clean = strip_tags($var);
+            } else {
+                $clean = array_map(array('StringHandling', 'clean'), $var);
+            }
+        }
+        return StringHandling::trimWhitespace($clean);
+    }
+    function removeJs($var){
+        if (isset($var)) {
+            if (!is_array($var)) {
+                $search = "/<script[^>]*?>.*?<\/script\s*>/i";
+                $replace = '';
+                $clean = preg_replace($search, $replace, $var);
+            } else {
+                $clean = array_map(array('StringHandling', 'removeJs'), $var);
+            }
+        }
+        return StringHandling::trimWhitespace($clean);
+    }
+    
+    /**
+     * This removes whitespace at front and end of a string
+     * 
+     * Borrowed from the Seagull project
+     * 
+     * @param string $str Could be a fixed length string or an array of strings
+     * @return mixed A string or array
+     */
+    function trimWhitespace($str){
+        if (!is_array($str)) {
+            $clean = trim($str);
+        } else {
+            $clean = array_map(array('StringHandling', 'trimWhitespace'), $var);
+        }
+        return $clean;
+        
     }
 }
 ?>
