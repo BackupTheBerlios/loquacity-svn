@@ -61,9 +61,7 @@ class postHandler {
     ** $sectionid ex = 1
     ** Return
     **********************************************************************/
-    ////
-    // !Gets blog entries from the db from a query.
-    // if apply mods is true, it will apply the modifiers
+    
     /**
      * Retrieve one or most posts based upon criteria
      * 

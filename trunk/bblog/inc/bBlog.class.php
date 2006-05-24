@@ -169,22 +169,24 @@ class bBlog extends Smarty {
 		return $ret;
 	}
 
-	
-    ////
-	// !check against the user and pass stored in the bB authors table
+	/**
+     * Authenticate the user
+     * 
+     * @param string $user Username
+     * @param string $pass Password
+     * @param bool   $setcookie If true, set a cookie
+	 */
     function userauth($user, $pass, $setcookie = FALSE) {
-        $query = "SELECT `id` FROM `".T_AUTHORS."` WHERE `nickname`='".my_addslashes($user)."' AND `password`='".my_addslashes($pass)."'";
+        $query = "SELECT `id` FROM `".T_AUTHORS."` WHERE `nickname`='".StringHandling::addslashes($user)."' AND `password`='".StringHandling::addslashes($pass)."'";
         $rs = $this->_adb->GetRow($query);
         if($rs){
-            $_SESSION['user_id'] = $rs->fields[0];
-            return $rs->fields[0];
+            $_SESSION['user_id'] = $rs[0];
+            return true;
         }
         else {
             return false;
         }
     }
- 
-
     ////
     // !logs out the admin
     function admin_logout() {

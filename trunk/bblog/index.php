@@ -37,15 +37,21 @@ $bBlog->assign_by_ref('title',$title);
 // we will store the rss templates in the inc/admin_templates dir, becasue almost noone will need to change them, - reduce clutter in the templates/* directory.
 $bBlog->template_dir = BBLOGROOT.'inc/admin_templates';
 $bBlog->compile_id = 'admin';
+
+
 // check to see if we're not logged in
 if(!$bBlog->admin_logged_in()) {
      if(isset($_POST['username']) && isset($_POST['password'])) { // we're trying to log in.
          $loggedin = $bBlog->userauth($_POST['username'],$_POST['password'],TRUE);
      }
-
-} else $loggedin = TRUE;  // we're already logged in.
-if((isset($_POST['submit'])) && ($_POST['submit'] == 'Login')) $bBlog->assign('tried2login',TRUE);
-if(!$loggedin) { // we are not logged in! Display the login page
+}
+else{
+    $loggedin = TRUE;
+}
+if((isset($_POST['submit'])) && ($_POST['submit'] == 'Login')){
+    $bBlog->assign('tried2login',TRUE);
+}
+if($loggedin === false) { // we are not logged in! Display the login page
    $menu[0]['url']='index.php';
    $menu[0]['name']='Login';
    $menu[0]['active']=TRUE;

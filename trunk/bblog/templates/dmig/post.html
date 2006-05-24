@@ -58,12 +58,9 @@
 	    		Trackback from <a href="{$comment.websiteurl}">{$comment.postername}</a> {$comment.posttime|date_format:since} &#8226;   {$comment.replylink}
 	    	{else}
 	    		<br /> {$comment.posttime|date_format:"%Y/%m/%d"} by {$comment.postername}
-	    		 <!-- we don't need no spam, so why would we need the email to be public?
-	    		 &#8226; {* $comment.emaillink *}
-	    		 -->
 	    		  &#8226; {$comment.posterwebsite} &#8226; <a href="replyto={$comment.id}#commentform">Reply</a>
 	    	{/if}
-	   	<br />Comment Trackback URL : BBLOGURL.trackback.php/{$comment.postid}/{$comment.id}/</div>
+	   	<br />Comment Trackback URL : {$comment.link}/</div>
 	   	</div><!-- .comments-body -->
     {/if}
 </div><!-- .box1 -->    

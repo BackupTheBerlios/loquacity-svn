@@ -28,6 +28,7 @@ class commentHandler {
     function commentHandler(&$db, $postid=null) {
         $postid = intval($postid);
         $this->_db = $db;
+        $this->_highestlevel = 0;
         if(!is_null($postid) && $postid > 0){
             //$this->_db->debug = true;
             $this->_post = $postid;
@@ -52,6 +53,7 @@ class commentHandler {
                         'delete'         => $row[14],
                         'onhold'         => $row[15]
                     );
+                    $this->_thread[$row[1]][$row[0]] = $row[0];
                 }
             }
         }
@@ -61,9 +63,11 @@ class commentHandler {
      */
     function get_comments($fordisplay=false){
         if($fordisplay){
+            //$this->debug($this->_thread);
             foreach($this->_comments as $id=>$comment){
                 $this->_comments[$id] = $this->prepFieldsForDisplay($comment);
             }
+            $this->makethread(0, $this->_thread, 0);
             return $this->_comments;
         }
         else{
@@ -401,9 +405,11 @@ class commentHandler {
         $rval['ip'] = $vars['ip'];
         $rval['onhold'] = ($this->needsModeration($rval['commenttext'])) ? true : false;
         $rval['postid'] = $this->_post;
-        $rval['replyto'] = ($vars['parentid'] > 0) ? $vars['parentid'] : false;
+        $rval['parent'] = ($vars['parentid'] > 0) ? $vars['parentid'] : false;
         $rval['type'] = $vars['type'];
         $rval['deleted'] = ($vars['deleted'] == 1) ? true : false;
+        $rval['link'] = BBLOGURL.'trackback.php/'.$this->_post.'/'.$vars['id'];
+        
         return $rval;
     }
     ////
@@ -480,13 +486,37 @@ class commentHandler {
     
     }
     
-    function makethread($parcat,$table,$level){
-        // recursive function! Get your head around this! :
-        global $finalar;
-        if($level > $this->highestlevel) $this->highestlevel = $level;
-        $list=$table[$parcat];
-            while(list($key,$val)=each($list)){
-        array_push($this->com_order_array,array("id"=>$val,"level"=>$level,"data"=>$this->com_finalar[$val]));
+    function makethread($index,$table,$level){
+        if($level > $this->_highestlevel){
+            $this->_highestlevel = $level;
+        }
+        $list=$table[$index];
+        while(list($key,$val)=each($list)){
+            $this->_comments[$key]['level'] = $level;
+            if($level > 0 ) {
+                $this->_comments[$key]['level25'] = $level*25;
+            } else {
+                $this->_comments[$key]['level25'] = 1;
+            }
+            if($level > 0 ) {
+                $this->_comments[$key]['level15'] = $level*15;
+            } else {
+                $this->_comments[$key]['level25'] = 1;
+            }
+            if($level > 0 ) {
+                $this->_comments[$key]['level10'] = $level*10;
+            } else {
+                $this->_comments[$key]['level10'] = 1;
+            }
+            if($this->_highestlevel == 0 || $this->_comments['level'] == 0) {
+                $this->_comments[$key]['levelpercent']   = 0;
+                $this->_comments[$key]['levelhalfpercent']   = 0;
+            } else {
+                $this->_comments[$key]['levelpercent'] = floor(( 100 / $this->_highestlevel )*$this->_comments[$key]['level']);
+                $this->_comments[$key]['levelhalfpercent'] = floor(( 50 / $this->_highestlevel )* $this->_comments[$key]['level']);
+            }
+        
+            $this->_comments[$key]['levelpercentremainder'] = 100 - $this->_comments[$key]['levelpercent'];
             if ((isset($table[$key]))){
                 $this->makethread($key,$table,$level+1);
             }
