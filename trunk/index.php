@@ -1,5 +1,5 @@
 <?php
-include "bblog/config.php";
+include_once("bblog/config.php");
 
 if(is_numeric(@$_GET['postid'])) {
     if($_COOKIE['bBcomment']){
@@ -10,8 +10,6 @@ if(is_numeric(@$_GET['postid'])) {
     $bBlog->show_post = (int)$_GET['postid'];
     $bBlog->display('post.html');
 }
-// Removed the die; and stuck the bottom code
-// in an elseif. Flyspray #64
 else if(is_numeric(@$_GET['sectionid'])) {
    	$bBlog->assign('sectionid', (int)$_GET['sectionid']);
    	$bBlog->assign('sectionname',$bBlog->sect_by_name[(int)$_GET['sectionid']]);
