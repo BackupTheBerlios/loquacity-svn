@@ -55,12 +55,10 @@ function smarty_function_recentposts($params, &$bBlog) {
     $crit['skip'] = (isset($params['skip'])) ? $params['skip'] : 0;
     $linkcode = ''; 
     $ph = $bBlog->_ph;
-    #$q = $ph->make_post_query(array("num"=>$num,"skip"=>$skip)); 
 
     $posts = $ph->get_posts($crit);
 
-    if($mode=="list") $linkcode .= "<ul>"; 
-
+    if($mode=="list") $linkcode .= "<ul>";
     $i=0; 
     if(is_array($posts)) { 
         /* <a([^<]*)?href=(\"|')?([a-zA-Z]*://[a-zA-Z0-9]*\.[a-zA-Z0-9]*\.[a-zA-Z]*([^>]*)?)(\"|')?([^>]*)?>([^<]*)</a> */
@@ -68,12 +66,15 @@ function smarty_function_recentposts($params, &$bBlog) {
         $regex = "#<a([^<]*)?href=(\"|')?(([a-zA-Z]*://)?[a-zA-Z0-9]*\.[a-zA-Z0-9]*\.[a-zA-Z]*(:[0-9]*)?([^>\"\']*)?)(\"|')?([^>]*)?>([^<]*)</a>#i";
             
         foreach ($posts as $post) {
+            if($post['title'] === 'No posts found'){
+                $linkcode .='<strong>'.$post['title'].'</strong>';
+                continue;
+            }
         	$title = $post["title"];
             $fulltitle = $title;   //wont be cut off
-                            
             if (preg_match($regex, $title, $matches) == 1){
                 $title = $matches[9];
-            } 
+            }
             
             $i++; 
             if($mode=="list") $linkcode .= "<li>"; 
@@ -89,14 +90,11 @@ function smarty_function_recentposts($params, &$bBlog) {
     } 
 
     if($mode=="list") $linkcode .= "</ul>"; 
-
     return $linkcode; 
 }
 
 
-function truncate($string, $length = 80, $etc = '...',
-                                  $break_words = false)
-{
+function truncate($string, $length = 80, $etc = '...', $break_words = false){
     if ($length == 0)
         return '';
 

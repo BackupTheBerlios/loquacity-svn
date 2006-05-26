@@ -81,26 +81,26 @@
       <th>Post</th>
       <th>&#160;</th>
     </tr>
-    {section name=c loop=$comments}
-    <tr class="{cycle values="high,low"}" style="vertical-align:top; {if $comments[c]->onhold eq 1} color: #999;{/if}">
+    {foreach from=$comments item=c}
+    <tr class="{cycle values="high,low"}" style="vertical-align:top; {if $c.onhold eq 1} color: #999;{/if}">
       <td>
-        <input type="checkbox" id="list" name="commentid[]" value="{$comments[c]->commentid}" />
-        <input type="hidden" name="postid[]" value="{$comments[c]->postid}" />
+        <input type="checkbox" id="list" name="commentid[]" value="{$c.commentid}" />
+        <input type="hidden" name="postid[]" value="{$c.postid}" />
       </td>
       <td>
-      {if $comments[c]->posteremail}
-        <a href='mailto:{$comments[c]->posteremail}'>{$comments[c]->postername}</a>
+      {if $c.posteremail}
+        <a href='mailto:{$c.posteremail}'>{$c.postername}</a>
       {else}
-        {$comments[c]->postername}
+        {$c.postername}
       {/if}
       </td>
-      <td>{$comments[c]->ip}</td>
-      <td><a href="index.php?b=plugins&amp;p=comments&amp;commentdo=Edit&amp;editComment={$comments[c]->commentid}&amp;postid={$comments[c]->postid}" title="Edit this comment">edit</a> {$comments[c]->commenttext|nohtml|truncate:200}</td>
-      <td>{$comments[c]->title}</td>
+      <td>{$c.ip}</td>
+      <td><a href="index.php?b=plugins&amp;p=comments&amp;commentdo=Edit&amp;editComment={$c.commentid}&amp;postid={$c.postid}" title="Edit this comment">edit</a> {$c.commenttext|nohtml|truncate:200}</td>
+      <td>{$c.title}</td>
       <td>
       </td>
     </tr>
-  {/section}
+  {/foreach}
   </table>
 </form>
 {/if}

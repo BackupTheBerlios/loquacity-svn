@@ -139,24 +139,15 @@ function retrieveComments(&$bBlog, $amount, $article){
     WHERE deleted="false"
     AND '.T_COMMENTS.'.postid '.$filter.'
     ORDER BY '.T_COMMENTS.'.posttime DESC';
-    $rs = $bBlog->_adb->Execute($sql);
-    if($rs !== false && !$rs->EOF){
-        $bBlog->assign('comments',$rs->GetRows(-1));
-    }
+    $rs = $bBlog->_adb->GetAll($sql);
+    $bBlog->assign('comments',$rs);
     $bBlog->assign('commentAmount', $amount);
     $bBlog->assign('commentPosts', $article);
 }
 
 function populateSelectList(&$bBlog){
-  $posts_with_comments_q = "SELECT ".T_POSTS.".postid, ".T_POSTS.".title, count(*) c FROM ".T_COMMENTS.",  ".T_POSTS." 	WHERE ".T_POSTS.".postid = ".T_COMMENTS.".postid GROUP BY ".T_POSTS.".postid ORDER BY ".T_POSTS.".posttime DESC ";
-
-// previously function populateSelectList(&$bBlog){
-//  $posts_with_comments_q = "SELECT ".T_POSTS.".postid, ".T_POSTS.".title, count(*) c FROM ".T_COMMENTS.",  ".T_POSTS." 	WHERE ".T_POSTS.".postid = ".T_COMMENTS.".postid GROUP BY ".T_POSTS.".postid ORDER BY ".T_POSTS.".posttime DESC  LIMIT 0 , 30 ";  
-//removed the LIMIT parameter as it was unnecessary
-  
-  $rs = $bBlog->_adb->Execute($posts_with_comments_q,ARRAY_A);
-  if($rs !== false && !$rs->EOF){
-    $bBlog->assign('postselect', $rs->GetRows(-1));
-  }
+    $posts_with_comments_q = "SELECT ".T_POSTS.".postid, ".T_POSTS.".title, count(*) c FROM ".T_COMMENTS.",  ".T_POSTS." 	WHERE ".T_POSTS.".postid = ".T_COMMENTS.".postid GROUP BY ".T_POSTS.".postid ORDER BY ".T_POSTS.".posttime DESC ";
+    $rs = $bBlog->_adb->GetAll($posts_with_comments_q);
+    $bBlog->assign('postselect', $rs);
 }
 ?>

@@ -1,0 +1,82 @@
+{include file="common/html_start.html"}
+{include file="common/layout_start.html"}
+
+{if $showmessage}
+{include file="common/message.html"}
+{/if}
+        <form action="index.php" method="post" style="margin-top:20px">
+            <input type="hidden" name="b" value="captcha">
+            <input type="hidden" name="captchado" id="captchado" value="configure">
+            <table cellpadding="0" cellspacing="0" class="list">
+                <tr>
+                    <td>
+                        <label for="">Enable CPATCHA on Comment Form</label>
+                        <input type="checkbox" name="enable_captcha" id="enable_captcha" {$settings.enable_captcha} />
+                    </td>
+                    <td>&nbsp;</td>
+                </tr>
+                <tr>
+                    <td>Width</td>
+                    <td><input type="text" name="captcha_width" id="captcha_width" {$enabled} value="{$settings.captcha_width}" /></td>
+                </tr>
+                <tr>
+                    <td>Height</td>
+                    <td><input type="text" name="captcha_height" id="captcha_height" {$enabled} value="{$settings.captcha_height}" /></td>
+                </tr>
+                <tr>
+                    <td>Number of Characters</td>
+                    <td><input type="text" name="captcha_characters" id="captcha_characters" {$enabled} value="{$settings.captcha_characters}" /></td>
+                </tr>
+                <tr>
+                    <td>Interference Lines</td>
+                    <td><input type="text" name="captcha_lines" id="captcha_lines" {$enabled} value="{$settings.captcha_lines}" /></td>
+                </tr>
+                <tr>
+                    <td>Enable Character Shadows</td>
+                    <td><input type="checkbox" name="captcha_enable_shadows" id="captcha_enable_shadows" {$enable_shadows} {$settings.enable_shadows} /></td>
+                </tr>
+                <tr>
+                    <td>Set Owner Text</td>
+                    <td><input type="checkbox" name="captcha_owner_text" id="captcha_owner_text" {$enable_owner} {$settings.enable_owner} /></td>
+                </tr>
+                <tr>
+                    <td>Character Set</td>
+                    <td><input type="text" name="captcha_character_set" id="captcha_character_set" {$enabled} value="{$settings.captcha_character_set}" /></td>
+                </tr>
+                <tr>
+                    <td>Case Insensitive</td>
+                    <td><input type="checkbox" name="captcha_case_insensitive" id="captcha_case_insensitive" {$enable_case} {$settings.enable_case_insensitive} /></td>
+                </tr>
+                <tr>
+                    <td>Custom Background Image</td>
+                    <td><input type="text" name="captcha_background" id="captcha_background" {$enabled} value="{$settings.captcha_background}" /></td>
+                </tr>
+                <tr>
+                    <td>Minimum Font Size</td>
+                    <td><input type="text" name="captcha_min_font" id="captcha_min_font" {$enabled} value="{$settings.captcha_min_font}" /></td>
+                </tr>
+                <tr>
+                    <td>Maximum Font Size</td>
+                    <td><input type="text" name="captcha_max_font" id="captcha_max_font" {$enabled} value="{$settings.captcha_max_font}" /></td>
+                </tr>
+                <tr>
+                    <td>Use Color</td>
+                    <td><input type="checkbox" name="captcha_use_color" id="captcha_use_color" {$settings.enable_color} /></td>
+                </tr>
+                <tr>
+                    <td>Graphic Type</td>
+                    <td>
+                        <select id="captcha_graphic_type" name="captcha_graphic_type">
+                            <option{if $settings.captcha_graphic_type eq 'jpg'} selected {/if}>jpg</option>
+                            <option{if $settings.captcha_graphic_type eq 'gif'} selected {/if}>gif</option>
+                            <option{if $settings.captcha_graphic_type eq 'png'} selected {/if}>png</option>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+            <div class="button">
+              <input type="submit" name="submit" value="Configure CAPTCHA" class="submit"/>
+            </div>
+        </form>
+{include file="common/layout_stop.html"}
+{include file="common/html_stop.html"}

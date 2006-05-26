@@ -37,7 +37,7 @@ function PluginHelp(mod){
 <div class="frame">
   <select name="modifier" id="modifier">
   {section name=mods loop=$modifiers}
-    <option value="{$modifiers[mods].name}" {if $modifiers[mods].name eq $selected_modifier}selected="selected"{/if}/>
+    <option value="{$modifiers[mods].name}" {if $modifiers[mods].name eq $selected_modifier}selected {/if}/>
       {$modifiers[mods].nicename}
     </option>
   {/section}
@@ -48,12 +48,12 @@ function PluginHelp(mod){
 <h4>Sections</h4>
 <div class="frame">
 <ul class="form">
-{section name=s loop=$sections}
+{foreach from=$sections item=section}
   <li>
-    <input class="checkbox" type="checkbox" id="s{$sections[s].sectionid}" name="sections[]" value="{$sections[s].sectionid}" {if $sections[s].checked}checked="checked"{/if}/>
-    <label for="s{$sections[s]->sectionid}">{$sections[s].nicename}</label>
+    <input class="checkbox" type="checkbox" id="s{$section.id}" name="sections[]" value="{$section.id}" {if $section.checked}checked {/if}/>
+    <label for="s{$section.id}">{$section.nicename}</label>
   </li>
-{/section}
+{/foreach}
 </ul>
 </div>
 
@@ -90,7 +90,7 @@ function PluginHelp(mod){
   </li>
   <li>
     <input class="radio" type="radio" name="commentoptions" id="timedcomments" value="timed" onClick=" document.forms.post.elements['disallow_comments_after'].disabled = false;" {$commentstimedvalue} />
-    <label for="timedcomments">Allow comments on this post but disable after </label> <select name='disallowcommentsdays' id='disallow_comments_after' {if $commentstimedvalue ne " checked='checked' "}disabled{/if}><option value='7'>1 Week</option><option value='14'>2 Weeks</option><option value='30'>30 Days</option><option value='90'>90 Days</option></select>
+    <label for="timedcomments">Allow comments on this post but disable after </label> <select name='disallowcommentsdays' id='disallow_comments_after' {if $commentstimedvalue ne " checked "}disabled{/if}><option value='7'>1 Week</option><option value='14'>2 Weeks</option><option value='30'>30 Days</option><option value='90'>90 Days</option></select>
   </li>
   <li>
     <input class="radio" type="radio" name="commentoptions" id="disallowcomments" value="disallow" onClick=" document.forms.post.elements['disallow_comments_after'].disabled = true;"  {$commentsdisallowvalue}/>
@@ -104,12 +104,11 @@ function PluginHelp(mod){
   <ul class="form">
     <li>
       <input class="checkbox" type="checkbox" name="send_trackback" value="TRUE" id="send_trackback" onClick="document.getElementById('tb').style.display ='block';" />
-      <label for="send_trackback">
-      Send Trackback?</label>
+      <label for="send_trackback">Send Trackback?</label>
     </li>
   </ul>
   <div class="hide" id="tb">
-    <label for=tburl">URL to trackback</label>
+    <label for="tburl">URL to trackback</label>
     <br />
     <input class="text" size="40"  type="text" name="tburl" id="tburl"/>
     <br />

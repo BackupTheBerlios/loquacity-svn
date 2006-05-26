@@ -70,17 +70,17 @@ if (isset($_POST['edit']) && is_numeric($_POST['edit'])){
 
     // to hide a post from the homepage
     if($epost['hidefromhome'] == 1){
-        $bBlog->assign('hidefromhomevalue'," checked='checked' ");
+        $bBlog->assign('hidefromhomevalue'," checked ");
     }
 
     // to disable comments either now or in the future
-    if($epost['allowcomments'] == 'timed') $bBlog->assign('commentstimedvalue'," checked='checked' ");
-    elseif($epost['allowcomments'] == 'disallow') $bBlog->assign('commentsdisallowvalue'," checked='checked' ");
+    if($epost['allowcomments'] == 'timed') $bBlog->assign('commentstimedvalue'," checked ");
+    elseif($epost['allowcomments'] == 'disallow') $bBlog->assign('commentsdisallowvalue'," checked ");
     else $bBlog->assign('commentsallowvalue'," checked='checked' ");
 
 
-    if($epost['status'] == 'draft') $bBlog->assign('statusdraft','checked="checked"');
-    else $bBlog->assign('statuslive','checked="checked"');
+    if($epost['status'] == 'draft') $bBlog->assign('statusdraft','checked');
+    else $bBlog->assign('statuslive','checked');
 
     $sects = $bBlog->sections;
     $editpostsections = array();
@@ -91,7 +91,7 @@ if (isset($_POST['edit']) && is_numeric($_POST['edit'])){
             $sects[$id] = $sect;
         }
     }
-    //var_dump($epost);
+    //var_dump($sects);
 /*        if(isset($editpostsections[$sect['sectionid']])){
             $sect['checked'] = TRUE;
             $nsects[] = $sect;

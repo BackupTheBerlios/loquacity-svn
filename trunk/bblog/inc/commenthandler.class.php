@@ -63,12 +63,17 @@ class commentHandler {
      */
     function get_comments($fordisplay=false){
         if($fordisplay){
-            //$this->debug($this->_thread);
-            foreach($this->_comments as $id=>$comment){
-                $this->_comments[$id] = $this->prepFieldsForDisplay($comment);
+            if(is_array($this->_comments)){
+                //$this->debug($this->_thread);
+                foreach($this->_comments as $id=>$comment){
+                    $this->_comments[$id] = $this->prepFieldsForDisplay($comment);
+                }
+                $this->makethread(0, $this->_thread, 0);
+                return $this->_comments;
             }
-            $this->makethread(0, $this->_thread, 0);
-            return $this->_comments;
+            else{
+                return;
+            }
         }
         else{
             return $this->_comments;

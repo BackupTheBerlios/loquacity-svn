@@ -4,16 +4,16 @@
 <th>Display Name</th>
 <th>&#160;</th>
 </tr>
-{section name=s loop=$esections}
+{foreach from=$sections item=section}
 <form action="index.php" method="post">
   <input type="hidden" name="b" value="plugins">
   <input type="hidden" name="p" value="sections">
-  <input type="hidden" name="sname" value="{$esections[s]->name}">
+  <input type="hidden" name="sname" value="{$section.name|escape htmlall}">
 
   <tr class="{cycle values="high,low"}">
-    <td>{$esections[s]->name}</td>
+    <td>{$section.name|escape htmlall}</td>
     <td>
-      <input type="text" name="nicename" value="{$esections[s]->nicename}" class="text"/>
+      <input type="text" name="nicename" value="{$section.nicename|escape htmlall}" class="text"/>
     </td>
     <td class="action">
       <input type="submit" name="sectdo" value="Save" class="submit"/>
@@ -21,7 +21,7 @@
     </td>
   </tr>
 </form>
-{/section}
+{/foreach}
 </table>
 
 

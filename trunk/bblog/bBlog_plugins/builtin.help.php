@@ -32,7 +32,8 @@ if(is_numeric($_GET['pid']) or strlen($_GET['mod'])>0) {
 	$bBlog->assign("authors",$pluginrow['authors']);
 	$bBlog->assign("license",$pluginrow['license']);
 
-} elseif($_GET['modifierhelp']) {
+}
+elseif($_GET['modifierhelp']) {
     $bBlog->assign('title','Modifier Help');
 	$bBlog->assign('inline',TRUE);
 	$helptext = "<p>Modifiers are an easy way to enable you to make links and other web features without knowing html. There are a few to choose fshowcloserom, select one to get instructions.</p><ul class='form'>";
@@ -43,9 +44,11 @@ if(is_numeric($_GET['pid']) or strlen($_GET['mod'])>0) {
     }
 	$helptext .="</ul>";
 	$bBlog->assign('helptext',$helptext);
- } else {
-	$bBlog->assign("title","Help");
-	$bBlog->assign("helptext",'Visit the <a href="http://www.bblog.com/docs/" target="_blank">bBlog online documentation</a> or the <a href="http://www.bBlog.com/forum.php" target="_blank">bBlog forum</a> for help.');
+    }
+    else {
+        $bBlog->assign("title","Help");
+        $bBlog->assign("helptext",'Visit the <a href="http://www.bblog.com/docs/" target="_blank">bBlog online documentation</a> or the <a href="http://www.bBlog.com/forum.php" target="_blank">bBlog forum</a> for help.');
+    }
 }
-$bBlog->display("help.html");
+    $bBlog->display("help.html");
 ?>

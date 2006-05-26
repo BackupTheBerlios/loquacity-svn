@@ -142,8 +142,8 @@ $optionformrows = array();
 $options = get_options();
 
 if ((isset($_POST['submit'])) && ($_POST['submit'] == 'Save Options')) { // saving options..
- $updatevars = array();
- foreach($options as $option) {
+    $updatevars = array();
+    foreach($options as $option) {
 
      if(!isset($_POST[$option['name']])) break;
 
@@ -275,9 +275,9 @@ if ((isset($_POST['submit'])) && ($_POST['submit'] == 'Save Options')) {
    $bBlog->assign("message_title","Options Updated");
    $bBlog->assign("message_content","Your changes have been saved.<br><a href='index.php?b=options&r=".rand(20,214142124)."'>Click here to continue</a>");
 
-} else {
-
-foreach($options as $option) {
+}
+else{
+    foreach($options as $option) {
         $formleft = $option['label'];
         switch ($option['type']) {
               case "text"  :
@@ -296,7 +296,8 @@ foreach($options as $option) {
                    $formright = '<select name="'.$option['name'].'" class="bf">';
                    $d = dir("templates");
                    while (false !== ($entry = $d->read())) {
-                       if(ereg("^[a-z]{3,20}$",$entry)){
+                       //if(ereg("^[a-z]{3,20}$",$entry)){
+                       if($entry !== '.' && $entry !== '..'){
                            $formright .= "<option value=\"$entry\"";
                            if($option['value'] == $entry) $formright .=" selected";
                            $formright .= ">$entry</option>";
@@ -306,28 +307,28 @@ foreach($options as $option) {
                    $formright .= '</select>';
                    break;
 
-							case "charsetselect":
-									 $formright = '<select name="'.$option['name'].'" class="bf">';	
-									 foreach ($charsets as $charset){
-									 		$formright .='<option value="'.$charset[value].'" ';
-									 		if ($charset[value] == C_CHARSET) $formright .='selected';
-									 		$formright .='>'.$charset[description].'</option>';
-									 }	
-									 $formright .= '</select>';
-									 break;
-
-							case "directionselect":
-										$formright = '<select name="'.$option['name'].'" class="bf">';
-										$formright .= '<option value="LTR"';
-										if(C_DIRECTION == 'LTR') $formright .= 'selected';
-										$formright .= '>LTR (default)</option>';
-										
-										$formright .='<option value="RTL"';
-										if(C_DIRECTION == 'RTL') $formright .= 'selected';										
-										$formright .='>RTL (if supported by template)</option>';
-										$formright .='</select>';
-							
-										break;
+                case "charsetselect":
+                         $formright = '<select name="'.$option['name'].'" class="bf">';	
+                         foreach ($charsets as $charset){
+                                $formright .='<option value="'.$charset[value].'" ';
+                                if ($charset[value] == C_CHARSET) $formright .='selected';
+                                $formright .='>'.$charset[description].'</option>';
+                         }	
+                         $formright .= '</select>';
+                         break;
+                
+                case "directionselect":
+                            $formright = '<select name="'.$option['name'].'" class="bf">';
+                            $formright .= '<option value="LTR"';
+                            if(C_DIRECTION == 'LTR') $formright .= 'selected';
+                            $formright .= '>LTR (default)</option>';
+                            
+                            $formright .='<option value="RTL"';
+                            if(C_DIRECTION == 'RTL') $formright .= 'selected';										
+                            $formright .='>RTL (if supported by template)</option>';
+                            $formright .='</select>';
+                
+                            break;
 	
 
               case "statusselect" :
@@ -355,9 +356,9 @@ foreach($options as $option) {
               case "modifierselect" :
                    $formright = '<select name="'.$option['name'].'" class="bf">';
                    foreach($bBlog->modifiers as $mod) {
-                       $formright .= '<option value="'.$mod->name.'" ';
-                       if(C_DEFAULT_MODIFIER == $mod->name) $formright .= 'selected';
-                       $formright .= '>'.$mod->nicename.'</option>';
+                       $formright .= '<option value="'.$mod['name'].'" ';
+                       if(C_DEFAULT_MODIFIER == $mod['name']) $formright .= 'selected';
+                       $formright .= '>'.$mod['nicename'].'</option>';
                    }
                    $formright .= '</select>';
                    break;

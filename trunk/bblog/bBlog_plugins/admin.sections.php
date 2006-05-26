@@ -20,77 +20,67 @@
 */
 
 function identify_admin_sections () {
-  $help = '<p>Sections are just a way of organizing posts. This plugin allows you to edit and delete sections.
-  When you make or edit a post, you can choose which sections it goes it.';
-  return array (
-    'name'           =>'sections',
-    'type'             =>'admin',
-    'nicename'     =>'Sections',
-    'description'   =>'Edit Sections',
-    'template' 	=> 'sections.html',
-    'authors'        =>'Eaden McKee <eadz@bblog.com>',
-    'licence'         =>'GPL',
-    'help'            => $help
-  );
+    $help = '<p>Sections are just a way of organizing posts. This plugin allows you to edit and delete sections.
+    When you make or edit a post, you can choose which sections it goes it.';
+    return array (
+        'name'           =>'sections',
+        'type'             =>'admin',
+        'nicename'     =>'Sections',
+        'description'   =>'Edit Sections',
+        'template' 	=> 'sections.html',
+        'authors'        =>'Eaden McKee <eadz@bblog.com>',
+        'licence'         =>'GPL',
+        'help'            => $help
+    );
 }
 
 function admin_plugin_sections_run(&$bBlog) {
-// Again, the plugin API needs work.
-if(isset($_GET['sectdo']))  { $sectdo = $_GET['sectdo']; }
-elseif(isset($_POST['sectdo'])) { $sectdo = $_POST['sectdo']; }
-else { $sectdo = ''; }
-
-switch($sectdo) {
-	case 'new' :  // sections are being editied
-		$bBlog->_adb->Execute("insert into ".T_SECTIONS."
-			set nicename='".my_addslashes($_POST['nicename'])."',
-			name='".my_addslashes($_POST['urlname'])."'");
-		$insid = $bBlog->insert_id;
-		$bBlog->get_sections(); // update the section cache
-		break;
-
-	case "Delete" : // delete section
-		// have to remove all references to the section in the posts
-                $sect_id = $bBlog->sect_by_name[$_POST['sname']];
-                if($sect_id > 0) { //
-			$posts_in_section_q = $bBlog->make_post_query(array("sectionid"=>$sect_id));
-                        $posts_in_section = $bBlog->get_posts($posts_in_section_q,TRUE);
-                        if($posts_in_section) {
-                            foreach($posts_in_section as $post) {
-                        	unset($tmpr);
-                                $tmpr = array();
-				$tmpsections = explode(":",$post->sections);
-                                foreach($tmpsections as $tmpsection) {
-                                	if($tmpsection != $sect_id) $tmpr[] = $tmpsection;
-				}
-                                $newsects = implode(":",$tmpr);
-				// update the posts to remove the section
-                                $bBlog->_adb->Execute("update ".T_POSTS." set sections='$newsects'
-                                	where postid='{$post->postid}'");
-
-                            } // end foreach ($post_in_section as $post)
-			} // end if($posts_in_section) 
-                        // delete the section
-                        
-                        $bBlog->_adb->Execute("delete from ".T_SECTIONS." where sectionid='$sect_id'");
-			//echo "delete from ".T_SECTIONS." where sectionid='$sect_id'";
-			$bBlog->get_sections();
-			//$bBlog->debugging=TRUE;
-
-                } // else show error
-	case "Save" :
- 		$sect_id = $bBlog->sect_by_name[$_POST['sname']];
-                if($sect_id < 1) break;
-                $sql = "update ".T_SECTIONS ." set nicename='".my_addslashes($_POST['nicename'])."' where sectionid='$sect_id'";
-                $bBlog->_adb->Execute($sql);
-                $bBlog->get_sections(); // update section cache
-        	break;
-
-	default : // show form
-        	break;
-	}
-        $bBlog->assign('esections',$bBlog->sections);
+    // Again, the plugin API needs work.
+    if(isset($_GET['sectdo']))  { $sectdo = $_GET['sectdo']; }
+    elseif(isset($_POST['sectdo'])) { $sectdo = $_POST['sectdo']; }
+    else { $sectdo = ''; }
+    
+    switch($sectdo) {
+        case 'new' :  // sections are being editied
+            $nicename = StringHandling::removeMagicQuotes($_POST['nicename']);
+            $urlname = StringHandling::removeMagicQuotes($_POST['urlname']);
+            $bBlog->_adb->Execute("insert into ".T_SECTIONS." set nicename=".$bBlog->_adb->quote($nicename).", name=".$bBlog->_adb->quote($urlname));
+            $insid = $bBlog->_adb->insert_id();
+            break;
+        case "Delete" : // delete section
+            // have to remove all references to the section in the posts
+            $sname = StringHandling::removeMagicQuotes($_POST['sname']);
+            $sect_id = $bBlog->section_ids_by_name[$sname];
+            if($sect_id > 0) {
+                $ph = $bBlog->_ph;
+                $posts_in_section_q = $ph->make_post_query(array("sectionid"=>$sect_id));
+                $posts_in_section = $ph->get_posts($posts_in_section_q,TRUE);
+                if($posts_in_section) {
+                    foreach($posts_in_section as $post) {
+                        unset($tmpr);
+                        $tmpr = array();
+                        $tmpsections = explode(":",$post->sections);
+                        foreach($tmpsections as $tmpsection) {
+                            if($tmpsection != $sect_id) $tmpr[] = $tmpsection;
+                        }
+                        $newsects = implode(":",$tmpr);
+                        // update the posts to remove the section
+                        $bBlog->_adb->Execute("update ".T_POSTS." set sections='$newsects' where postid={$post->postid}");
+                    } // end foreach ($post_in_section as $post)
+                } // end if($posts_in_section) 
+                // delete the section
+                $bBlog->_adb->Execute("delete from ".T_SECTIONS." where sectionid=$sect_id");
+            } // else show error
+        case "Save" :
+            $sect_id = $bBlog->sect_by_name[$_POST['sname']];
+            if($sect_id < 1) break;
+            $sql = "update ".T_SECTIONS ." set nicename='".my_addslashes($_POST['nicename'])."' where sectionid='$sect_id'";
+            $bBlog->_adb->Execute($sql);
+            break;
+        default : // show form
+            break;
+    }
+    $bBlog->get_sections();
+    $bBlog->assign('esections',$bBlog->sections);
 }
-
-
 ?>

@@ -210,10 +210,6 @@ class bBlog extends Smarty {
     // and it really should only be called once.
 	function display($page,$addfooter=true) {
         ob_start();
-        // we use a relitive path because otherwise we need
-        // as many compile directories as template
-        // and to make things easy for users we don't want them
-        // to have to chmod 777 too many directories.
 		parent::display($page);
         $o = ob_get_contents();
         ob_end_clean();
@@ -236,9 +232,9 @@ class bBlog extends Smarty {
                    if(!is_null($sect['sectionid'])){
                        $nsects[$sect['sectionid']] = array(
                            'id'        => $sect['sectionid'],
-                           'name'      => $sect['name'],
-                           'nicename'  => $sect['nicename'],
-                           'url'       => (defined('CLEANURLS')) ? str_replace('%sectionname%',$sect['name'],URL_SECTION) : BLOGURL.'?sectionid='.$sect['sectionid'],
+                           'name'      => stripslashes($sect['name']),
+                           'nicename'  => stripslashes($sect['nicename']),
+                           'url'       => (defined('CLEANURLS')) ? str_replace('%sectionname%', stripslashes($sect['name']),URL_SECTION) : BLOGURL.'?sectionid='.$sect['sectionid'],
                            'feed'      => BLOGURL.'rss.php?sectionid='.$sect['sectionid']
                        );
                        $ids[strtolower($sect['name'])] = $sect['sectionid'];

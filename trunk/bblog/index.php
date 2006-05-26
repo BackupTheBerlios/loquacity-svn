@@ -1,6 +1,4 @@
 <?php
-// index.php - bBlog admin interface
-// index.php - author: Eaden McKee <email@eadz.co.nz>
 /*
 ** bBlog Weblog http://www.bblog.com/
 ** Copyright (C) 2003  Eaden McKee <email@eadz.co.nz>
@@ -19,6 +17,7 @@
 ** along with this program; if not, write to the Free Software
 ** Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
+
 $loggedin = FALSE;
 define('IN_BBLOG_ADMIN',TRUE);
 // include the config and main code
@@ -98,6 +97,9 @@ if($rs !== false && !$rs->EOF){
     }
 }
 
+$menu[$i+4]['name'] = 'Captcha';
+$menu[$i+4]['url'] = 'index.php?b=captcha';
+$menu[$i+4]['title'] = 'Configure and Enable Captcha use';
 
 $menu[$i]['name'] = 'Plugins';
 $menu[$i]['url']  = 'index.php?b=plugins';
@@ -113,9 +115,10 @@ $menu[$i+2]['name'] = 'About';
 $menu[$i+2]['url']  = 'index.php?b=about';
 $menu[$i+2]['title'] = 'About bBlog';
 $bindex['about']=$i+2;
+$bindex['captcha'] = $i+4;
 
 $menu[$i+3]['name']='Docs';
-$menu[$i+3]['url']='http://www.bblog.com/docs/" target="_blank'; // NASTY hack!
+$menu[$i+3]['url']='http://www.bblog.com/docs/" target="_blank"'; // NASTY hack!
 $menu[$i+3]['title'] = 'Link to the online documentation at bBlog.com';
 
 $bBlog->assign_by_ref('menu',$menu);
@@ -137,22 +140,21 @@ if(isset($_POST['b'])) $b = $_POST['b'];
 if($b == 'login') $b = 'post'; // the default action when just logged in
 
 switch ($b) {
-
-    case 'post' :
-         $title = 'Post Entry';
-         include BBLOGROOT.'bBlog_plugins/builtin.post.php';
-         break;
-
-    case 'archives' :
-         $title = 'Archives';
-         include BBLOGROOT.'bBlog_plugins/builtin.archives.php';
-         break;
-
-    case 'options' :
-         $title='Options';
-         include BBLOGROOT.'bBlog_plugins/builtin.options.php';
-         break;
-
+    case 'post':
+    case 'captcha':
+    case 'archives':
+    case 'options':
+    case 'help':
+    case 'about':
+        $title = ucfirst($b);
+        if($b === 'post'){
+            $title = 'Post Entry';
+        }
+        if($b === 'about'){
+            $title = 'About bBlog';
+        }
+        include_once(BBLOGROOT.'bBlog_plugins/builtin.'.$b.'.php');
+        break;
     case 'plugins' :
          if (!isset($_GET['p']))    $_GET['p']  = '';
          if (!isset($_POST['p']))   $_POST['p'] = '';
@@ -160,18 +162,6 @@ switch ($b) {
          $title='Plugins';
          include BBLOGROOT.'bBlog_plugins/builtin.plugins.php';
          break;
-
-
-    case 'help' :
-         $title='Help';
-         include BBLOGROOT.'bBlog_plugins/builtin.help.php';
-         break;
-
-    case 'about' :
-         $title='About bBlog '.BBLOG_VERSION;
-         include BBLOGROOT.'bBlog_plugins/builtin.about.php';
-         break;
-
     case 'logout' :
          $bBlog->admin_logout();
          header('Location: index.php');
