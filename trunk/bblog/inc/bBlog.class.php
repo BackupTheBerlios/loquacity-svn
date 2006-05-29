@@ -48,6 +48,7 @@ class bBlog extends Smarty {
 	  	$this->assign('metadescription',C_META_DESCRIPTION);
 		$this->assign('charset',C_CHARSET);
 		$this->assign('direction', C_DIRECTION);
+        $this->assign('C_CAPTCHA_ENABLE', C_CAPTCHA_ENABLE);
  
         // initial time from config table, based on last updated stuff.
         // this is just the initial value.

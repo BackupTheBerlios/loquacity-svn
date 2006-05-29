@@ -113,7 +113,8 @@
 				</div><!-- .box -->
 			</div><!-- .formfieldcomtainer -->
 			 Make Public? <input class="checkbox" name="public_website" type="checkbox" id="public_website" value="1" checked="checked" />
-			</div>
+        </div>
+        {if $C_CAPTCHA_ENABLE === 'true'}
 		<div class="clear">&nbsp;</div>
 		<div class="formleft">Captcha: </div>
 		<div class="formright">
@@ -124,6 +125,7 @@
 				Text: <input name="imagecode" id="imagecode" type="text" class="formfield" />
 			</div>
 		</div>
+        {/if}
 	</div><!-- box1 -->	
 	<div class="box1">
 		<div class="formleft">Comment:</div>
