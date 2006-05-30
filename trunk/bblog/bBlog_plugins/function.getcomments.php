@@ -40,7 +40,7 @@ function smarty_function_getcomments($params, &$bBlog) {
     else{
         $ch = $bBlog->get_comment_handler($_REQUEST['postid']);
     }
-    prep_form(&$bBlog, $_REQUEST['postid'], $_REQUEST['replyto']);
+    prep_form(&$bBlog, $postid, $_REQUEST['replyto']);
     // are we posting a comment ?
     if($_POST['do'] == 'submitcomment' && is_numeric($_POST['comment_postid'])) { // we are indeed!
         if(is_numeric($_POST['replytos'])){

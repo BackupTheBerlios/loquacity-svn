@@ -10,7 +10,7 @@ function identify_modifier_bbcode () {
     'type'           =>'modifier',
     'nicename'       =>'BBCode',
     'description'    =>'Converts BBCode style tags to HTML and makes URLs clickable',
-    'authors'         =>'André Rabold, Nathan Codding, The PHPBB group',
+    'authors'         =>'Andrï¿½ Rabold, Nathan Codding, The PHPBB group',
     'licence'         =>'GPL',
     'help'            => $help
   );
@@ -155,7 +155,7 @@ return $o;
  * Type:       modifier
  * Name:       bbcode2html
  * Purpose:    Converts BBCode style tags to HTML
- * Author:     André Rabold
+ * Author:     Andrï¿½ Rabold
  * Version:    1.3c
  * Remarks:    Notice that this function does not check for
  *             correct syntax. Try not to use it with invalid
@@ -215,8 +215,9 @@ function smarty_modifier_bbcode($message) {
     '/\[size=(.*?)(?::\w+)?\](.*?)\[\/size(?::\w+)?\]/si'     => "<span style=\"font-size:\\1\">\\2</span>",
     '/\[font=(.*?)(?::\w+)?\](.*?)\[\/font(?::\w+)?\]/si'     => "<span style=\"font-family:\\1\">\\2</span>",
     '/\[align=(.*?)(?::\w+)?\](.*?)\[\/align(?::\w+)?\]/si'   => "<div style=\"text-align:\\1\">\\2</div>",
-    '/\[b(?::\w+)?\](.*?)\[\/b(?::\w+)?\]/si'                 => "<b>\\1</b>",
-    '/\[i(?::\w+)?\](.*?)\[\/i(?::\w+)?\]/si'                 => "<i>\\1</i>",
+    '/\[b(?::\w+)?\](.*?)\[\/b(?::\w+)?\]/si'                 => "<strong>\\1</strong>",
+    '/\[p(?::\w+)?\](.*?)\[\/p(?::\w+)?\]/si'                 => "<p>\\1</p>",
+    '/\[i(?::\w+)?\](.*?)\[\/i(?::\w+)?\]/si'                 => "<em>\\1</em>",
     '/\[u(?::\w+)?\](.*?)\[\/u(?::\w+)?\]/si'                 => "<u>\\1</u>",
     '/\[center(?::\w+)?\](.*?)\[\/center(?::\w+)?\]/si'       => "<div style=\"text-align:center\">\\1</div>",
     '/\[code(?::\w+)?\](.*?)\[\/code(?::\w+)?\]/si'           => "<div class=\"ng_code\">\\1</div>",
@@ -285,7 +286,7 @@ function smarty_modifier_bbcode($message) {
 	// Remove our padding..
 	$ret = substr($ret, 1);
 
-	return (nl2br($ret));
+	return ($ret);
 }
 
 ?>

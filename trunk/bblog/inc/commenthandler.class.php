@@ -131,13 +131,13 @@ class commentHandler {
      * @param int   $replyto If supplied, the id of the comment being replied to
      */
     function prepFieldsForDB($vars, $id, $replyto = 0){
-        $rval['postername'] = StringHandling::addslashes($vars["name"]);
+        $rval['postername'] = StringHandling::removeMagicQuotes($vars["name"]);
         if (empty($rval['postername']))
             $rval['postername'] = "Anonymous";
-        $rval['posteremail'] = StringHandling::addslashes($vars["email"]);
-        $rval['title'] = StringHandling::addslashes($vars["title"]);
-        $rval['posterwebsite'] = StringHandling::addslashes($vars["website"]);
-        $rval['commenttext'] = StringHandling::addslashes($vars["comment"]);
+        $rval['posteremail'] = StringHandling::removeMagicQuotes($vars["email"]);
+        $rval['title'] = StringHandling::removeMagicQuotes($vars["title"]);
+        $rval['posterwebsite'] = StringHandling::removeMagicQuotes($vars["website"]);
+        $rval['commenttext'] = StringHandling::clean($vars["comment"]);
         $rval['pubemail'] = ($vars["public_email"] == 1) ? 1 : 0;
         $rval['pubwebsite'] = ($vars["public_website"] == 1) ? 1 : 0;
         $rval['posternotify'] = ($vars["notify"] == 1) ? 1 : 0;
