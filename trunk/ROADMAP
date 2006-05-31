@@ -1,0 +1,23 @@
+#  Alpha 2
+    * Integrate OpenID option
+    * Integrate TypeKey option
+    * Integrate FeedCreator for advanced feed generation
+    * Implement input filtering preprocessor
+    * Update all plugins
+    * Replace all bBlog references with loquacity
+
+
+# Alpha 3
+    * Generate feeds and captcha without need for external files
+    * Remove code and logic redundancy (code cleanup)
+    * Replace bblog/index.php with better administrative access and functionality
+    * Make it easy to place the bblog directory tree anywhere
+
+
+# Alpha 4
+    * True Multi-author functionality
+    * Better user(author) authentication: allow for easier integration with existing sites and software
+
+
+# Alpha 5
+    * Rewrite Installer/upgrader 

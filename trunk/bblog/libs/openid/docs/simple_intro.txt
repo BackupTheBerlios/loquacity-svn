@@ -1,0 +1,224 @@
+Implementing a consumer using the PHP OpenID library.
+
+==Introduction==
+
+OpenID is a decentralized identity system, and simply provides a way of
+proving that someone owns a URL.  The URL is the user's identity.  An
+OpenID consumer will need to confirm the identity of users by talking
+to an OpenID server.  The PHP OpenID library does the heavy-lifting of
+this interaction, leaving you to spend more time on your application.
+It is highly recommended that you have a look at the OpenID homepage
+and specification.  http://www.openid.net
+
+The PHP OpenID library has been ported directly from the high-quality 
+Python OpenID library.  See http://openid.schtuff.com.  For the most part, 
+both the PHP and Python versions share a common API, making it simpler to 
+port a server or client from one language to the other.  It is my goal to 
+incorporate new fixes and features from the Python library over time and 
+to keep the libraries in sync.  Currently, all of the examples are direct 
+ports from the Python package as well.  
+
+Further, the bulk of this documentation comes from the Python package, 
+although it has been proof-read and PHP specific changes and comments 
+added.
+
+Be aware that as of this writing, the PHP port has not been heavily tested 
+or used in any production environment.  There are bound to be bugs and 
+gotchas.  
+
+
+==What does PHP OpenID do?==
+
+The PHP OpenID library fully implements the OpenID specification.  The 
+library takes care of all consumer to server interaction logic and 
+identity verification intricacies.  In a nutshell, the library provides 
+building blocks upon which you can base your own OpenID server or 
+consumer.  It does NOT make assumptions about your page processing or 
+attempt to dispatch incoming requests.  Nor does it display any HTML pages 
+or forms to the user.  That is all left to you, although some examples are 
+provided.  
+
+Operating in "dumb mode" by default, PHP OpenID can easily use the smart 
+association mode, but requires your consumer to store server association 
+information.  An example of both a dumb mode and a smart consumer are 
+provided, the latter using Diffie-Helman for key exchange.  Anyone 
+implementing a real server should use this method to reduce the number of 
+requests being made.  
+
+
+==PHP Compatibility==
+
+PHP OpenID is intended to run on any version of PHP >= 4.1.0, although
+to date it has only been tested with PHP5. If you encounter problems
+running with other versions, please let me know.  Great care has been taken
+to use PHP extensions when available and to provide fallback routines in
+case the extension is not present. These fallback routines are often slower
+and may not be as secure or "rock-solid". For production use of the library, 
+I recommend installation of these extensions: gmp, mhash, curl, and tidy2.
+PHP OpenID does not use or require PEAR.
+
+
+
+==Getting Started==
+
+Using the library requires a little work on your part, tailoring the
+OpenID interaction to your application.  There are three steps
+to get your OpenID consumer up and running: 1) Provide your own
+OpenIDConsumer subclass. 2) Provide an object that implements the
+ActionHandler interface 3) Control flow and dispatching.  Each of these
+is covered in a section below.  You will also need to provide a
+way for your application to send redirects to the user's browser.
+
+
+==simple.php example==
+
+The simple.php example script verifies an identity URL and nothing more.  
+You may run this script by unpacking the openid package somewhere beneath 
+your webserver docroot and loading simple.php in your browser.  You'll be 
+presented with a form asking you for your Identity URL.  If you don't have 
+an identity url, you may get one from livejournal.com or schtuff.com ( or, 
+coming soon: videntity.org ).  The identity server will ask you if you 
+trust your consumer server (simple.php).  Click yes and you will return to 
+simple.php with a verification message.  If something did not work 
+correctly, you will see an error message.  
+
+simple.php is about 200 lines of code including comments and HTML code.  
+Jump in!  The code is well-commented and readable.  Also, don't be afraid 
+to look at the library source code, as it is also somewhat documented.  
+Many questions are answered by looking at the source!  Go ahead and open 
+up simple.php, as you find it useful in the following sections.  
+
+
+==Subclassing OpenIDConsumer==
+
+The core of the library's consumer logic exists in the
+consumer.OpenIDConsumer class, and to get our example working we'll
+make a subclass extending it's behavior.  OpenIDConsumer handles all
+the server interaction, logic, and HTTP calls.  The only thing it
+needs from us is an implementation of the verify_return_to method.
+
+Our subclass is called SimpleOpenIDConsumer, and contains only the 
+verify_return_to method.  The purpose of this method is to look at the 
+elements of the return_to url and make sure they have not been altered in 
+any way.  First, we use the standard parse_url() function to parse the 
+url, and compare the host information to our consumer's host.  This is 
+essential for preventing an attack where one consumer can be used to log 
+into other consumers.  If they match, we consider the return_to url 
+verified, and return true.  Otherwise we return false.  
+
+
+==The ActionHandler Interface==
+
+In the course of an OpenID transaction, the consumer object may find
+itself in several different states.  The interface.ActionManager class
+provides a callback interface for each of these states, and you must
+supply an object that implements these methods.
+
+SimpleActionHandler is the ActionHandler implementation for our
+example.  For each state it either sets an alert message, or does a
+check and transitions to another state which sets the message.
+
+The doCheckAuthRequired callback uses the consumer object's check_auth
+call, and returns response state object, which is then used for a
+state transition.  This is necessary since our example is operating
+in dumb mode.  See http://www.openid.net/specs.bml#mode-check_authentication
+
+Also required in the ActionHandler object are implementations of the 
+createReturnTo and getOpenID methods.  The consumer supplies the server 
+with a return_to url to which it will redirect once the server interaction 
+is complete.  Obviously, the return_to url is application specific, and 
+building this url is left up to the user of the library.  The 
+ActionHandler contains a createReturnTo method which accepts an base_url, 
+identity url, and a dict ( key/val mapped array ) of additional arguments.  
+From these parameters your implementation will construct and return a 
+return_to url for your application.  One thing that every OpenID consumer 
+needs to do is keep track of the initial "identity_url" entered by the 
+user.  Since we are a stateless consumer, we choose to pass this 
+information through the return_to url.  This could also be done with a 
+cookie/session solution.  
+
+The last method required is getOpenID, which returns the identity_url
+initially entered by the user.  In simple.php we passed this though the
+return_to url, so we can simply extract it from the query arguments.
+
+==Dispatching==
+
+Dispatching is the process of looking for arguments, and then running
+code based on their values.  In our case we're looking for the
+existence of an "identity_url" argument, or an "openid.mode"
+argument. ( PHP's URL parsing converts "." to "_", so we actually look
+for "openid_mode". )
+
+In the case of "identity_url" existing, we are at the very beginning
+of our OpenID transaction, and need to find out more information from
+the user's identity page.  We call consumer::find_identity_info() to
+learn more about the identity and the server we are to contact.
+
+Once we have the identity server's url, we build a trust_root for our 
+application, a return_to (see above), and let our consumer object do the 
+rest by calling consumer::handle_request().  handle_request returns a 
+server url which we are to redirect to.  
+
+The server will then respond via redirect to us with an "openid.mode"
+argument.  We then create an interface.Request object with the input
+parameters, and call the consumer object's handle_response method.  We
+are returned a response object, which is executed by calling it's
+doAction() method.
+
+
+==Preventing Replay Attacks==
+
+In the interest of keeping the example short, code to prevent replay 
+attacks is not included.  A replay attack involves someone sniffing your 
+internet traffic, and stealing your OpenID server responses.  If no 
+safeguards are taken, and you are not connecting from the consumer to the 
+OpenID server over SSL, it is very easy for someone to execute a replay 
+attack, and masquerade as someone else in your consumer application.  
+
+The simplest way to prevent replay attacks is to add a nonce parameter
+into the return_to url.  A nonce is a value that is only used once
+then discarded.  When building your return_to url, stick a random
+number in, and also stick that random number in a consumer-side
+database or file.  When verifying the return to url, you should
+extract the nonce from the query arguments, and make sure it
+exists in the nonce database, also discarding it from the database.
+If the nonce does not exist in the database, then someone is attempting
+a replay attack, and you should return false from verify_return_to.
+
+
+==Smart Mode==
+
+Operating in smart mode is a wise choice for any consumer, however it
+does require a little more work from you.  Smart mode involves
+creating an association with an OpenID server, and then reusing that
+association for other users of that server.  This prevents extra trips
+to the server and speeds up the validation process tremendously.
+
+Implementing smart mode with PHP OpenID requires you implement an 
+ConsumerAssociationManager class which stores association keys in a 
+persistent datastore ( database, memcached, flat file, etc ).  An example 
+consumer association implementation is available in the examples directory 
+in the associations module.  It uses SQLite for association storage, but
+is written with to PHP's new PDO database layer, so should be easily
+adaptable to any database.  If you do not have PDO in your php installation, 
+the example could easily be ported to use mysql_* or pgsql_* calls, etc.
+
+A memcached example should be coming soon.
+
+
+==httpconsumer.php Example==
+
+To be written
+
+
+==sampleserver.php Example==
+
+To be written
+
+
+==Conclusion==
+
+To gain a basic understanding of an OpenID consumer, read through 
+simple.php and interact with it and possibly re-read this article.  If you 
+are serious about implementing an OpenID consumer or server, then refer to 
+the httpconsumer.php and sampleserver.php examples for further details.  
