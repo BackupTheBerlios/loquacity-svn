@@ -1,0 +1,26 @@
+<?php
+include_once('bblog/config.php');
+$request = trim($_SERVER['REQUEST_URI']);
+if(substr($request, -1) === '/'){
+	$request = substr($request, 0, -1);
+}
+$params = explode('/', $request);
+if($params){
+	$section = (count($params) > 0) ? end($params) : '';
+	if(ctype_alpha($section)){
+		$id = $bBlog->section_ids_by_name[strtolower($section)];
+		if($id){
+			$bBlog->show_section = intval($id);
+			$bBlog->assign('sectionname', $section);
+			$bBlog->assign('sectionid', intval($id));
+			$bBlog->display('section.html');
+		}
+	}
+	else{
+		$bBlog->display('index.html');
+	}
+}
+else{
+	$bBlog->display('index.html');
+}
+?>

@@ -1,0 +1,22 @@
+<?php
+include_once("bblog/config.php");
+$request = trim($_SERVER['REQUEST_URI']);
+if(substr($request, -1) === '/'){
+	$request = substr($request, 0, -1);
+}
+$params = explode('/', $request);
+if($params){
+	$id = (count($params) > 0) ? end($params) : '';
+	if(ctype_digit($id) && intval($id) > 0){
+		$bBlog->show_post = intval($id);
+		$bBlog->assign('postid', intval($id));
+		$bBlog->display('post.html');
+	}
+	else{
+		$bBlog->display('index.html');
+	}
+}
+else{
+	$bBlog->display('index.html');
+}
+?>
