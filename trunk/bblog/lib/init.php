@@ -21,7 +21,6 @@
 ** Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 if ( ! is_dir(BBLOGROOT) ) {
- 
   // throw meaningful error here ( OK tim ! )
   echo "There was an error : BBLOGROOT is not a directory. Please check that you have configured bBlog correctly by checking values in config.php";
   die();
@@ -40,21 +39,22 @@ define('T_CATEGORIES',TBL_PREFIX.'categories');
 define('T_RSS',TBL_PREFIX.'rss');
 
 // prevent errors when _open_basedir is set
-ini_set('include_path','./:../');
+#ini_set('include_path','./:../');
 
-define('SMARTY_DIR', BBLOGROOT.'libs/smarty/libs/');
+define('SMARTY_DIR', BBLOGROOT.'ext-libs/smarty/libs/');
 
 // include  needed files
 include_once(SMARTY_DIR.'Smarty.class.php');
-include_once(BBLOGROOT.'libs/adodb/adodb.inc.php');
-include_once(BBLOGROOT.'libs/ez_sql.php');
-include_once(BBLOGROOT.'inc/stringhandling.class.php');
-include_once(BBLOGROOT.'inc/confighandler.class.php');
-include_once(BBLOGROOT.'inc/posthandler.class.php');
-include_once(BBLOGROOT.'inc/commenthandler.class.php');
-include_once(BBLOGROOT.'inc/bBlog.class.php');
-include_once(BBLOGROOT.'inc/functions.php');
-include_once(BBLOGROOT.'inc/templates.php');
+include_once('ext-libs/adodb/adodb.inc.php');
+#include_once(BBLOGROOT.'libs/ez_sql.php');
+include_once('lib/stringhandling.class.php');
+include_once('lib/confighandler.class.php');
+include_once('lib/posthandler.class.php');
+include_once('lib/commenthandler.class.php');
+include_once('lib/sectionhandler.class.php');
+include_once('lib/bBlog.class.php');
+include_once('lib/functions.php');
+include_once('lib/templates.php');
 
 
 // start your engines
@@ -67,7 +67,7 @@ $bBlog->begintime = $mtime[1] + $mtime[0];
 
 
 $bBlog->template_dir = BBLOGROOT.'templates/'.C_TEMPLATE;
-$bBlog->compile_dir = BBLOGROOT.'compiled_templates/';
+$bBlog->compile_dir = BBLOGROOT.'generated/templates/';
 
 if(defined('IN_BBLOG_ADMIN')) {
        $bBlog->compile_id = 'admin';
@@ -75,10 +75,10 @@ if(defined('IN_BBLOG_ADMIN')) {
 	$bBlog->compile_id = C_TEMPLATE;
 }
 
-$bBlog->plugins_dir = array(BBLOGROOT.'bBlog_plugins', BBLOGROOT.'bBlog_plugins/smarty',BBLOGROOT.'libs/smarty/libs/plugins');
+$bBlog->plugins_dir = array(BBLOGROOT.'plugins', BBLOGROOT.'plugins/smarty',BBLOGROOT.'ext-libs/smarty/libs/plugins');
 $bBlog->use_sub_dirs	= FALSE; // change to true if you have a lot of templates
 
-define('BBLOG_VERSION',"0.8-alpha1");
+define('BBLOG_VERSION',"0.8-alpha2");
 $bBlog->assign("bBlog_version",BBLOG_VERSION);
 
 ?>

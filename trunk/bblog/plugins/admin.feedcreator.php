@@ -32,6 +32,9 @@ function identify_admin_feedcreator(){
 }
 
 function admin_plugin_feedcreator_run(&$bBlog){
+    if(isset($_POST) && count($_POST) > 0){
+        var_dump($_POST);
+    }
 	if ((isset($_POST['sub'])) && ($_POST['sub'] == 'y')){
 		$url = BLOGURL.'rss.php?';
 
@@ -52,12 +55,10 @@ function admin_plugin_feedcreator_run(&$bBlog){
 		$bBlog->assign('feedurl',$url);
 	}
 	
-	$sections = $bBlog->get_sections();
+	$sections = $bBlog->sections;
 	$sectionlist = '';
-	
-	foreach ($sections as $section) 
-	{
-		$sectionlist .= "<option value='{$section->sectionid}'>{$section->nicename}</option>";
+	foreach($sections as $section){
+		$sectionlist .= '<option value="'.$section['sectionid'].'">'.$section['nicename'].'</option>';
 	}
 	
 	$bBlog->assign('sectionlist',$sectionlist);

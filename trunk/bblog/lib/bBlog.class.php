@@ -1,25 +1,24 @@
 <?php
-/*
-** bBlog Weblog http://www.bblog.com/
-** Copyright (C) 2005  Eaden McKee <email@eadz.co.nz>
-**
-** This program is free software; you can redistribute it and/or modify
-** it under the terms of the GNU General Public License as published by
-** the Free Software Foundation; either version 2 of the License, or
-** (at your option) any later version. 
-**
-** This program is distributed in the hope that it will be useful, 
-** but WITHOUT ANY WARRANTY; without even the implied warranty of
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-** GNU General Public License for more details.
-**
-** You should have received a copy of the GNU General Public License
-** along with this program; if not, write to the Free Software
-** Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*/
+/**
+* Copyright 2006 Kenneth POwer <kenneth.power@gmail.com>
+* Copyright (C) 2005  Eaden McKee <email@eadz.co.nz>
+*
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation; either version 2 of the License, or
+* (at your option) any later version. 
+*
+* This program is distributed in the hope that it will be useful, 
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program; if not, write to the Free Software
+* Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+**/
 
 class bBlog extends Smarty {
-
 	var $template;
 	var $num_homepage_entries = 20;
 	var $templatepage = "index.html";
@@ -220,35 +219,15 @@ class bBlog extends Smarty {
         }
 	}
 
-	
-    ////
-    // !called once to load up the sections
-    // and assign them to $sections in the template
+    /**
+    *
+    *
+    */
     function get_sections(){
-        $sects = $this->_adb->Execute("SELECT * FROM `".T_SECTIONS."` ORDER BY name");
-        if($sects !== false && !$sects->EOF){
-             $nsects = array();
-             $ids = array();
-             while($sect = $sects->FetchRow()){
-                   if(!is_null($sect['sectionid'])){
-                       $nsects[$sect['sectionid']] = array(
-                           'id'        => $sect['sectionid'],
-                           'name'      => stripslashes($sect['name']),
-                           'nicename'  => stripslashes($sect['nicename']),
-                           'url'       => (defined('CLEANURLS')) ? str_replace('%sectionname%', stripslashes($sect['name']),URL_SECTION) : BLOGURL.'?sectionid='.$sect['sectionid'],
-                           'feed'      => BLOGURL.'rss.php?sectionid='.$sect['sectionid']
-                       );
-                       $ids[strtolower($sect['name'])] = $sect['sectionid'];
-                   }
-             }
-             // now the section array is available in any template
-             $this->assign_by_ref('sections',$nsects);
-             // we use $this->sections array a lot.
-             $this->sections = $nsects;
-             $this->section_ids_by_name = $ids;
-        }
-        else{
-            return FALSE;
+        $sh =& new sectionhandler(&$this->_adb);
+        if(($s = $sh->getallsections()) !== false){
+            $this->assign_by_ref('sections', $s);
+            $this->sections = $s;
         }
 	}
 	

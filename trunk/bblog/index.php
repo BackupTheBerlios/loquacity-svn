@@ -21,11 +21,11 @@
 $loggedin = FALSE;
 define('IN_BBLOG_ADMIN',TRUE);
 // include the config and main code
-include "config.php";
+include_once("config.php");
 
-include BBLOGROOT.'inc/charsets.php';
+include_once('lib/charsets.php');
 
-include BBLOGROOT.'inc/taglines.php';
+include_once('lib/taglines.php');
 // default title
 $title = 'Admin';
 
@@ -34,7 +34,7 @@ $bBlog->setmodifytime(time());
 
 $bBlog->assign_by_ref('title',$title);
 // we will store the rss templates in the inc/admin_templates dir, becasue almost noone will need to change them, - reduce clutter in the templates/* directory.
-$bBlog->template_dir = BBLOGROOT.'inc/admin_templates';
+$bBlog->template_dir = BBLOGROOT.'lib/admin_templates';
 $bBlog->compile_id = 'admin';
 
 
@@ -145,6 +145,7 @@ switch ($b) {
     case 'archives':
     case 'options':
     case 'help':
+    case 'feedcreator':
     case 'about':
         $title = ucfirst($b);
         if($b === 'post'){
@@ -153,14 +154,14 @@ switch ($b) {
         if($b === 'about'){
             $title = 'About bBlog';
         }
-        include_once(BBLOGROOT.'bBlog_plugins/builtin.'.$b.'.php');
+        include_once('plugins/builtin.'.$b.'.php');
         break;
     case 'plugins' :
          if (!isset($_GET['p']))    $_GET['p']  = '';
          if (!isset($_POST['p']))   $_POST['p'] = '';
 
          $title='Plugins';
-         include BBLOGROOT.'bBlog_plugins/builtin.plugins.php';
+         include_once('plugins/builtin.plugins.php');
          break;
     case 'logout' :
          $bBlog->admin_logout();

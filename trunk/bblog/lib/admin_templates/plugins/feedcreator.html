@@ -1,6 +1,6 @@
 <form method="POST" action="index.php" name="rssfeedmaker">
-    <input type="hidden" name="b" value="plugins" />
-    <input type="hidden" name="p" value="rssfeedmaker" />
+    <input type="hidden" name="b" value="feedcreator" />
+    <input type="hidden" name="p" value="feedcreator" />
     <input type="hidden" name="sub" value="y" />
     {if $results}
     <h4>Your Custom Feed URL</h4>
@@ -27,18 +27,6 @@
             </td>
         </tr>
         <tr>
-            <th style="width:33%">Year (4 digit)</th>
-            <td><input type="text" class="text" name="year" value="" /></td>
-        </tr>
-        <tr>
-            <th style="width:33%">Month (2 digit)</th>
-            <td><input type="text" class="text" name="month" value="" /></td>
-        </tr>
-        <tr>
-            <th style="width:33%">Day (2 digit)</th>
-            <td><input type="text" class="text" name="day" value="" /></td>
-        </tr>
-        <tr>
             <th style="width:33%">Feed Version</th>
             <td>
                 <select name="version">
@@ -47,7 +35,6 @@
                     <option value="RSS2.0">RSS 2.0</option>
                     <option value="ATOM1.0">Atom 1.0</option>
                     <option value="atom03">Atom 0.3</option>
-                    <option value="PIE0.1">PIE 0.1</option>
                     <option value="mbox">mbox</option>
                     <option value="OPML">OPML</option>
                     <option value="HTML">HTML</option>

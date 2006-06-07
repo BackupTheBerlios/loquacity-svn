@@ -28,7 +28,7 @@ function identify_admin_captcha(){
     );
 }
 
-include_once('inc/manageCaptcha.class.php');
+include_once('lib/manageCaptcha.class.php');
 $bBlog->assign('form_type','edit');
 
 $mc = new manageCaptcha(&$bBlog->_adb);

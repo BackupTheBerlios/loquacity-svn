@@ -9,17 +9,17 @@ function identify_admin_help () {
     'licence'         =>'GPL'
   );
 }
-include BBLOGROOT.'inc/credits.php';
+include_once('lib/credits.php');
 $bBlog->assign('credits',$credits);
 $bBlog->assign('title','About bBlog '.BBLOG_VERSION);
 
 ob_start();
-include BBLOGROOT.'docs/LICENCE.txt';
+include_once('docs/LICENCE.txt');
 $bBlog->assign('licence',ob_get_contents());
 ob_end_clean();
 
 ob_start();
-include BBLOGROOT.'make_bookmarklet.php';
+include_once('make_bookmarklet.php');
 $bBlog->assign('bookmarklet',ob_get_contents());
 ob_end_clean();
 

@@ -31,7 +31,7 @@ function scan_for_plugins () {
                            
             
   $plugin_files=array();
-  $dir="./bBlog_plugins";
+  $dir="./plugins";
   $dh = opendir( $dir ) or die("couldn't open directory");
   while ( ! ( ( $file = readdir( $dh ) ) === false ) ) {
     if(substr($file, -3) == 'php') $plugin_files[]=$file;
@@ -111,9 +111,9 @@ if($p && is_array($plugins['admin'][$p])) { // successful call to plugin
 	$bBlog->assign('plugin',$plugins['admin'][$p]);
 	$bBlog->assign('plugin_template','plugins/'.$plugins['admin'][$p]['template']);
 	$bBlog->assign('title',$plugins['admin'][$p]['displayname']);
-	include_once BBLOGROOT.'bBlog_plugins/'.$plugins['admin'][$p]['file'];
-        $func = "admin_plugin_".$p."_run";
-        $func($bBlog);
+	include_once('plugins/'.$plugins['admin'][$p]['file']);
+    $func = "admin_plugin_".$p."_run";
+    $func($bBlog);
 }
 
 $bBlog->assign('plugin_ar',$plugin_ar);
