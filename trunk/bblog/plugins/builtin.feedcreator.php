@@ -37,20 +37,10 @@ function admin_plugin_feedcreator_run(&$bBlog){
         var_dump($_POST);
     }
 	if ((isset($_POST['sub'])) && ($_POST['sub'] == 'y')){
-		$url = BLOGURL.'rss.php?';
-
-
-		if($_POST['version'] == 2) $url .= 'ver=2';
-		elseif($_POST['version'] == 'atom03') $url .= 'ver=atom03';
-		else $url .= 'ver=0.92';
-
-		if(is_numeric($_POST['num'])) $url .= '&amp;num='.$_POST['num'];
-
-		if($_POST['sectionid']>0) $url .= '&amp;sectionid='.$_POST['sectionid'];
-
-		if(is_numeric($_POST['year'])) $url .= '&amp;year='.$_POST['year'];
-		if(is_numeric($_POST['month'])) $url .= '&amp;year='.$_POST['day'];
-		if(is_numeric($_POST['day'])) $url .= '&amp;year='.$_POST['day'];
+		include_once('lib/feedhandler.class.php');
+        
+        $fh = new feedhandler(&$bBlog->_adb);
+        $url = $fh->createurl();
 
 		$bBlog->assign('results',TRUE);
 		$bBlog->assign('feedurl',$url);

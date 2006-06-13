@@ -1,2 +1,7 @@
+Wed Jun 07 13:05:05 CDT 2006 @795 /Internet Time/
+  * Initial work to set the includ_path to our directory
+  * Updated lib/init.php to use new file paths for Smarty and includes
+  * Updated bblog/index.php, builtin.captcha. builtin.about and builtin.plugins with new file patchs and include scheme
+  
 Wed May 31 14:49:02 CDT 2006 @867 /Internet Time/
   * Reorganised directory structure
