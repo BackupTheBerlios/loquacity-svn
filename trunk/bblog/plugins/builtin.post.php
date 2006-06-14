@@ -75,15 +75,15 @@ if ((isset($_REQUEST['popup']) && ($_REQUEST['popup'] == 'true'))) {
 // !makes sure post data is sql safe
 // and in a nice format
 function prep_new_post () {
-    $post->title = my_addslashes($_POST['title_text']);
-    $post->body  = my_addslashes($_POST['body_text']);
+    $post->title = StringHandling::removeMagicQuotes($_POST['title_text']);
+    $post->body  = StringHandling::removeMagicQuotes($_POST['body_text']);
 
     // there has to be abetter way that this but i'm tired.
     if(!isset($_POST['modifier'])) $post->modifier = C_DEFAULT_MODIFIER;
-    else $post->modifier = my_addslashes($_POST['modifier']);
+    else $post->modifier = StringHandling::removeMagicQuotes($_POST['modifier']);
 
     if(!isset($_POST['pubstatus'])) $post->status = C_DEFAULT_STATUS;
-    else $post->status = my_addslashes($_POST['pubstatus']);
+    else $post->status = StringHandling::removeMagicQuotes($_POST['pubstatus']);
 
     if (isset($_POST['sections'])) 
     {
