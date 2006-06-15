@@ -21,9 +21,8 @@
 
 include_once('bblog/config.php');
 $type = strtoupper($_GET['ft']);
-if(in_array($type, $types)){
-    include_once('lib/feedhandler.class.php');
-    $fh = new FeedHandler(&$bBlog->_adb);
-    $fh->generate();
-}
+include_once('lib/feedhandler.class.php');
+//Until the redesign, we pass both the database and posthandler to the FeedHandler
+$fh = new FeedHandler(&$bBlog->_adb, &$bBlog->_ph);
+$fh->generate($type);
 ?>
