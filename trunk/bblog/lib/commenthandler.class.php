@@ -4,19 +4,16 @@
  * File: commenthandler.class.php
  * Author: Kenneth Power <telcor@users.berlios.de>
  * Date: May 4, 2006
- * 
+ *
  * A class to manage all comment related functions
- */
-/**
- * Beginnings of comment handling consolidation
  *
  * @package Loquacity
  * @author Kenneth Power <telcor@users.berlios.de>, http://www.loquacity.info/ - last modified by $LastChangedBy: $
  * @version $Id: $
  * @copyright 2006 Kenneth Power <telcor@users.berlios.de>
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License
- */
-/* This file is part of Loquacity.
+ *
+ * This file is part of Loquacity.
  *
  * Loquacity is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,7 +29,7 @@
  * along with Loquacity; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
- 
+
 class commentHandler {
 
     var $_post = null;
@@ -51,6 +48,7 @@ class commentHandler {
             $rs = $this->_db->Execute($sql);
             if($rs){
                 while($row = $rs->FetchRow()){
+                    var_dump($row);
                     $this->_comments[$row[0]] = array(
                         'id'             => $row[0],
                         'parentid'       => $row[1],
@@ -118,7 +116,7 @@ class commentHandler {
             if ($post_vars['set_cookie']) {
                 $this->setCommentCookie($vars['postername'], $vars['posteremail'], $vars['posterwebsite']);
             }
-            
+
             $id = $this->saveComment($vars);
             if($id !== false && $id > 0){
                 if(C_NOTIFY == true){
@@ -134,25 +132,25 @@ class commentHandler {
         }
         return $result;
     }
-    
+
     /**
      * Prepare comment data for storage in the database
-     * 
+     *
      * Nothing peculiar to HTML display is done at this stage. Essentially the
      * comment is stored raw, for later manipulation for the display purposes.
-     * 
+     *
      * @param array $vars The comment data
      * @param int   $id The post id receiving this comment
      * @param int   $replyto If supplied, the id of the comment being replied to
      */
     function prepFieldsForDB($vars, $id, $replyto = 0){
-        $rval['postername'] = StringHandling::removeMagicQuotes($vars["name"]);
+        $rval['postername'] = StringHandling::clean($vars["name"]);
         if (empty($rval['postername']))
             $rval['postername'] = "Anonymous";
-        $rval['posteremail'] = StringHandling::removeMagicQuotes($vars["email"]);
-        $rval['title'] = StringHandling::removeMagicQuotes($vars["title"]);
-        $rval['posterwebsite'] = StringHandling::removeMagicQuotes($vars["website"]);
-        $rval['commenttext'] = StringHandling::clean($vars["comment"]);
+        $rval['posteremail'] = StringHandling::clean($vars["email"]);
+        $rval['title'] = StringHandling::clean($vars["title"]);
+        $rval['posterwebsite'] = StringHandling::clean($vars["website"]);
+        $rval['commenttext'] = StringHandling::processCommentText($vars["comment"]);
         $rval['pubemail'] = ($vars["public_email"] == 1) ? 1 : 0;
         $rval['pubwebsite'] = ($vars["public_website"] == 1) ? 1 : 0;
         $rval['posternotify'] = ($vars["notify"] == 1) ? 1 : 0;
@@ -165,8 +163,8 @@ class commentHandler {
         $rval['type'] = 'comment';
         return $rval;
     }
-    
-    
+
+
     /**
     * Save the comment/trackback
     *
@@ -188,7 +186,7 @@ class commentHandler {
         }
         return $rval;
     }
-    
+
     /**
     * Tests comment text against moderation criteria
     *
@@ -207,7 +205,7 @@ class commentHandler {
         }
         return $rval;
     }
-    
+
     /**
     * Initiates a variety of tests
     *
@@ -233,19 +231,19 @@ class commentHandler {
         $rval['message'] = array();
         if($this->isFlooding( $_SERVER['REMOTE_ADDR'], time())){
             $rval['proceed'] = false;
-            $rval['message'][] = array("Comment Flood Protection", "Error adding comment. You have tried to make a comment too soon after your last one. Please try again later. This is a bBlog spam prevention measure");
+            $rval['message'][] = array("Comment Flood Protection" => "Error adding comment. You have tried to make a comment too soon after your last one. Please try again later. This is a bBlog spam prevention measure");
         }
         if($this->isDisabled(&$post)){
             $rval['proceed'] = false;
-            $rval['message'][] = array("Error adding comment", "Comments have been turned off for this post");
+            $rval['message'][] = array("Error adding comment" => "Comments have been turned off for this post");
         }
         if($this->failsCaptcha($code)){
             $rval['proceed'] = false;
-            $rval['message'][] = array('Error adding comment', 'Supplied text does not match what was on the image');
+            $rval['message'][] = array('Error adding comment' => 'Supplied text does not match what was on the image');
         }
         return $rval;
     }
-    
+
     /**
     * Checks whether commenting is disabled for this post
     *
@@ -258,7 +256,7 @@ class commentHandler {
             $rval = true;
         return $rval;
     }
-    
+
     /**
     * Performs various transformations on text. Hyperlinks have
     * the redirector added and are wrapped in A tags (if not already wrapped).
@@ -278,7 +276,7 @@ class commentHandler {
         //Policy: line breaks converted automatically
         return nl2br($comment);
     }
-    
+
     /**
     * Checks whether an attempt at comment flooding is being made
     *
@@ -296,7 +294,7 @@ class commentHandler {
         }
         return $rval;
     }
-    
+
     /**
     * Saves comment details in a cookie
     *
@@ -313,7 +311,7 @@ class commentHandler {
         $value = base64_encode(serialize(array ('web' => $website, 'mail' => $email, 'name' => $name)));
         setcookie("bBcomment", $value, time() + (86400 * 360));
     }
-    
+
     /**
     * Tests what user typed against the captcha
     *
@@ -330,7 +328,7 @@ class commentHandler {
         }
         return $rval;
     }
-    
+
     /**
     * Notifies blog author of new comment
     *
@@ -347,11 +345,12 @@ class commentHandler {
             $message .= "You have selected comment moderation and this comment will not appear until you approve it, so please visit your blog and log in to approve or reject any comments\n";
         notify_owner("New comment on your blog", $message);
     }
-    
+
     /**
      * Updates the number of comments for a post in the post table
+     *
      * @deprecated This will go away soon. It can easily be obtained when by a query, removing this step
-     * 
+     * @param int $postid
      */
     function updateCommentCount($postid){
         $rs = $this->_db->Execute("SELECT count(*) as c FROM ".T_COMMENTS." WHERE postid='$postid' and deleted='false' group by postid");
@@ -360,10 +359,10 @@ class commentHandler {
             $this->_db->Execute("update ".T_POSTS." set commentcount='$newnumcomments' where postid='$postid'");
         }
     }
-    
+
     /**
      * Enforces HTML Encoding policy on comment text
-     * 
+     *
      * Policy states HTML special characters (&, ", etc) be translated to
      * their HTML entity equivalents for HTML display purposes. In doing this,
      * we must maintain the HTML tags (a, b, i, strong, code, acrynom, blockquote,
@@ -372,7 +371,7 @@ class commentHandler {
     function encodeHTML($comment){
         //Make certain we don't encode the allowed tags
         //Policy: only a, b, i, strong, code, acrynom, blockquote, abbr are allowed
-        
+
         $comment = str_replace("\r\n", '%%%COMMENT:TRANSFORM:NEWLINE:%%% ', $comment);
         $comment = str_replace("\n", '%%%COMMENT:TRANSFORM:NEWLINE:%%% ', $comment);
         $_blocks = array(
@@ -408,7 +407,7 @@ class commentHandler {
         $comment = str_replace('%%%COMMENT:TRANSFORM:NEWLINE:%%%', "\n", $comment);
         return $comment;
     }
-    
+
     function prepFieldsForDisplay($vars, $replyto=0){
         $rval['id'] = $vars['id'];
         $rval['postername'] = htmlspecialchars($vars["postername"]);
@@ -429,7 +428,7 @@ class commentHandler {
         $rval['type'] = $vars['type'];
         $rval['deleted'] = ($vars['deleted'] == 1) ? true : false;
         $rval['link'] = BBLOGURL.'trackback.php/'.$this->_post.'/'.$vars['id'];
-        
+
         return $rval;
     }
     ////
@@ -438,40 +437,40 @@ class commentHandler {
         if($comment['data']['pubemail'] > 0) {
             $commentr['email'] = $comment['data']['posteremail'];
         }
-                    
+
         if($comment['data']['pubwebsite'] > 0) {
             $commentr['website'] = $comment['data']->posterwebsite;
         }
         if($comment['data']['pubemail'] > 0 && $comment['data']['posteremail'] != '') {
             $commentr['emaillink'] = "<a href='mailto:".$comment['data']['posteremail']."'>@</a>";
         } else $commentr['emaillink'] = '';
-        
-                
+
+
         if($comment['data']['pubwebsite'] > 0 && $comment['data']['posterwebsite'] != '') {
             $commentr['websitelink'] = $comment['data']['posterwebsite'];
         } else $commentr['websitelink'] = '';
-                
+
         $commentr['websiteurl'] = $comment['data']['posterwebsite'];
         $commentr['permalink'] = "<a name='comment{$comment['data']['commentid']}'></a>
                           <a href='".$this->_get_comment_permalink($postid,$comment['data']['commentid'])."'>#</a>";
-    
+
         $commentr['permalinkurl'] = $this->_get_comment_permalink($postid,$comment['data']['commentid']);
-                    
+
         $commentr['replylinkurl'] = $this->_get_entry_permalink($postid);
-        
+
         if(substr_count($commentr['replylinkurl'],"?") == 1) {
                 $commentr['replylinkurl'] .= "&amp;";
         } else {
             $commentr['replylinkurl'] .= "?";
         }
-    
+
         $commentr['replylinkurl'] .= "replyto={$comment['data']['commentid']}#commentform";
-        
+
         $commentr['replylink'] = "<a href='".$commentr['replylinkurl']."'>Reply</a>";
-    
+
         $commentr['commentid'] = $comment['data']['commentid'];
         $commentr['postid'] = $postid;
-    
+
         if($comment['level'] > 0 ) {
             $commentr['level25'] = $comment['level']*25;
         } else {
@@ -487,9 +486,9 @@ class commentHandler {
         } else {
             $commentr['level10'] = 1;
         }
-        
+
         $commentr['level'] = $comment['level'];
-        
+
         if($this->highestlevel == 0 || $comment['level'] == 0) {
             $commentr['levelpercent']   = 0;
             $commentr['levelhalfpercent']   = 0;
@@ -497,15 +496,15 @@ class commentHandler {
             $commentr['levelpercent']   = floor(( 100 / $this->highestlevel )*$comment['level']);
             $commentr['levelhalfpercent']   = floor(( 50 / $this->highestlevel )* $comment['level']);
         }
-    
+
         $commentr['levelpercentremainder'] = 100 - $commentr['levelpercent'];
-    
+
         $commentr['trackbackurl']  = $this->_get_comment_trackback_url($postid,$comment['data']->commentid);
-    
+
         return $commentr;
-    
+
     }
-    
+
     function makethread($index,$table,$level){
         if($level > $this->_highestlevel){
             $this->_highestlevel = $level;
@@ -535,7 +534,7 @@ class commentHandler {
                 $this->_comments[$key]['levelpercent'] = floor(( 100 / $this->_highestlevel )*$this->_comments[$key]['level']);
                 $this->_comments[$key]['levelhalfpercent'] = floor(( 50 / $this->_highestlevel )* $this->_comments[$key]['level']);
             }
-        
+
             $this->_comments[$key]['levelpercentremainder'] = 100 - $this->_comments[$key]['levelpercent'];
             if ((isset($table[$key]))){
                 $this->makethread($key,$table,$level+1);

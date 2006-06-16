@@ -14,8 +14,7 @@
  * @version $Id: $
  * @copyright 2006 Kenneth Power <telcor@users.berlios.de>, Demian Turner
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License
- */
-/* This file is part of Loquacity.
+ *
  *
  * Loquacity is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,17 +63,17 @@ class StringHandling{
         $prot_pattern = '/\s([fh]+[t]{0,1}tp[s]*:\/\/([a-zA-Z0-9_~#=&%\/\:;@,\.\?\+-]+))/i';
         $simple_pattern = '/\s(www|ftp)\.([a-zA-Z0-9_~#=&%\/\:;@,\.\?\+-]+)/i';
         $patterns = array($et_pattern, $prot_pattern, $simple_pattern);
-        
+
         $et_replace = ' <a$1href="http://www.google.com/url?sa=D&q=$2$3>$4</a>';
         $prot_replace = ' <a href="http://www.google.com/url?sa=D&q=$1">$2</a>';
         $simple_replace = ' <a href="http://www.google.com/url?sa=D&q=http://$0">$2</a>';
         $repl = array($et_replace, $prot_replace, $simple_replace);
-        
+
         //Since the regex replace above adds a space within the HREF attribute, we need to remove it
         $str = preg_replace($patterns, $repl, $str);
-        
+
         $str = str_replace('sa=D&q=http:// ', 'sa=D&q=http://', $str);
-        
+
         //Return the result, removing the prepended space
         return substr($str, 1);
     }
@@ -113,7 +112,7 @@ class StringHandling{
             $rval = true;
         return $rval;
     }
-    
+
     /**
     * Simple check for presence of a protocol
     *
@@ -132,7 +131,7 @@ class StringHandling{
             $rval = true;
         return $rval;
     }
-    
+
     /**
     * Reports whether a string contains clickable links
     *
@@ -146,12 +145,12 @@ class StringHandling{
             $rval = true;
         return $rval;
     }
-    
+
     /**
      * Reports whether a link contains the Google Redirector.
      * This is meant to be used after a string successfully passes the containsTransformedLinks
      * check. If used without first passing that check unexpected results may return.
-     * 
+     *
      * @param string $str The link to check
      * return bool True if contains the link redirector, False if it does not
      */
@@ -162,7 +161,7 @@ class StringHandling{
             $rval = true;
         return $rval;
     }
-    
+
     /**
     * Replace various characters with their HTML entities equivalent
     *
@@ -176,12 +175,12 @@ class StringHandling{
         $result = str_replace($search, $replace, $result);
         return $result;
     }
-    
+
     function containsExternalLinks($str){
         $str = $str;
         return true;
     }
-    
+
     /**
     * Prepends the Google redirector service to the HREF attribute of anchor tags
     * Use this when a hyperlink already exists as a HTML tag
@@ -193,7 +192,7 @@ class StringHandling{
     // Google link redirector
         return preg_replace("/href=\"/i","href=\"http://www.google.com/url?sa=D&q=", $str);
     }
-    
+
     /**
     * Prepends the Google redirector service to raw hyperlinks
     * Use this when the hyperlink is raw text, not transformed into a HTML tag
@@ -208,7 +207,7 @@ class StringHandling{
     }
     /**
     * Removes slashes added by magic_quotes
-    * 
+    *
     * Borrowed from the Seagull project
     */
     function removeMagicQuotes(&$data) {
@@ -258,12 +257,12 @@ class StringHandling{
         }
         return StringHandling::trimWhitespace($clean);
     }
-    
+
     /**
      * This removes whitespace at front and end of a string
-     * 
+     *
      * Borrowed from the Seagull project
-     * 
+     *
      * @param string $str Could be a fixed length string or an array of strings
      * @return mixed A string or array
      */
@@ -274,7 +273,7 @@ class StringHandling{
             $clean = array_map(array('StringHandling', 'trimWhitespace'), $var);
         }
         return $clean;
-        
+
     }
 }
 ?>

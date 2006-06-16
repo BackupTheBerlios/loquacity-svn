@@ -38,8 +38,8 @@ function admin_plugin_comments_run(&$bBlog) {
     $articles = null;
     if(isset($_POST['commentsPosts'])){
         $articles = ($_POST['commentsPosts'] === 'All') ? null : intval($_POST['commentsPosts']);
-    }  
-    
+    }
+
     $commentdo = (isset($_POST['commentdo'])) ? $_POST['commentdo'] : '';
     switch($commentdo) {
         case "Delete" : // delete comments
@@ -67,10 +67,10 @@ function admin_plugin_comments_run(&$bBlog) {
         default : // show form
           break;
     }
-    
+
     retrieveComments(&$bBlog, $commentAmount, $articles);
     populateSelectList(&$bBlog);
-    
+
 }
 
 function deleteComment(&$bBlog, $id){
@@ -105,11 +105,11 @@ function saveEdit(&$bBlog){
   $rval = true;
   if(!(is_numeric($_POST['commentid'])))
     $rval = false;
-  $title = my_addslashes($_POST['title']);
-  $author = my_addslashes($_POST['author']);
-  $email  = my_addslashes($_POST['email']);
-  $websiteurl = my_addslashes($_POST['websiteurl']);
-  $body = my_addslashes($_POST['body']);
+  $title = StringHandling::clean($_POST['title']);
+  $author = StringHandling::clean($_POST['author']);
+  $email  = StringHandling::clean($_POST['email']);
+  $websiteurl = StringHandling::clean($_POST['websiteurl']);
+  $body = StringHandling::clean($_POST['body']);
   if($rval === true){
     $q = "update ".T_COMMENTS." set title='$title', postername='$author', posterwebsite='$websiteurl', posteremail='$email', commenttext='$body' where commentid='{$_POST['commentid']}'";
     if($bBlog->_adb->Execute($q) === true)
@@ -120,7 +120,7 @@ function saveEdit(&$bBlog){
 
 /**
  * Retrieve select amount of comments from the system
- * 
+ *
  * @param object $bBlog      A reference to a bBlog instance
  * @param int    $amount     The number of comments to retrieve
  * @param mixed  $posts      Which article to retrieve comments from; Setting to null retrieves from all articles

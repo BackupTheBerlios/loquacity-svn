@@ -15,7 +15,7 @@ function identify_admin_plugins () {
     'licence'         =>'GPL'
   );
 }
-// PLUGINS : 
+// PLUGINS :
 
 function scan_for_plugins () {
     global $bBlog;
@@ -28,8 +28,8 @@ function scan_for_plugins () {
             $have_plugins[$plugin['type']][$plugin['name']] = TRUE;
         }
     }
-                           
-            
+
+
   $plugin_files=array();
   $dir="./plugins";
   $dh = opendir( $dir ) or die("couldn't open directory");
@@ -51,10 +51,10 @@ function scan_for_plugins () {
                          `type`='".$newplugin['type']."',
                         `name`='".$newplugin['name']."',
                          nicename='".$newplugin['nicename']."',
-                         description='".addslashes($newplugin['description'])."',
+                         description='".StringHandling::clean($newplugin['description'])."',
 			 template='".$newplugin['template']."',
-                         help='".addslashes($newplugin['help'])."',
-                         authors='".addslashes($newplugin['authors'])."',
+                         help='".StringHandling::removeMagicQuotes($newplugin['help'])."',
+                         authors='".StringHandling::clean($newplugin['authors'])."',
                          licence='".$newplugin['licence']."'";
 			 $bBlog->_adb->Execute($q);
 			 $newplugincount++;
@@ -82,7 +82,7 @@ if(isset($_POST['scan_refresh'])) {
 $rs = $bBlog->_adb->Execute("select * from ".T_PLUGINS." order by type");
 if($rs !== false && !$rs->EOF){
     while($plugin = $rs->FetchRow()){
-        $plugins[$plugin['type']][$plugin['name']]= array( 
+        $plugins[$plugin['type']][$plugin['name']]= array(
             "name"=>$plugin['name'],
             "id" => $plugin['id'],
             "type"=>$plugin['type'],

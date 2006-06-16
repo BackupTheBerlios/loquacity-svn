@@ -1,0 +1,4 @@
+<?php
+include_once('bblog/config.php');
+include_once('bblog/trackback.php');
+?>

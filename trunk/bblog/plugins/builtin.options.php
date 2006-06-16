@@ -153,7 +153,7 @@ if ((isset($_POST['submit'])) && ($_POST['submit'] == 'Save Options')) { // savi
               case "url"   :
                    $updatevars[] = array(
                                  "name" =>$option['name'],
-                                 "value" => my_addslashes($_POST[$option['name']])
+                                 "value" => StringHandling::clean($_POST[$option['name']])
                                  );
                     break;
               case "password" :
@@ -194,13 +194,13 @@ if ((isset($_POST['submit'])) && ($_POST['submit'] == 'Save Options')) { // savi
 									 //check all charsets
 									 foreach ($charsets as $charset){
 									 		//if submitted is one of our valid charsets
-									 		if ( $_POST[$option['name']] == $charset['value'] ){					 		
-									 		
+									 		if ( $_POST[$option['name']] == $charset['value'] ){
+
 									 				$updatevars[] = array(
 									 												"name" => $option['name'],
 									 												"value" => $charset['value']
 									 												);
-									 	
+
 									 		}//if
 									 }//foreach
                    break;
@@ -215,8 +215,8 @@ if ((isset($_POST['submit'])) && ($_POST['submit'] == 'Save Options')) { // savi
                          $updatevars[]= array(
                                         "name" => $option['name'],
                                         "value" => 'RTL'
-                                        );	
-										
+                                        );
+
 									 break;
 
 
@@ -247,7 +247,7 @@ if ((isset($_POST['submit'])) && ($_POST['submit'] == 'Save Options')) { // savi
                                        );
 
                    break;
-	      case "truefalse" : 
+	      case "truefalse" :
 			$updatevars[] = array(
 				"name"=>$option['name'],
 				"value"=>$_POST[$option['name']]
@@ -283,7 +283,7 @@ else{
               case "text"  :
               case "email" :
               case "url"   :
-                   $formright = '<input type="text" name="'.$option['name'].'" 
+                   $formright = '<input type="text" name="'.$option['name'].'"
 		                    class="bf" value="'.$option['value'].'">';
                    break;
 
@@ -303,33 +303,33 @@ else{
                            $formright .= ">$entry</option>";
                        }
                    }
-                   $d->close();                 
+                   $d->close();
                    $formright .= '</select>';
                    break;
 
                 case "charsetselect":
-                         $formright = '<select name="'.$option['name'].'" class="bf">';	
+                         $formright = '<select name="'.$option['name'].'" class="bf">';
                          foreach ($charsets as $charset){
                                 $formright .='<option value="'.$charset[value].'" ';
                                 if ($charset[value] == C_CHARSET) $formright .='selected';
                                 $formright .='>'.$charset[description].'</option>';
-                         }	
+                         }
                          $formright .= '</select>';
                          break;
-                
+
                 case "directionselect":
                             $formright = '<select name="'.$option['name'].'" class="bf">';
                             $formright .= '<option value="LTR"';
                             if(C_DIRECTION == 'LTR') $formright .= 'selected';
                             $formright .= '>LTR (default)</option>';
-                            
+
                             $formright .='<option value="RTL"';
-                            if(C_DIRECTION == 'RTL') $formright .= 'selected';										
+                            if(C_DIRECTION == 'RTL') $formright .= 'selected';
                             $formright .='>RTL (if supported by template)</option>';
                             $formright .='</select>';
-                
+
                             break;
-	
+
 
               case "statusselect" :
                    $formright = '<select name="'.$option['name'].'" class="bf">';

@@ -39,7 +39,7 @@ function admin_plugin_sections_run(&$bBlog) {
     if(isset($_GET['sectdo']))  { $sectdo = $_GET['sectdo']; }
     elseif(isset($_POST['sectdo'])) { $sectdo = $_POST['sectdo']; }
     else { $sectdo = ''; }
-    
+
     switch($sectdo) {
         case 'new' :  // sections are being editied
             $nicename = StringHandling::removeMagicQuotes($_POST['nicename']);
@@ -67,14 +67,14 @@ function admin_plugin_sections_run(&$bBlog) {
                         // update the posts to remove the section
                         $bBlog->_adb->Execute("update ".T_POSTS." set sections='$newsects' where postid={$post->postid}");
                     } // end foreach ($post_in_section as $post)
-                } // end if($posts_in_section) 
+                } // end if($posts_in_section)
                 // delete the section
                 $bBlog->_adb->Execute("delete from ".T_SECTIONS." where sectionid=$sect_id");
             } // else show error
         case "Save" :
             $sect_id = $bBlog->sect_by_name[$_POST['sname']];
             if($sect_id < 1) break;
-            $sql = "update ".T_SECTIONS ." set nicename='".my_addslashes($_POST['nicename'])."' where sectionid='$sect_id'";
+            $sql = "update ".T_SECTIONS ." set nicename='".StringHandling::clean($_POST['nicename'])."' where sectionid='$sect_id'";
             $bBlog->_adb->Execute($sql);
             break;
         default : // show form

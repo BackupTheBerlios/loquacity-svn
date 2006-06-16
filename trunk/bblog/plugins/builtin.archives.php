@@ -22,7 +22,7 @@
 // now it may be an idea to do a if(!defined('IN_BBLOG')) die "hacking attempt" type thing but
 // i'm not sure it's needed, as without this file being included it hasn't connected to the
 // database, and all the functions it calls are in the $bBlog object.
-function identify_admin_archives () 
+function identify_admin_archives ()
 {
   return array (
     'name'           =>'archives',
@@ -97,7 +97,7 @@ if (isset($_POST['edit']) && is_numeric($_POST['edit'])){
             $nsects[] = $sect;
         }
     }
-    
+
     if(strlen($epost['sections']) > 1){
         $_post_secs = explode(":",$epost['sections']);
         if(is_array($_post_secs)){
@@ -166,13 +166,13 @@ if ((isset($_POST['postedit'])) && ($_POST['postedit'] == 'true')){
 
     $params = array(
         "postid"    => $_POST['postid'],
-        "title"     => my_addslashes($_POST['title_text']),
-        "body"      => my_addslashes($_POST['body_text']),
-        "modifier"  => my_addslashes($_POST['modifier']),
-        "status"    => my_addslashes($_POST['pubstatus']),
+        "title"     => StringHandling::clean($_POST['title_text']),
+        "body"      => StringHandling::removeMagicQuotes($_POST['body_text']),
+        "modifier"  => StringHandling::clean($_POST['modifier']),
+        "status"    => StringHandling::clean($_POST['pubstatus']),
         "edit_sections" => TRUE,
 	    "hidefromhome" => $hidefromhome,
-	    "allowcomments" => my_addslashes($_POST['commentoptions']),
+	    "allowcomments" => StringHandling::clean($_POST['commentoptions']),
 	    "autodisabledate" => $autodisabledate,
         "sections"  => $newsections,
         "timestamp" => $timestamp
@@ -198,21 +198,21 @@ if ((isset($_POST['filter'])) && ($_POST['filter'] == 'true')){
     if ((isset($_POST['shownum'])) && (is_numeric($_POST['shownum'])))
     {
     	$num = $_POST['shownum'];
-    } 
-    else 
+    }
+    else
     {
 	    $num=20;
 	}
-	
+
 	$searchopts['num'] = $num;
-	$searchopts['wherestart'] = ' WHERE 1 ';	
-	
-	if(is_numeric($_POST['showsection'])) 
+	$searchopts['wherestart'] = ' WHERE 1 ';
+
+	if(is_numeric($_POST['showsection']))
 	{
 		$searchopts['sectionid'] = $_POST['showsection'];
 	}
-	
-	if($_POST['showmonth'] != 'any') 
+
+	if($_POST['showmonth'] != 'any')
 	{
 		$searchopts['month'] = substr($_POST['showmonth'],0,2);
 		$searchopts['year']  = substr($_POST['showmonth'],3,4);
@@ -235,7 +235,7 @@ $bBlog->assign('postmonths',get_post_months());
 $bBlog->assign_by_ref('archives',$archives);
 $bBlog->display('archives.html');
 
-function get_post_months() 
+function get_post_months()
 {
 	global $bBlog;
     $rs = $bBlog->_adb->Execute("SELECT FROM_UNIXTIME(posttime,'%Y%m') yyyymm,  posttime from ".T_POSTS." group by yyyymm order by yyyymm");
@@ -259,17 +259,17 @@ function timestampform($ts){
 	$year = date('Y',$ts);
 	$hour = date('H',$ts);
 	$minute = date('i',$ts);
-	$o  = "<span class='ts'>Day</span> / 
-	       <span class='ts'>Month</span> / 
-	       <span class='ts'>Year</span> @ 
-	       <span class='ts'>24hours</span> : 
+	$o  = "<span class='ts'>Day</span> /
+	       <span class='ts'>Month</span> /
+	       <span class='ts'>Year</span> @
+	       <span class='ts'>24hours</span> :
 	       <span class='ts'>Minutes</span><br />
-	       <input type='text' name='ts_day' value='$day' class='ts' size='5'/> / 
-	       <input type='text' name='ts_month' value='$month' class='ts' size='5'/> / 
-	       <input type='text' name='ts_year' value='$year' class='ts' size='7'/> @ 
-           <input type='text' name='ts_hour' value='$hour' class='ts' size='5'/> : 
+	       <input type='text' name='ts_day' value='$day' class='ts' size='5'/> /
+	       <input type='text' name='ts_month' value='$month' class='ts' size='5'/> /
+	       <input type='text' name='ts_year' value='$year' class='ts' size='7'/> @
+           <input type='text' name='ts_hour' value='$hour' class='ts' size='5'/> :
            <input type='text' name='ts_minute' value='$minute' class='ts' size='5'/>
-           ";	
+           ";
 	return $o;
 }
 

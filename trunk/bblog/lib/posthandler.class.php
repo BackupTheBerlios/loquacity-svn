@@ -71,14 +71,14 @@ class postHandler {
             $autodisable_q
             modifier    ='$post->modifier',
             ownerid    ='$post->ownerid'";
-            
+
             $this->_db->query($q_insert);
             $postid = $this->_db->insert_id;
         if($postid > 0)
             return $postid;
         else
             return false;
-        
+
     }
     /**********************************************************************
     ** get_entries
@@ -87,10 +87,10 @@ class postHandler {
     ** $sectionid ex = 1
     ** Return
     **********************************************************************/
-    
+
     /**
      * Retrieve one or most posts based upon criteria
-     * 
+     *
      * @param array $crit Hash of selection criteria
      * @param bool $raw If false return in a format sufficient for browser display
      * @return array
@@ -129,9 +129,9 @@ class postHandler {
         $npost['id'] = $post['postid'];
         $npost['postid'] = $post['postid'];
         $npost['permalink'] = (defined('CLEANURLS')) ? str_replace('%postid%',$post['postid'],URL_POST) : BLOGURL.'?postid='.$post['postid'];
-        $npost['trackbackurl'] = BBLOGURL.'trackback.php/'.$post['postid'].'/';
+        $npost['trackbackurl'] = (defined('CLEANURLS')) ?  BLOGURL.'trackback/tbpost='.$post['postid'] : BBLOGURL.'trackback.php&amp;tbpost='.$post['postid'];
         $npost['title'] = $post['title'];
-         
+
         // do the body text
         /*if($post->modifier != '') {
              // apply a smarty modifier to the body
@@ -200,7 +200,7 @@ class postHandler {
 
         return $npost;
     }
-    
+
     function make_post_query($params) {
         $skip           = 0;
         $num            = 20;
@@ -213,7 +213,7 @@ class postHandler {
 
         // overwrite the above defaults with options from the $params array
         extract($params);
-         
+
         if (!isset($limit))                                 $limit = " LIMIT $skip,$num ";
         if ((isset($postid)) && ($postid != FALSE))         $where .= " AND postid='$postid' ";
         if (isset($year))                                   $where .= " AND FROM_UNIXTIME(posttime,'%Y') = '" . addslashes($year) . "' ";
@@ -222,8 +222,8 @@ class postHandler {
         if (isset($hour))                                   $where .= " AND FROM_UNIXTIME(posttime,'%H') = '" . addslashes($hour) . "' ";
         if (isset($minute))                                 $where .= " AND FROM_UNIXTIME(posttime,'%i') = '" . addslashes($minute) . "' ";
         if (isset($second))                                 $where .= " AND FROM_UNIXTIME(posttime,'%S') = '" . addslashes($second) . "' ";
-         
-        // There should be a ":" at the beginning and end of 
+
+        // There should be a ":" at the beginning and end of
         // any sections list
         if ((isset($sectionid)) && ($sectionid != FALSE))   $where .= " AND sections like '%:$sectionid:%' ";
 
@@ -231,11 +231,11 @@ class postHandler {
         $q = "SELECT posts.$what, authors.nickname, authors.email, authors.fullname, COUNT(`comments`.`commentid`) AS NUMCOMMENTS FROM ".T_POSTS." AS posts LEFT JOIN ".T_AUTHORS." AS authors ON posts.ownerid = authors.id LEFT JOIN `".T_COMMENTS."` as comments ON posts.postid = comments.postid $wherestart $where GROUP BY posts.postid $order $limit";
         return $q;
     }
-    
-    
+
+
     /**
      * Retrieves a single post
-     * 
+     *
      * @param int $postid
      * @param bool $draftok If true, its ok to retrieve a draft post
      * @param bool $raw If true, don't prepare for display
@@ -250,8 +250,8 @@ class postHandler {
             $draft_q = "AND posts.status='live' ";
         else
             $draft_q = '';
-        
-            
+
+
         $q = "SELECT posts.*, authors.nickname, authors.email, authors.fullname FROM ".T_POSTS." AS posts LEFT JOIN ".T_AUTHORS." AS authors ON posts.ownerid = authors.id WHERE posts.postid='$postid' $draft_q LIMIT 0,1";
         $post = $this->_db->GetRow($q);
         if($raw)
@@ -260,8 +260,8 @@ class postHandler {
             #require_once $this->_get_plugin_filepath('modifier', $post->modifier);
             return $this->prep_post($post);
         }
-    }   
-    
+    }
+
     ////
     // !deletes a post
     function delete_post($postid) {
@@ -274,13 +274,13 @@ class postHandler {
         $q2 = "DELETE FROM ".T_POSTS." WHERE postid='$postid'";
         $this->_db->Execute($q2);
     }
-    
+
     ////
     // !edits a post
     function edit_post($params) {
         $now = time();
         if(!is_numeric($params['postid'])) return false;
-        
+
         $q = 'UPDATE '.T_POSTS.' SET title="'.$params['title'].'", body="'.$params['body'].'" ';
         $q .= ", modifytime='$now'";
         if($params['sections']) {

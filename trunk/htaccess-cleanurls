@@ -1,6 +1,9 @@
 <Files item>
-ForceType application/x-httpd-php
+	ForceType application/x-httpd-php
 </Files>
 <Files section>
-ForceType application/x-httpd-php
+	ForceType application/x-httpd-php
+</Files>
+<Files trackback>
+	ForceType application/x-httpd-php
 </Files>

@@ -1,7 +1,16 @@
+June 16, 2006:
+  * Tested trackback handling
+  * Trackback now fails if postid is not provided
+  * Changed all my_addslash calls to either StringHandling::clean or ::removeMagicQuotes
+  * Update htaccess-cleanurls to include trackback
+June 15, 2006:
+  * Trackbacks now can use CLEANURLS
+  * Fixed trackback.php to use trackbackhandler.php
+  * Added trackback which merely calls trackback.php
 Wed Jun 07 13:05:05 CDT 2006 @795 /Internet Time/
   * Initial work to set the includ_path to our directory
   * Updated lib/init.php to use new file paths for Smarty and includes
   * Updated bblog/index.php, builtin.captcha. builtin.about and builtin.plugins with new file patchs and include scheme
-  
+
 Wed May 31 14:49:02 CDT 2006 @867 /Internet Time/
   * Reorganised directory structure
