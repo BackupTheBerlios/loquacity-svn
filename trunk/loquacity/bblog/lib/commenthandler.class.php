@@ -109,7 +109,7 @@ class commentHandler {
     * @param array  $post_vars $_POST
     */
     function new_comment($post, $replyto, $post_vars) {
-        $result = $this->canProceed(&$post, $post_vars['imagecode'], $post_vars['comment']);
+        $result = $this->canProceed($post, $post_vars['imagecode'], $post_vars['comment']);
         if($result['proceed'] === true){
             unset($result);
             $vars = $this->prepFieldsForDB($post_vars, $post['postid'], $replyto);
@@ -233,7 +233,7 @@ class commentHandler {
             $rval['proceed'] = false;
             $rval['message'][] = array("Comment Flood Protection" => "Error adding comment. You have tried to make a comment too soon after your last one. Please try again later. This is a bBlog spam prevention measure");
         }
-        if($this->isDisabled(&$post)){
+        if($this->isDisabled($post)){
             $rval['proceed'] = false;
             $rval['message'][] = array("Error adding comment" => "Comments have been turned off for this post");
         }

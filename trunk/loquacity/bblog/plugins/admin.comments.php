@@ -45,17 +45,17 @@ function admin_plugin_comments_run(&$bBlog) {
         case "Delete" : // delete comments
             if(is_array($_POST['commentid'])){
                 foreach($_POST['commentid'] as $key=>$val){
-                    deleteComment(&$bBlog, $val);
+                    deleteComment($bBlog, $val);
                 }
             }
             break;
         case "Edit" :
             $commentid = intval($_GET['editComment']);
             $postid = intval($_GET['postid']);
-            editComment(&$bBlog, $commentid, $postid);
+            editComment($bBlog, $commentid, $postid);
             break;
         case "editsave" :
-          saveEdit(&$bBlog);
+          saveEdit($bBlog);
           break;
         case "Approve":
             if(is_array($_POST['commentid'])){
@@ -68,8 +68,8 @@ function admin_plugin_comments_run(&$bBlog) {
           break;
     }
 
-    retrieveComments(&$bBlog, $commentAmount, $articles);
-    populateSelectList(&$bBlog);
+    retrieveComments($bBlog, $commentAmount, $articles);
+    populateSelectList($bBlog);
 
 }
 

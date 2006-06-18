@@ -177,7 +177,7 @@ class bBlog extends Smarty {
      * @param bool   $setcookie If true, set a cookie
 	 */
     function userauth($user, $pass, $setcookie = FALSE) {
-        $query = "SELECT `id` FROM `".T_AUTHORS."` WHERE `nickname`='".StringHandling::removeMagicQuotes(&$user)."' AND `password`='".StringHandling::removeMagicQuotes(&$pass)."'";
+        $query = "SELECT `id` FROM `".T_AUTHORS."` WHERE `nickname`='".StringHandling::removeMagicQuotes($user)."' AND `password`='".StringHandling::removeMagicQuotes($pass)."'";
         $rs = $this->_adb->GetRow($query);
         if($rs){
             $_SESSION['user_id'] = $rs[0];
@@ -224,7 +224,7 @@ class bBlog extends Smarty {
     *
     */
     function get_sections(){
-        $sh =& new sectionhandler(&$this->_adb);
+        $sh =& new sectionhandler($this->_adb);
         if(($s = $sh->getallsections()) !== false){
             $this->assign_by_ref('sections', $s);
             $this->sections = $s;
@@ -338,7 +338,7 @@ class bBlog extends Smarty {
     	die();
     }
     function get_comment_handler($postid){
-        return new commentHandler(&$this->_adb, $postid);
+        return new commentHandler($this->_adb, $postid);
     }
 
 } // end of bBlog class

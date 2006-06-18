@@ -39,40 +39,35 @@ function smarty_function_calendar($params, &$bBlog) {
     $new_year = $_GET["year"];
 
     if ($new_month && $new_year) {    
-	$date = getdate(mktime(0, 0, 0, $new_month, 1, $new_year));
-	$show_month = $date["mon"];
-	$show_year = $date["year"];
-    } else {
-	$show_month = $month;
-	$show_year = $year;
+        $date = getdate(mktime(0, 0, 0, $new_month, 1, $new_year));
+        $show_month = $date["mon"];
+        $show_year = $date["year"];
+    }
+    else {
+        $show_month = $month;
+        $show_year = $year;
     }
 
 
-    $q = $bBlog->make_post_query(
-	array(
-	"where" => " AND month(FROM_UNIXTIME(posttime)) = $show_month and year(FROM_UNIXTIME(posttime)) = $show_year ",
-	"num"=>"999"
-	)
-    );
+    $q = $bBlog->make_post_query(array("where" => " AND month(FROM_UNIXTIME(posttime)) = $show_month and year(FROM_UNIXTIME(posttime)) = $show_year ","num"=>"999"));
 	    
     $dayindex = array();
     global $dayindex;
     $posts = $bBlog->get_posts($q);
     if(is_array($posts)) {
-        
-	foreach ($posts as $post) {
-	    $d = date('j', $post['posttime']);
-	    $dayindex[$d][] = array(
-		"id"    => $post['post'],
-		"title" => $post['title'],
-		"url"   => $bBlog->_get_entry_permalink($post['postid'])
-    	    );
-	}
-	
+        foreach ($posts as $post) {
+            $d = date('j', $post['posttime']);
+            $dayindex[$d][] = array(
+            "id"    => $post['post'],
+            "title" => $post['title'],
+            "url"   => $bBlog->_get_entry_permalink($post['postid'])
+            );
+        }
     }
 
-
-    $left_year = $right_year = $show_year;
+    $right_year = $show_year;
+    $left_year = $right_year;
+    
     
     $left_month = $show_month - 1;
     if ($left_month < 1) {
@@ -143,7 +138,7 @@ function smarty_function_calendar($params, &$bBlog) {
 		    );
 		$pre_counter--;
 	    } else {
-		getDateLink($day, &$values);
+		getDateLink($day, $values);
 	
 		$week_array[] = array(
 			0 => (($dayindex["$day"])?true:false),

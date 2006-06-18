@@ -39,7 +39,7 @@ function admin_plugin_feedcreator_run(&$bBlog){
 	if ((isset($_POST['sub'])) && ($_POST['sub'] == 'y')){
 		include_once('lib/feedhandler.class.php');
         
-        $fh = new feedhandler(&$bBlog->_adb);
+        $fh = new feedhandler($bBlog->_adb);
         $url = $fh->createurl();
 
 		$bBlog->assign('results',TRUE);

@@ -33,12 +33,12 @@ function identify_admin_captcha(){
 include_once('lib/manageCaptcha.class.php');
 $bBlog->assign('form_type','edit');
 
-$mc = new manageCaptcha(&$bBlog->_adb);
+$mc = new manageCaptcha($bBlog->_adb);
 if(isset($_POST['captchado'])){
-    save_configuration(&$mc);
+    save_configuration($mc);
 }
 
-$bBlog->assign('settings', current_configuration(&$mc));
+$bBlog->assign('settings', current_configuration($mc));
 $bBlog->display('captcha.html');
 
 function current_configuration(&$mc){

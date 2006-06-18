@@ -141,7 +141,7 @@ function smarty_function_getposts($params, &$bBlog) {
         }
         $lastmonth = date('Fy',$ar['posts'][$key]['posttime']);
     }
-    $posts = apply_modifier(&$bBlog, $ar['posts']);
+    $posts = apply_modifier($bBlog, $ar['posts']);
     $bBlog->assign($params['assign'],$posts);
 
     return;
@@ -152,7 +152,7 @@ function get_single_post(&$bBlog, &$ph, $postid){
     $post = $ph->get_post($postid);
     if(!is_array($post))
         return false;
-    $post = apply_modifier(&$bBlog, array($post));
+    $post = apply_modifier($bBlog, array($post));
     $post = $post[0];
     $post['newday'] = 'yes';
     $post['newmonth'] = 'yes';
