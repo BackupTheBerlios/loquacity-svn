@@ -1,15 +1,19 @@
 <?php
-
 /**
- * trackbackhandler.class.php - Implements trackback handling according to the Trackback specification found at http://www.sixapart.com/pronet/docs/trackback_spec
+ * Loquacity - A web blogging application with simplicity in mind - http://www.loquacity.info/
+ * Copyright (c) 2006 Kenneth Power
  *
  * @package Loquacity
- * @author Kenneth Power <telcor@users.berlios.de>, http://www.loquacity.info/ - last modified by $LastChangedBy: $
- * @version $Id: $
- * @copyright 2006 Kenneth Power <telcor@users.berlios.de>
- * @license http://www.gnu.org/licenses/gpl.html GNU General Public License
- */
-/* This file is part of Loquacity.
+ * @subpackage Comments
+ * @author Kenneth Power <telcor@users.berlios.de>
+ * @copyright &copy; 2006 Kenneth Power
+ * @license    http://www.opensource.org/licenses/lgpl-license.php GPL
+ * @link http://www.loquacity.info
+ * @since 0.8-alpha1
+ *
+ * LICENSE:
+ *
+ * This file is part of Loquacity.
  *
  * Loquacity is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +28,12 @@
  * You should have received a copy of the GNU General Public License
  * along with Loquacity; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ */
+
+/**
+ * Implements trackback handling according to the Trackback specification found at http://www.sixapart.com/pronet/docs/trackback_spec
+ *
+ * @version $Revision$
  */
 
 

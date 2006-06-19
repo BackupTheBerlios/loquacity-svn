@@ -1,25 +1,40 @@
 <?php
-// templates.php - Deals with templating functions
-// templates.php - author: Eaden McKee <email@eadz.co.nz>
+/**
+ * Loquacity - A web blogging application with simplicity in mind - http://www.loquacity.info/
+ * Copyright (c) 2006 Kenneth Power
+ *
+ * @package Loquacity
+ * @subpackage Administration
+ * @author Eaden McKee <email@eadz.co.nz>
+ * @copyright &copy; 2003  Eaden McKee <email@eadz.co.nz>
+ * @license    http://www.opensource.org/licenses/lgpl-license.php GPL
+ * @link http://www.loquacity.info
+ * @since 0.8-alpha1
+ *
+ * LICENSE:
+ *
+ * This file is part of Loquacity.
+ *
+ * Loquacity is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * Loquacity is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Loquacity; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ */
 
-/*                                                                          
-** bBlog Weblog http://www.bblog.com/
-** Copyright (C) 2003  Eaden McKee <email@eadz.co.nz>    
-**
-** This program is free software; you can redistribute it and/or modify
-** it under the terms of the GNU General Public License as published by
-** the Free Software Foundation; either version 2 of the License, or 
-** (at your option) any later version. 
-** 
-** This program is distributed in the hope that it will be useful, 
-** but WITHOUT ANY WARRANTY; without even the implied warranty of
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
-** GNU General Public License for more details. 
-**
-** You should have received a copy of the GNU General Public License
-** along with this program; if not, write to the Free Software
-** Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*/                                                                          
+/**
+ * Deals with templating functions
+ *
+ * @version $Revision$
+ */                                                                        
 
 ////
 // !Custom Smarty template handler for use with database templates

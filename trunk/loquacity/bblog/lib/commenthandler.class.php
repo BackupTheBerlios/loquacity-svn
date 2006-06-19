@@ -1,17 +1,17 @@
 <?php
-
 /**
- * File: commenthandler.class.php
- * Author: Kenneth Power <telcor@users.berlios.de>
- * Date: May 4, 2006
- *
- * A class to manage all comment related functions
+ * Loquacity - A web blogging application with simplicity in mind - http://www.loquacity.info/
+ * Copyright (c) 2006 Kenneth Power
  *
  * @package Loquacity
- * @author Kenneth Power <telcor@users.berlios.de>, http://www.loquacity.info/ - last modified by $LastChangedBy: $
- * @version $Id: $
- * @copyright 2006 Kenneth Power <telcor@users.berlios.de>
- * @license http://www.gnu.org/licenses/gpl.html GNU General Public License
+ * @subpackage Comments
+ * @author Kenneth Power <telcor@users.berlios.de>
+ * @copyright &copy; 2006 Kenneth Power
+ * @license    http://www.opensource.org/licenses/lgpl-license.php GPL
+ * @link http://www.loquacity.info
+ * @since 0.8-alpha1
+ *
+ * LICENSE:
  *
  * This file is part of Loquacity.
  *
@@ -28,6 +28,12 @@
  * You should have received a copy of the GNU General Public License
  * along with Loquacity; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ */
+
+/**
+ * A class to manage all comment related functions
+ *
+ * @version $Revision$
  */
 
 class commentHandler {

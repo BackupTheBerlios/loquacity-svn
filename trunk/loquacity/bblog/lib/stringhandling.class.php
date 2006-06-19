@@ -1,20 +1,19 @@
 <?php
 /**
- * Class for handling string related functions
- *
- * A pseudo static class, it never needs instantiated. This class
- * serves to centralize various string handling functions, such as
- * transforming typed hyperlinks into clickable links.
- * Some code is borrowed from the Seagull project, according to the terms of the
- * BSD license. Such code is:
- * Copyright (c) 2006, Demian Turner
+ * Loquacity - A web blogging application with simplicity in mind - http://www.loquacity.info/
+ * Copyright (c) 2006 Kenneth Power
  *
  * @package Loquacity
- * @author Kenneth Power <telcor@users.berlios.de>, http://www.loquacity.info/ - last modified by $LastChangedBy: $
- * @version $Id: $
- * @copyright 2006 Kenneth Power <telcor@users.berlios.de>, Demian Turner
- * @license http://www.gnu.org/licenses/gpl.html GNU General Public License
+ * @subpackage Comments
+ * @author Kenneth Power <telcor@users.berlios.de>, Demian Turner
+ * @copyright &copy; 2006 Kenneth Power, Demian Turner
+ * @license    http://www.opensource.org/licenses/lgpl-license.php GPL
+ * @link http://www.loquacity.info
+ * @since 0.8-alpha2
  *
+ * LICENSE:
+ *
+ * This file is part of Loquacity.
  *
  * Loquacity is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,6 +29,19 @@
  * along with Loquacity; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
+
+/**
+ * Class for handling string related functions
+ *
+ * A pseudo static class, it never needs instantiated. This class
+ * serves to centralize various string handling functions, such as
+ * transforming typed hyperlinks into clickable links.
+ * Some code is borrowed from the Seagull project, according to the terms of the
+ * BSD license. Such code is:
+ * Copyright (c) 2006, Demian Turner
+ *
+ * @version $Revision$
+ */ 
 class StringHandling{
     /**
     * Converts typed links into clickable links
