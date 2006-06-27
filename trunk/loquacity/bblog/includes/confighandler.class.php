@@ -7,7 +7,7 @@
  * @subpackage Administration
  * @author Kenneth Power <telcor@users.berlios.de>
  * @copyright &copy; 2006 Kenneth Power
- * @license    http://www.opensource.org/licenses/lgpl-license.php GPL
+ * @license    http://www.opensource.org/licenses/gpl-license.php GPL
  * @link http://www.loquacity.info
  * @since 0.8-alpha1
  *
@@ -43,6 +43,7 @@ class configHandler {
     }
     /**
      * Loads the configuration from the DB and creates constants
+     *
      */
     function loadConfig(){
         $rs = $this->_db->Execute('select * from '.T_CONFIG);

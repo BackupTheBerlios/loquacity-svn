@@ -50,10 +50,6 @@ class bBlog extends Smarty {
         // connect to database
         $this->_adb = NewADOConnection('mysql://'.DB_USERNAME.':'.DB_PASSWORD.'@'.DB_HOST.'/'.DB_DATABASE.'?persist');
         
-	 	//$this->_db = new db(DB_USERNAME, DB_PASSWORD, DB_DATABASE, DB_HOST);
-        $this->num_rows =& $this->_db->num_rows;
-        $this->insert_id =& $this->_db->insert_id;
-        
         //Load the config
         $config =& new configHandler($this->_adb);
         $config->loadConfig();
@@ -75,7 +71,7 @@ class bBlog extends Smarty {
         $this->get_sections();
 
         //start the session that we need so much ;)
-        if(!session_id()) {         
+        if(!session_id()) {
 	  	    session_start();
 	    }
         $this->_ph =& new postHandler(&$this->_adb);

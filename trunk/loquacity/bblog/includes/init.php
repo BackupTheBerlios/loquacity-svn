@@ -56,20 +56,18 @@ define('T_RSS',TBL_PREFIX.'rss');
 // prevent errors when _open_basedir is set
 #ini_set('include_path','./:../');
 
-define('SMARTY_DIR', BBLOGROOT.'ext-libs/smarty/libs/');
+define('SMARTY_DIR', BBLOGROOT.'3rdparty/smarty/libs/');
 
 // include  needed files
 include_once(SMARTY_DIR.'Smarty.class.php');
-include_once('ext-libs/adodb/adodb.inc.php');
-#include_once(BBLOGROOT.'libs/ez_sql.php');
-include_once('lib/stringhandling.class.php');
-include_once('lib/confighandler.class.php');
-include_once('lib/posthandler.class.php');
-include_once('lib/commenthandler.class.php');
-include_once('lib/sectionhandler.class.php');
-include_once('lib/bBlog.class.php');
-include_once('lib/functions.php');
-include_once('lib/templates.php');
+include_once('3rdparty/adodb/adodb.inc.php');
+include_once('includes/stringhandling.class.php');
+include_once('includes/confighandler.class.php');
+include_once('includes/posthandler.class.php');
+include_once('includes/commenthandler.class.php');
+include_once('includes/sectionhandler.class.php');
+include_once('includes/bBlog.class.php');
+include_once('includes/templates.php');
 
 
 // start your engines
@@ -90,7 +88,7 @@ if(defined('IN_BBLOG_ADMIN')) {
 	$bBlog->compile_id = C_TEMPLATE;
 }
 
-$bBlog->plugins_dir = array(BBLOGROOT.'plugins', BBLOGROOT.'plugins/smarty',BBLOGROOT.'ext-libs/smarty/libs/plugins');
+$bBlog->plugins_dir = array(BBLOGROOT.'plugins', BBLOGROOT.'plugins/smarty',BBLOGROOT.'3rdparty/smarty/libs/plugins');
 $bBlog->use_sub_dirs	= FALSE; // change to true if you have a lot of templates
 
 define('BBLOG_VERSION',"0.8-alpha2");
