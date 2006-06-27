@@ -166,13 +166,13 @@ if ((isset($_POST['postedit'])) && ($_POST['postedit'] == 'true')){
 
     $params = array(
         "postid"    => $_POST['postid'],
-        "title"     => StringHandling::clean($_POST['title_text']),
-        "body"      => StringHandling::removeMagicQuotes($_POST['body_text']),
-        "modifier"  => StringHandling::clean($_POST['modifier']),
-        "status"    => StringHandling::clean($_POST['pubstatus']),
+        "title"     => stringHandler::clean($_POST['title_text']),
+        "body"      => stringHandler::removeMagicQuotes($_POST['body_text']),
+        "modifier"  => stringHandler::clean($_POST['modifier']),
+        "status"    => stringHandler::clean($_POST['pubstatus']),
         "edit_sections" => TRUE,
 	    "hidefromhome" => $hidefromhome,
-	    "allowcomments" => StringHandling::clean($_POST['commentoptions']),
+	    "allowcomments" => stringHandler::clean($_POST['commentoptions']),
 	    "autodisabledate" => $autodisabledate,
         "sections"  => $newsections,
         "timestamp" => $timestamp

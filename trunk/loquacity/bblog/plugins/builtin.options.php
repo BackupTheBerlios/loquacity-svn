@@ -153,7 +153,7 @@ if ((isset($_POST['submit'])) && ($_POST['submit'] == 'Save Options')) { // savi
               case "url"   :
                    $updatevars[] = array(
                                  "name" =>$option['name'],
-                                 "value" => StringHandling::clean($_POST[$option['name']])
+                                 "value" => stringHandler::clean($_POST[$option['name']])
                                  );
                     break;
               case "password" :

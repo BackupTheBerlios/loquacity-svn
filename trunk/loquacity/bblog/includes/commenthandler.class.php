@@ -54,7 +54,6 @@ class commentHandler {
             $rs = $this->_db->Execute($sql);
             if($rs){
                 while($row = $rs->FetchRow()){
-                    var_dump($row);
                     $this->_comments[$row[0]] = array(
                         'id'             => $row[0],
                         'parentid'       => $row[1],
@@ -150,13 +149,13 @@ class commentHandler {
      * @param int   $replyto If supplied, the id of the comment being replied to
      */
     function prepFieldsForDB($vars, $id, $replyto = 0){
-        $rval['postername'] = StringHandling::clean($vars["name"]);
+        $rval['postername'] = stringHandler::clean($vars["name"]);
         if (empty($rval['postername']))
             $rval['postername'] = "Anonymous";
-        $rval['posteremail'] = StringHandling::clean($vars["email"]);
-        $rval['title'] = StringHandling::clean($vars["title"]);
-        $rval['posterwebsite'] = StringHandling::clean($vars["website"]);
-        $rval['commenttext'] = StringHandling::processCommentText($vars["comment"]);
+        $rval['posteremail'] = stringHandler::clean($vars["email"]);
+        $rval['title'] = stringHandler::clean($vars["title"]);
+        $rval['posterwebsite'] = stringHandler::clean($vars["website"]);
+        $rval['commenttext'] = stringHandler::processCommentText($vars["comment"]);
         $rval['pubemail'] = ($vars["public_email"] == 1) ? 1 : 0;
         $rval['pubwebsite'] = ($vars["public_website"] == 1) ? 1 : 0;
         $rval['posternotify'] = ($vars["notify"] == 1) ? 1 : 0;
@@ -273,9 +272,9 @@ class commentHandler {
     */
     function processCommentText($comment){
         //Policy: only a, b, i, strong, code, acrynom, blockquote, abbr are allowed
-        $comment = StringHandling::removeTags($comment, '<a><b><i><strong><code><acronym><blockquote><abbr>');
-        /*if(StringHandling::containsLinks($comment)){
-            $comment = StringHandling::transformLinks($comment);
+        $comment = stringHandler::removeTags($comment, '<a><b><i><strong><code><acronym><blockquote><abbr>');
+        /*if(stringHandler::containsLinks($comment)){
+            $comment = stringHandler::transformLinks($comment);
         }*/
         //Policy: translate HTML special characters to their HTML entities
         $comment = $this->encodeHTML($comment);
@@ -421,7 +420,7 @@ class commentHandler {
             $rval['postername'] = "Anonymous";
         $rval['posteremail'] = htmlspecialchars(stripslashes($vars["posteremail"]));
         $rval['title'] = htmlspecialchars($vars["title"]);
-        $rval['posterwebsite'] = StringHandling::transformLinks(htmlspecialchars(stripslashes($vars["posterwebsite"])));
+        $rval['posterwebsite'] = stringHandler::transformLinks(htmlspecialchars(stripslashes($vars["posterwebsite"])));
         $rval['commenttext'] = $this->processCommentText(stripslashes($vars["commenttext"]));
         $rval['pubemail'] = ($vars["pubemail"] == 1) ? true : false;
         $rval['pubwebsite'] = ($vars["pubwebsite"] == 1) ? true : false;

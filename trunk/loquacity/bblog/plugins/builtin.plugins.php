@@ -51,10 +51,10 @@ function scan_for_plugins () {
                          `type`='".$newplugin['type']."',
                         `name`='".$newplugin['name']."',
                          nicename='".$newplugin['nicename']."',
-                         description='".StringHandling::clean($newplugin['description'])."',
+                         description='".stringHandler::clean($newplugin['description'])."',
 			 template='".$newplugin['template']."',
-                         help='".StringHandling::removeMagicQuotes($newplugin['help'])."',
-                         authors='".StringHandling::clean($newplugin['authors'])."',
+                         help='".stringHandler::removeMagicQuotes($newplugin['help'])."',
+                         authors='".stringHandler::clean($newplugin['authors'])."',
                          licence='".$newplugin['licence']."'";
 			 $bBlog->_adb->Execute($q);
 			 $newplugincount++;

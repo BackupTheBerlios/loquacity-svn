@@ -42,14 +42,14 @@ function admin_plugin_sections_run(&$bBlog) {
 
     switch($sectdo) {
         case 'new' :  // sections are being editied
-            $nicename = StringHandling::removeMagicQuotes($_POST['nicename']);
-            $urlname = StringHandling::removeMagicQuotes($_POST['urlname']);
+            $nicename = stringHandler::removeMagicQuotes($_POST['nicename']);
+            $urlname = stringHandler::removeMagicQuotes($_POST['urlname']);
             $bBlog->_adb->Execute("insert into ".T_SECTIONS." set nicename=".$bBlog->_adb->quote($nicename).", name=".$bBlog->_adb->quote($urlname));
             $insid = $bBlog->_adb->insert_id();
             break;
         case "Delete" : // delete section
             // have to remove all references to the section in the posts
-            $sname = StringHandling::removeMagicQuotes($_POST['sname']);
+            $sname = stringHandler::removeMagicQuotes($_POST['sname']);
             $sect_id = $bBlog->section_ids_by_name[$sname];
             if($sect_id > 0) {
                 $ph = $bBlog->_ph;
@@ -74,7 +74,7 @@ function admin_plugin_sections_run(&$bBlog) {
         case "Save" :
             $sect_id = $bBlog->sect_by_name[$_POST['sname']];
             if($sect_id < 1) break;
-            $sql = "update ".T_SECTIONS ." set nicename='".StringHandling::clean($_POST['nicename'])."' where sectionid='$sect_id'";
+            $sql = "update ".T_SECTIONS ." set nicename='".stringHandler::clean($_POST['nicename'])."' where sectionid='$sect_id'";
             $bBlog->_adb->Execute($sql);
             break;
         default : // show form

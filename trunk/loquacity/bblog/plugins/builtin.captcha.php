@@ -76,7 +76,7 @@ function save_configuration(&$mc){
     $curr['CAPTCHA_LINES'] = (isset($_POST['captcha_lines'])) ? intval($_POST['captcha_lines']): 70;
     $curr['CAPTCHA_ENABLE_SHADOWS'] = (isset($_POST['captcha_enable_shadows'])) ? 'true': 'false';
     $curr['CAPTCHA_OWNER_TEXT'] = (isset($_POST['captcha_owner_text'])) ? 'true': 'false';
-    $curr['CAPTCHA_CHARACTER_SET'] = (isset($_POST['captcha_character_set'])) ? StringHandling::clean($_POST['captcha_character_set']) : '';
+    $curr['CAPTCHA_CHARACTER_SET'] = (isset($_POST['captcha_character_set'])) ? stringHandler::clean($_POST['captcha_character_set']) : '';
     $curr['CAPTCHA_CASE_INSENSITIVE'] = (isset($_POST['captcha_case_insensitive'])) ? 'true': 'false';
     $curr['CAPTCHA_BACKGROUND'] = (isset($_POST['captcha_background'])) ? $_POST['captcha_background']: '';
     $curr['CAPTCHA_MIN_FONT'] = (isset($_POST['captcha_min_font'])) ? intval($_POST['captcha_min_font']): 16;

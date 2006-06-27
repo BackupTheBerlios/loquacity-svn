@@ -42,7 +42,7 @@
  *
  * @version $Revision$
  */ 
-class StringHandling{
+class stringHandler{
     /**
     * Converts typed links into clickable links
     *
@@ -231,7 +231,7 @@ class StringHandling{
             if (!is_array($data)) {
                 $var = stripslashes($data);
             } else {
-                array_walk($data, array('StringHandling', 'removeMagicQuotes'));
+                array_walk($data, array('stringHandler', 'removeMagicQuotes'));
             }
         }
         return $data;
@@ -252,10 +252,10 @@ class StringHandling{
             if (!is_array($var)) {
                 $clean = strip_tags($var);
             } else {
-                $clean = array_map(array('StringHandling', 'clean'), $var);
+                $clean = array_map(array('stringHandler', 'clean'), $var);
             }
         }
-        return StringHandling::trimWhitespace($clean);
+        return stringHandler::trimWhitespace($clean);
     }
     function removeJs($var){
         if (isset($var)) {
@@ -264,10 +264,10 @@ class StringHandling{
                 $replace = '';
                 $clean = preg_replace($search, $replace, $var);
             } else {
-                $clean = array_map(array('StringHandling', 'removeJs'), $var);
+                $clean = array_map(array('stringHandler', 'removeJs'), $var);
             }
         }
-        return StringHandling::trimWhitespace($clean);
+        return stringHandler::trimWhitespace($clean);
     }
 
     /**
@@ -282,7 +282,7 @@ class StringHandling{
         if (!is_array($str)) {
             $clean = trim($str);
         } else {
-            $clean = array_map(array('StringHandling', 'trimWhitespace'), $var);
+            $clean = array_map(array('stringHandler', 'trimWhitespace'), $var);
         }
         return $clean;
 

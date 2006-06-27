@@ -49,19 +49,19 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && $_SERVER['CONTENT_TYPE'] === 'applic
         $url = explode('/', $_SERVER['REQUEST_URI']);
         $num = count($url);
         if($url[$num - 3] === 'trackback'){ //a comment id is included
-            $post = StringHandling::removeMagicQuotes($url[$num - 2]);
-            $comment = StringHandling::removeMagicQuotes($url[$num - 1]);
+            $post = stringHandler::removeMagicQuotes($url[$num - 2]);
+            $comment = stringHandler::removeMagicQuotes($url[$num - 1]);
         }
         else{
-            $post = StringHandling::removeMagicQuotes($url[$num - 1]);
+            $post = stringHandler::removeMagicQuotes($url[$num - 1]);
         }
     }
     else{
         $url = array();
         parse_str(substr($_SERVER['REQUEST_URI'], strpos($_SERVER['REQUEST_URI'], '?') + 1), $url);
-        $post = StringHandling::removeMagicQuotes($url['tbpost']);
+        $post = stringHandler::removeMagicQuotes($url['tbpost']);
         if(isset($url['cid'])){
-            $comment = StringHandling::removeMagicQuotes($url['cid']);
+            $comment = stringHandler::removeMagicQuotes($url['cid']);
             }
     }
     include_once('lib/trackbackhandler.class.php');

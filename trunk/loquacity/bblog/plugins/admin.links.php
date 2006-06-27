@@ -50,9 +50,9 @@ switch($linkdo) {
 		$maxposition = $bBlog->get_var("select position from ".T_LINKS." order by position desc limit 0,1");
 		$position = $maxposition + 10;
 		$bBlog->_adb->Execute("insert into ".T_LINKS."
-            set nicename='".StringHandling::removeMagicQuotes($_POST['nicename'])."',
-            url='".StringHandling::removeMagicQuotes($_POST['url'])."',
-            category='".StringHandling::removeMagicQuotes($_POST['category'])."',
+            set nicename='".stringHandler::removeMagicQuotes($_POST['nicename'])."',
+            url='".stringHandler::removeMagicQuotes($_POST['url'])."',
+            category='".stringHandler::removeMagicQuotes($_POST['category'])."',
 	    position='$position'");
 		break;
 
@@ -62,9 +62,9 @@ switch($linkdo) {
 
 	case "Save" : // update an existing link
             $bBlog->_adb->Execute("update ".T_LINKS."
-            set nicename='".StringHandling::removeMagicQuotes($_POST['nicename'])."',
-            url='".StringHandling::removeMagicQuotes($_POST['url'])."',
-            category='".StringHandling::removeMagicQuotes($_POST['category'])."'
+            set nicename='".stringHandler::removeMagicQuotes($_POST['nicename'])."',
+            url='".stringHandler::removeMagicQuotes($_POST['url'])."',
+            category='".stringHandler::removeMagicQuotes($_POST['category'])."'
             where linkid=".$_POST['linkid']);
         	break;
 	case "Up" :
@@ -88,7 +88,7 @@ switch($linkdo) {
 switch($catdo) {
 	case "New" :  // add new category
 		$bBlog->_adb->Execute("insert into ".T_CATEGORIES."
-            set name='".StringHandling::removeMagicQuotes($_POST['name'])."'");
+            set name='".stringHandler::removeMagicQuotes($_POST['name'])."'");
 		break;
 
 	case "Delete" : // delete category
@@ -101,7 +101,7 @@ switch($catdo) {
 
 	case "Save" : // update an existing category
             $bBlog->_adb->Execute("update ".T_CATEGORIES."
-            set name='".StringHandling::removeMagicQuotes($_POST['name'])."'
+            set name='".stringHandler::removeMagicQuotes($_POST['name'])."'
             where categoryid=".$_POST['categoryid']);
         	break;
 

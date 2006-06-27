@@ -114,9 +114,9 @@ class trackbackhandler extends commentHandler {
         *   In the interests of spam-blocking, the only hypertext we allow is the
         *   URL of the poster. This is the only deviance from comment handling. This means no URL transformation is performed
         */
-        $vars['title'] = (isset($this->_tbdata['title'])) ? (StringHandling::clean($this->_tbdata['title'])) : '';
-        $vars['commenttext'] = (isset($this->_tbdata['excerpt'])) ? (StringHandling::clean($this->_tbdata['excerpt'])) : '';
-        $vars['postername'] = (isset($this->_tbdata['blog_name'])) ? (StringHandling::clean($this->_tbdata['blog_name'])) : '';
+        $vars['title'] = (isset($this->_tbdata['title'])) ? (stringHandler::clean($this->_tbdata['title'])) : '';
+        $vars['commenttext'] = (isset($this->_tbdata['excerpt'])) ? (stringHandler::clean($this->_tbdata['excerpt'])) : '';
+        $vars['postername'] = (isset($this->_tbdata['blog_name'])) ? (stringHandler::clean($this->_tbdata['blog_name'])) : '';
         $vars['posttime'] = time();
         $vars['ip'] = $this->_ip;
         $vars['postid'] = $this->_post;
@@ -127,7 +127,7 @@ class trackbackhandler extends commentHandler {
         * Added check for moderation.
         * Follow the same rules as for comments
         */
-        $vars['commenttext'] = StringHandling::clean(($vars['commenttext']));
+        $vars['commenttext'] = stringHandler::clean(($vars['commenttext']));
         $vars['onhold'] = ($this->needsModeration($vars['commenttext'])) ? 1 : 0;
         $vars['type'] = 'trackback';
         return $vars;

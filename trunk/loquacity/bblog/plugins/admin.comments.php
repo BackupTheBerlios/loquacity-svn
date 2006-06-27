@@ -105,11 +105,11 @@ function saveEdit(&$bBlog){
   $rval = true;
   if(!(is_numeric($_POST['commentid'])))
     $rval = false;
-  $title = StringHandling::clean($_POST['title']);
-  $author = StringHandling::clean($_POST['author']);
-  $email  = StringHandling::clean($_POST['email']);
-  $websiteurl = StringHandling::clean($_POST['websiteurl']);
-  $body = StringHandling::clean($_POST['body']);
+  $title = stringHandler::clean($_POST['title']);
+  $author = stringHandler::clean($_POST['author']);
+  $email  = stringHandler::clean($_POST['email']);
+  $websiteurl = stringHandler::clean($_POST['websiteurl']);
+  $body = stringHandler::clean($_POST['body']);
   if($rval === true){
     $q = "update ".T_COMMENTS." set title='$title', postername='$author', posterwebsite='$websiteurl', posteremail='$email', commenttext='$body' where commentid='{$_POST['commentid']}'";
     if($bBlog->_adb->Execute($q) === true)

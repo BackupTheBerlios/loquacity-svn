@@ -61,7 +61,7 @@ define('SMARTY_DIR', BBLOGROOT.'3rdparty/smarty/libs/');
 // include  needed files
 include_once(SMARTY_DIR.'Smarty.class.php');
 include_once('3rdparty/adodb/adodb.inc.php');
-include_once('includes/stringhandling.class.php');
+include_once('includes/stringhandler.class.php');
 include_once('includes/confighandler.class.php');
 include_once('includes/posthandler.class.php');
 include_once('includes/commenthandler.class.php');
