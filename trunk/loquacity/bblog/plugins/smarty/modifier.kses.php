@@ -1,30 +1,38 @@
 <?php
+/**
+ * Loquacity - A web blogging application with simplicity in mind - http://www.loquacity.info/
+ * Copyright (c) 2006 Kenneth Power
+ *
+ * @package Loquacity
+ * @subpackage Plugins
+ * @author Ulf Harnhammar - metaur at users dot sourceforge dot net
+ * @copyright &copy; 2002, 2003  Ulf Harnhammar - http://sourceforge.net/projects/kses - metaur at users dot sourceforge dot net
+ * @license    http://www.gnu.org/licenses/gpl.html GPL
+ * @link http://www.loquacity.info
+ * @since 0.8-alpha1
+ *
+ * LICENSE:
+ *
+ * This file is part of Loquacity.
+ *
+ * Loquacity is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * Loquacity is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Loquacity; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ */
 
-# kses 0.2.1 - HTML/XHTML filter that only allows some elements and attributes
-# Copyright (C) 2002, 2003  Ulf Harnhammar
-#
-# This program is free software and open source software; you can redistribute
-# it and/or modify it under the terms of the GNU General Public License as
-# published by the Free Software Foundation; either version 2 of the License,
-# or (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful, but WITHOUT
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-# more details.
-#
-# You should have received a copy of the GNU General Public License along
-# with this program; if not, write to the Free Software Foundation, Inc.,
-# 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA  or visit
-# http://www.gnu.org/licenses/gpl.html
-#
-# *** CONTACT INFORMATION ***
-#
-# E-mail:      metaur at users dot sourceforge dot net
-# Web page:    http://sourceforge.net/projects/kses
-# Paper mail:  (not at the moment)
-#
-# [kses strips evil scripts!]
+/**
+ * kses 0.2.1 - HTML/XHTML filter that only allows some elements and attributes
+ */
 
 function identify_modifier_kses () {
     return array (

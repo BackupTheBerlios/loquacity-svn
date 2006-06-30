@@ -1,13 +1,47 @@
-<?php // bBlog Plugin : referers.
-// function.referers.php - Show ( and log ) recent referers
-// based on code by nathan@ncyoung.com
-// usage:
-// in a page template : {referers}.
-// To seperate links other than the default <br> : {referers sep=" | "} to seperate by pipe
-// other paramaters :
-// {referers pages="all"} show referers for all pages.
-//  ( the default is to just show the referers for the current page }
-//
+<?php
+/**
+ * Loquacity - A web blogging application with simplicity in mind - http://www.loquacity.info/
+ * Copyright (c) 2006 Kenneth Power
+ *
+ * @package Loquacity
+ * @subpackage Plugins
+ * @author nathan@ncyoung.com
+ * @copyright &copy; 2003  nathan@ncyoung.com
+ * @license    http://www.gnu.org/licenses/gpl.html GPL
+ * @link http://www.loquacity.info
+ * @since 0.8-alpha1
+ *
+ * LICENSE:
+ *
+ * This file is part of Loquacity.
+ *
+ * Loquacity is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * Loquacity is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Loquacity; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ */
+ 
+/**
+ * bBlog Plugin : referers.
+ * function.referers.php - Show ( and log ) recent referers
+ * based on code by nathan@ncyoung.com
+ * usage:
+ * in a page template : {referers}.
+ * To seperate links other than the default <br> : {referers sep=" | "} to seperate by pipe
+ * other paramaters :
+ * {referers pages="all"} show referers for all pages.
+ * ( the default is to just show the referers for the current page }
+ */
+ 
 function identify_function_referers () {
 $help = '
 <p>Referers is a Smarty function to be used in templates that captures and lists referers to the current page.
