@@ -1,7 +1,17 @@
 <?php
-/*
- * Loquacity Weblog http://www.loquacity.info/
- * Copyright (C) 2006 Kenneth Power <telcor@users.berlios.de>
+/**
+ * Loquacity - A web blogging application with simplicity in mind - http://www.loquacity.info/
+ * Copyright (c) 2006 Kenneth Power
+ *
+ * @package Loquacity
+ * @subpackage Plugins
+ * @author Kenneth Power <telcor@users.berlios.de>
+ * @copyright &copy; 2006 Kenneth Power
+ * @license    http://www.gnu.org/licenses/gpl.html GPL
+ * @link http://www.loquacity.info
+ * @since 0.8-alpha1
+ *
+ * LICENSE:
  *
  * This file is part of Loquacity.
  *
@@ -17,7 +27,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with Loquacity; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 function identify_admin_captcha(){
     return array (

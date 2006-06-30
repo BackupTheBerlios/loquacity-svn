@@ -1,6 +1,17 @@
 <?php
-/* Loquacity - A web blogging application with simplicity in mind - http://www.loquacity.info/
- * Copyright (C) 2006 Kenneth Power <telcor@users.berlios.de>
+/**
+ * Loquacity - A web blogging application with simplicity in mind - http://www.loquacity.info/
+ * Copyright (c) 2006 Kenneth Power
+ *
+ * @package Loquacity
+ * @subpackage Plugins
+ * @author Kenneth Power <telcor@users.berlios.de>
+ * @copyright &copy; 2006 Kenneth Power
+ * @license    http://www.gnu.org/licenses/gpl.html GPL
+ * @link http://www.loquacity.info
+ * @since 0.8-alpha1
+ *
+ * LICENSE:
  *
  * This file is part of Loquacity.
  *
