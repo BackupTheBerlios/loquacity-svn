@@ -7,7 +7,7 @@
  * @subpackage Comments
  * @author Kenneth Power <telcor@users.berlios.de>, Demian Turner
  * @copyright &copy; 2006 Kenneth Power, Demian Turner
- * @license    http://www.opensource.org/licenses/lgpl-license.php GPL
+ * @license    http://www.gnu.org/licenses/gpl.html GPL
  * @link http://www.loquacity.info
  * @since 0.8-alpha2
  *
