@@ -87,7 +87,7 @@ function smarty_function_getrecentposts($params, &$bBlog) {
 	$opt['home'] = $params['home'];
 
     
-    $ar['posts'] = $bBlog->ph->get_posts($opt);
+    $ar['posts'] = $bBlog->_ph->get_posts($opt);
         
 	// No posts.
   if(!is_array($ar['posts'])) {
