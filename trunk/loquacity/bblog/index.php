@@ -43,9 +43,9 @@ define('IN_BBLOG_ADMIN',TRUE);
 // include the config and main code
 include_once("config.php");
 
-include_once('lib/charsets.php');
+include_once('includes/charsets.php');
 
-include_once('lib/taglines.php');
+include_once('includes/taglines.php');
 // default title
 $title = 'Admin';
 
@@ -54,7 +54,7 @@ $bBlog->setmodifytime(time());
 
 $bBlog->assign_by_ref('title',$title);
 // we will store the rss templates in the inc/admin_templates dir, becasue almost noone will need to change them, - reduce clutter in the templates/* directory.
-$bBlog->template_dir = BBLOGROOT.'lib/admin_templates';
+$bBlog->template_dir = BBLOGROOT.'includes/admin_templates';
 $bBlog->compile_id = 'admin';
 
 
