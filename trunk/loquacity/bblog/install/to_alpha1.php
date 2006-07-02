@@ -8,7 +8,7 @@
  * @subpackage Installer 
  * @author Stan <lqc_stan@users.berlios.de> 
  * @copyright &copy; 2006 Stanley Schade 
- * @license    http://www.opensource.org/licenses/lgpl-license.php GPL 
+ * @license    http://www.gnu.org/licenses/gpl.html GPL 
  * @link http://www.loquacity.info 
  * @since 0.8-alpha2 
  * 
@@ -39,6 +39,6 @@
 
 include('../config.php'); 
 $tmpdb = NewADOConnection('mysql://'.DB_USERNAME.':'.DB_PASSWORD.'@'.DB_HOST.'/'.DB_DATABASE.'?persist'); 
-$sql = "INSERT INTO '.T_CONFIG.' VALUES (null,'CAPTCHA_ENABLE','false'), (null,'CAPTCHA_WIDTH','200'),  (null,'CAPTCHA_HEIGHT','50'), (null,'CAPTCHA_CHARACTERS','5'),  (null,'CAPTCHA_LINES','70'),  (null,'CAPTCHA_ENABLE_SHADOWS','false'), (null,'CAPTCHA_OWNER_TEXT','false'), (null,'CAPTCHA_CHARACTER_SET','A-Z'), (null,'CAPTCHA_CASE_INSENSITIVE','false'), (null,'CAPTCHA_BACKGROUND',''), (null,'CAPTCHA_MIN_FONT','16'), (null,'CAPTCHA_MAX_FONT','25'), (null,'CAPTCHA_USE_COLOR','false'), (null,'CAPTCHA_GRAPHIC_TYPE','jpg')"; 
+$sql = "INSERT INTO ".T_CONFIG." VALUES (null,'CAPTCHA_ENABLE','false'), (null,'CAPTCHA_WIDTH','200'),  (null,'CAPTCHA_HEIGHT','50'), (null,'CAPTCHA_CHARACTERS','5'),  (null,'CAPTCHA_LINES','70'),  (null,'CAPTCHA_ENABLE_SHADOWS','false'), (null,'CAPTCHA_OWNER_TEXT','false'), (null,'CAPTCHA_CHARACTER_SET','A-Z'), (null,'CAPTCHA_CASE_INSENSITIVE','false'), (null,'CAPTCHA_BACKGROUND',''), (null,'CAPTCHA_MIN_FONT','16'), (null,'CAPTCHA_MAX_FONT','25'), (null,'CAPTCHA_USE_COLOR','false'), (null,'CAPTCHA_GRAPHIC_TYPE','jpg')"; 
 $tmpdb->Execute($sql);
 ?>

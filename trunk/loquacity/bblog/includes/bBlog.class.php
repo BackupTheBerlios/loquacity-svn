@@ -74,7 +74,7 @@ class bBlog extends Smarty {
         if(!session_id()) {
 	  	    session_start();
 	    }
-        $this->_ph =& new postHandler(&$this->_adb);
+        $this->_ph =& new postHandler($this->_adb);
         Smarty::Smarty();
 	} // end of function bBlog
     /**
