@@ -30,26 +30,37 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 function identify_function_email () {
-$help = 'usage: <br/>
-        {email email=\'somone@example.com\' name=\'john doe\'} <br/>
-        or just<br/>
-        {email email=\'somone@example.com\'} <br/>';
+    $help = '
+            <dl>
+                <dt>usage:</dt>
+                    <dd>{email email=\'somone@example.com\' name=\'john doe\'}</dd>
+                <dt>or just</dt>
+                    <dd>{email email=\'somone@example.com\'}</dd>
+            </dl>';
 
-  return array (
-    'name'           =>'email',
-    'type'             =>'function',
-    'nicename'     =>'Email',
-    'description'   =>'encodes email addresses to get rid of spam bots',
-    'authors'        =>'Tobias Schlottke <tschlottke@virtualminds.de>',
-    'licence'         =>'GPL',
-    'help'   => $help
-  );
+    return array (
+        'name'           =>'email',
+        'type'             =>'function',
+        'nicename'     =>'Email',
+        'description'   =>'encodes email addresses to get rid of spam bots',
+        'authors'        =>'Tobias Schlottke <tschlottke@virtualminds.de>',
+        'licence'         =>'GPL',
+        'help'   => $help
+    );
 }
+/**
+ * Obfuscate (munge, mangle) email addresses for display
+ * 
+ * The munging is done by converting the ascii to hexadecimal. This function relies upon
+ * Javascript in order to function client-side. Without javascript, one does not get a mailto hyperlink
+ * 
+ * @param array $params Consists of the following key=>value pairs
+ *      $name string Optional. The display name, such as Tobias Schlottke
+ *      $email string The email address to munge
+ */
 function smarty_function_email($params, &$bBlog) {
-
-    extract($params);
-    if(!$name) $name = str_replace("."," dot ",str_replace("@"," at ",$email));
-    $email = preg_replace("/\"/","\\\"",$email);
+    $name = (isset($params['name'])) ? $params['name'] : str_replace("."," dot ",str_replace("@"," at ",$email)); 
+    $email = preg_replace("/\"/","\\\"",$params['email']);
     $old = "document.write('<a href=\"mailto:$email\">$name</a>')";
 
     $output = "";
@@ -59,4 +70,4 @@ function smarty_function_email($params, &$bBlog) {
 
     echo "<script language=\"JavaScript\" type=\"text/javascript\">eval(unescape('".$output."'))</script>";
 }
-
+?>

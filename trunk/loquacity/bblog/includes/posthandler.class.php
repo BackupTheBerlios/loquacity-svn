@@ -120,10 +120,10 @@ class posthandler {
                 }
             }
             else
-                return array(array("title"=>"No posts found"));
+                return array("title"=>"No posts found");
         }
         else{
-            return array(array("title"=>"No selection cirteria supplied"));
+            return array("title"=>"No selection cirteria supplied");
         }
     }
 

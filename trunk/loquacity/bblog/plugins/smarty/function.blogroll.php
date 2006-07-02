@@ -11,6 +11,9 @@
  * @link http://www.loquacity.info
  * @since 0.8-alpha1
  *
+ * TODO: Simplify this
+ * TODO: Look for and remove redundancy
+ * 
  * LICENSE:
  *
  * This file is part of Loquacity.
@@ -35,37 +38,37 @@
  */
 
 function identify_function_blogroll () {
-$help = '
-<p>blogroll!
-<p>Based on phpblogroll by phil ringnalda - http://philringnalda.com/phpblogroll/
-<p>You will need a blogroll account from <a href="http://www.blo.gs">blo.gs</a> to use this.
-<p>Make sure bblog/compiled_templates/favorites.xml is writable by the webserver.
-<p>Sign up at blo.gs and then add your favorites to your favorites list (you\'ll be happier
- if you use a decent browser, since Opera/Mozilla will show a cute little plus in a
- circle for things you haven\'t added, and an x in a circle for things you\'ve already added,
- while IE will show a square box if it\'s added and "&oplus" if it isn\'t.
-
-Once you\'ve added your favorites to your list, click "settings" and check the box to make your
-list of favorites public. Save your settings, go back to the home page, and click "share".
-Down at the bottom of the page is a list of links to favorites in three flavors.
-Right click the "favorites.xml" and select "save target as" to save a copy of
-favorites.xml on your computer (you only have to save and upload it once <b>into compiled_templates</b>
-to prime the pump - after that it\'s automatic).
-While you are there, make a note of the number in the url,
-which is your user number - you\'ll need it.
-
-<p>Once you have uploaded your favorites.xml into bblog/compiled_templates and chmod 777\'d it you
-can put {blogroll userid=1234} in your template. Your userid being you blo.gs userid.';
-
-return array (
-    'name'           =>'blogroll',
-    'type'             =>'function',
-    'nicename'     =>'Blogroll',
-    'description'   =>'Displays a blo.gs blogroll',
-    'authors'        =>'phil ringnalda',
-    'licence'         =>'Free',
-    'help'   => $help
-  );
+    $help = '
+    <h2>blogroll!</h2>
+    <p>Based on phpblogroll by phil ringnalda - http://philringnalda.com/phpblogroll/</p>
+    <p>You will need a blogroll account from <a href="http://www.blo.gs">blo.gs</a> to use this.</p>
+    <p>Make sure bblog/compiled_templates/favorites.xml is writable by the webserver.</p>
+    <p>Sign up at blo.gs and then add your favorites to your favorites list (you\'ll be happier
+     if you use a decent browser, since Opera/Mozilla will show a cute little plus in a
+     circle for things you haven\'t added, and an x in a circle for things you\'ve already added,
+     while IE will show a square box if it\'s added and "&oplus" if it isn\'t.</p>
+    
+    <p>Once you\'ve added your favorites to your list, click "settings" and check the box to make your
+    list of favorites public. Save your settings, go back to the home page, and click "share".
+    Down at the bottom of the page is a list of links to favorites in three flavors.
+    Right click the "favorites.xml" and select "save target as" to save a copy of
+    favorites.xml on your computer (you only have to save and upload it once <b>into compiled_templates</b>
+    to prime the pump - after that it\'s automatic).</p>
+    <p>While you are there, make a note of the number in the url,
+    which is your user number - you\'ll need it.</p>
+    
+    <p>Once you have uploaded your favorites.xml into bblog/compiled_templates and chmod 777\'d it, you
+    can put {blogroll userid=1234} in your template. Your userid being your blo.gs userid.</p>';
+    
+    return array (
+        'name'           =>'blogroll',
+        'type'             =>'function',
+        'nicename'     =>'Blogroll',
+        'description'   =>'Displays a blo.gs blogroll',
+        'authors'        =>'phil ringnalda',
+        'licence'         =>'Free',
+        'help'   => $help
+      );
 }
 
 
@@ -75,8 +78,8 @@ function smarty_function_blogroll($params,&$bBlog) {
     global $blogroll_close_tags;
     global $blogroll_html_header, $blogroll_html_footer;
 
-    if(is_numeric($params['userid'])) $userid = $params['userid'];
-      else return "<p>You need to set your blo.gs user id like : {blogroll userid=1234}";
+    if(is_numeric($params['userid'])) $userid = intval($params['userid']);
+    else return "<p>You need to set your blo.gs user id like : {blogroll userid=1234}</p>";
     ob_start();
 ?>
 <script type="text/javascript">
@@ -234,4 +237,4 @@ function blogrollWriteLinks(){
 
 
 
-?> 
+?>

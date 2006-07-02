@@ -102,8 +102,7 @@ function smarty_function_referers($params, &$bBlog) {
 }
 
 
-function tolist($array)
-{
+function tolist($array){
   $ret="<ul>";
 
   foreach ($array as $elem)

@@ -34,40 +34,69 @@
  * Build Archive Months Listing 
  */
 
-function identify_function_archivemonths() {
-return array("name" => "archivemonths",
-"type" => "function",
-"nicename" => "Archive Month Listing",
-"description" => "Generates a list of archive months",
-"authors" => "c.boulton@mybboard.com");
+function identify_function_archivemonths(){
+    return array(
+        "name" => "archivemonths",
+        "type" => "function",
+        "nicename" => "Archive Month Listing",
+        "description" => "Generates a list of archive months",
+        "authors" => "c.boulton@mybboard.com, Kenneth Power <telcor@users.berlios.de>",
+        'license' => 'GPL'
+    );
 }
+
+/**
+ * Produces a list of months containing posts for easy access.
+ * 
+ * The list produced is of the following format:
+ *     month year (posts)
+ * 
+ * Where month is the full string representing the month in the blog primary language,
+ * year is the full four digit gregorian year and posts is the number of posts total for
+ * that month. Each entry is on its own line and the months begin with current - 1
+ * 
+ * This is an HTML GUI function, returning data in HTML markup for placement on your
+ * template.
+ * 
+ * @param array $params A list of parameters that define the behavior and look of the
+ *              resulting list. Currently the array recognizes the following:
+ *              sep        => When not in HTML list mode, specifies the HTML tag used to separate list items. If nothing is specified, and we are not in HTML list mode, this defaults to <br />
+ *              showcount  => 0 or 1 (false or true) When set to false, do not display (posts) as part of the list entry
+ *              year       => If four digit year is specified, only show months for the given year
+ *              num        => Show at most `num` list items
+ *              aslist     => Switches formating to HTML list mode. This produces a list in unordered list markup (<ul>)
+ */
 function smarty_function_archivemonths($params, &$bBlog) {
-$num = 10;
-$sep = "<br />";
-$year = "";
-$showcount = 0;
-extract($params);
-if($year) {
-$where = " AND YEAR(FROM_UNIXTIME(posttime)) = '$year'";
+    $sep = (isset($params['sep'])) ? $params['sep'] : "<br />";
+    $list = (isset($params['aslist'])) ? true : false;
+    $showcount = (isset($params['showcount'])) ? intval($params['showcount']) : 0;
+    $where = (isset($params['year'])) ? ' AND YEAR(FROM_UNIXTIME(posttime)) = "'.intval($params['year']).'"' : '';
+    $limit = 'limit 0, ' . (isset($params['num'])) ? inval($params['num']) : 10;
+    
+    $rs = $bBlog->_adb->Execute("SELECT DISTINCT YEAR(FROM_UNIXTIME(posttime)) AS `year`, DATE_FORMAT(FROM_UNIXTIME(posttime), '%m') AS `month`, COUNT(postid) AS `posts` FROM `".T_POSTS."` $where GROUP BY `year`, `month` ORDER BY posttime DESC $limit;");
+    if($rs && !$rs->EOF){
+        if($list)
+            $monthslist = '<ul>';
+        while($row = $rs->FetchRow()){
+            if($list)
+                $monthslist .= '<li>';
+            $monthslist .= '<a href="archives.php?month='.$month['month'].'&year='.$month['year'].'">'.getmonthfriendlyname($month['month']). $month['year'].'</a>';
+            if($showcount) {
+                $monthslist .= ' <em>'.$month['posts'].'</em>';
+            }
+            if($list)
+                $monthslist .= '<li>';
+            else
+                $monthslist .= $sep;
+        }
+        if($list)
+            $monthslist .='</ul>';
+    }
+    return $monthslist;
 }
-if($num) {
-$num = " LIMIT 0, $num";
-}
-$query = mysql_query("SELECT DISTINCT YEAR(FROM_UNIXTIME(posttime)) AS year, MONTH(FROM_UNIXTIME(posttime)) AS month, COUNT(postid) AS posts FROM ".T_POSTS." $where GROUP BY YEAR(FROM_UNIXTIME(posttime)), MONTH(FROM_UNIXTIME(posttime)) ORDER BY posttime DESC $limit;");
-while($month = mysql_fetch_array($query)) {
-if($month[month] < 10) {
-$month[month] = "0$month[month]";
-}
-$monthslist .= "<a href=\"archives.php?month=$month[month]&year=$month[year]\">".getmonthfriendlyname($month[month])." $month[year]</a> ";
-if($showcount) {
-$monthslist .= " <i>$month[posts]</i>";
-}
-$monthslist .= "$sep";
-}
-return $monthslist;
-}
+
 function getmonthfriendlyname($month) {
-$tstamp = mktime(0, 0, 0, $month);
-return date("F", $tstamp);
+    $tstamp = mktime(0, 0, 0, $month);
+    return strftime('%m', $tstamp);
 }
 ?>

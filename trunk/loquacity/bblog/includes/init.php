@@ -55,6 +55,8 @@ define('T_RSS',TBL_PREFIX.'rss');
 
 // prevent errors when _open_basedir is set
 #ini_set('include_path','./:../');
+$cur_path = ini_get('include_path');
+ini_set('include_path', BBLOGROOT.':'.$cur_path);
 
 define('SMARTY_DIR', BBLOGROOT.'3rdparty/smarty/libs/');
 

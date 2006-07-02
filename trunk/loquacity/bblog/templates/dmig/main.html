@@ -1,13 +1,13 @@
 {foreach from=$posts item=post}
 <div class="blogbody">
-<div class="box1">
-	<h2 class="title"><a href="{$post.permalink}">{$post.title}</a></h2>
-</div><!-- .box1 -->	
-
-<div class="box1" style="padding: 0px;">
-	<h3 class="date">{$post.author.fullname} | {$post.posttime|date_format:s2}</h3>
-</div>
- 
+    <div class="box1">
+    	<h2 class="title"><a href="{$post.permalink}">{$post.title}</a></h2>
+    </div><!-- .box1 -->	
+    
+    <div class="box1" style="padding: 0px;">
+    	<h3 class="date">{$post.author.fullname} | {$post.posttime|date_format:s2}</h3>
+    </div>
+    {referers}
 	<div class="box2">
 		{$post.body}
 	</div><!-- .box2 -->
