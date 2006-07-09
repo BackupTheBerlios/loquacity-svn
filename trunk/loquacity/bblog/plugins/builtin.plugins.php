@@ -76,7 +76,7 @@ function scan_for_plugins () {
     $type = $far[0];
     $name = $far[1];
     if($type != 'builtin') {
-       include_once './bBlog_plugins/'.$plugin_file;
+       include_once './plugins/'.$plugin_file;
        $func = 'identify_'.$type.'_'.$name;
        if(function_exists($func)) {
                 $newplugin = $func();

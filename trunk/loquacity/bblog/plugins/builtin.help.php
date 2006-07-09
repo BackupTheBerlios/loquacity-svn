@@ -43,7 +43,7 @@ if(is_numeric($_GET['pid']) or strlen($_GET['mod'])>0) {
     $bBlog->assign('pluginhelp',TRUE);
 	if($_GET['mod']){
         $pluginrow = array();
-        $rs = $bBlog->adb->Execute("select * from ".T_PLUGINS." where name='".$_GET['mod']."' and type='modifier'");
+        $rs = $bBlog->_adb->Execute("select * from ".T_PLUGINS." where name='".$_GET['mod']."' and type='modifier'");
         if($rs !== false && !$rs->EOF){
             $pluginrow = $rs->FetchRow();
         }

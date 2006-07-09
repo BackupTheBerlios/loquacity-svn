@@ -40,7 +40,7 @@ function identify_admin_captcha(){
     );
 }
 
-include_once('lib/manageCaptcha.class.php');
+include_once('includes/manageCaptcha.class.php');
 $bBlog->assign('form_type','edit');
 
 $mc = new manageCaptcha($bBlog->_adb);
