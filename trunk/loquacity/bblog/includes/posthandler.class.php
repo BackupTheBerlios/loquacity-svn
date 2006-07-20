@@ -109,15 +109,11 @@ class posthandler {
         if(is_array($crit)){
             $rs = $this->_db->Execute($this->make_post_query($crit));
             if($rs !== false && !$rs->EOF){
-                if($raw)
-                    return $rs;
-                else {
-                    $finalposts = array();
-                    while($post = $rs->FetchRow()){
-                             $finalposts[] = $this->prep_post($post);
-                    }
-                    return $finalposts;
+                $posts = array();
+                while($p = $rs->FetchRow()){
+                    $posts[] = $this->get_post($p['postid'], false, $raw);
                 }
+                return $posts;
             }
             else
                 return array("title"=>"No posts found");
@@ -176,20 +172,18 @@ class posthandler {
              default: $npost['commenttext'] = $post['NUMCOMMENTS'] ." comments"; break;
         }
         $npost['commentcount'] = $post['NUMCOMMENTS'];
+        //TODO move this to a section module
         if($post['sections'] != '') {
-              // we are assuming that there is at least one section
-              // becasue you shouldnt' have ":" or something in there !
-              $tmp_sec_ar = explode(":",$post['sections']);
-              foreach ($tmp_sec_ar as $tmp_sec) {
-              // Make sure it isn't the empty section at
-              // the beginning and end of each section list.
-                  if($tmp_sec != '') {
-                  // Populate Sections Array
-                          $npost['sections'][] = array(
-                                            "id"=>$tmp_sec,
-                                            "name"=>$this->sect_by_id[$tmp_sec],
-                                            "nicename"=>$this->sect_nicename[$tmp_sec],
-                                            "url"=>$this->sect_url[$tmp_sec]);
+            //Transform the 'list' of sections into an array for use in a SQL statement
+              $tmp_sec_ar = explode(":",trim($post['sections']));
+              array_shift($tmp_sec_ar);
+              array_pop($tmp_sec_ar);
+              $sect = join(',', $tmp_sec_ar);
+              $sql = 'SELECT * FROM `'.T_SECTIONS.'` WHERE sectionid IN ('.$sect.')';
+              $rs = $this->_db->Execute($sql);
+              if($rs){
+                  while($section = $rs->FetchRow()){
+                      $npost['sections'][] = array('id' => $section['sectionid'], 'nicename' => $section['nicename'], 'url' => $section['url']);
                   }
               }
         }
@@ -218,7 +212,7 @@ class posthandler {
         $postid         = FALSE;
         $wherestart     = " WHERE status='live' ";
         $where          = "";
-        $order          = " ORDER BY posttime desc ";
+        $order          = " ORDER BY posts.posttime desc ";
         $what           = "*";
 
         // overwrite the above defaults with options from the $params array
@@ -238,7 +232,8 @@ class posthandler {
         if ((isset($sectionid)) && ($sectionid != FALSE))   $where .= " AND sections like '%:$sectionid:%' ";
 
         if($home) $where .= " AND hidefromhome=0 ";
-        $q = "SELECT posts.$what, authors.nickname, authors.email, authors.fullname, COUNT(`comments`.`commentid`) AS NUMCOMMENTS FROM ".T_POSTS." AS posts LEFT JOIN ".T_AUTHORS." AS authors ON posts.ownerid = authors.id LEFT JOIN `".T_COMMENTS."` as comments ON posts.postid = comments.postid $wherestart $where GROUP BY posts.postid $order $limit";
+        //$q = "SELECT posts.$what, authors.nickname, authors.email, authors.fullname, COUNT(`comments`.`commentid`) AS NUMCOMMENTS FROM ".T_POSTS." AS posts LEFT JOIN ".T_AUTHORS." AS authors ON posts.ownerid = authors.id LEFT JOIN `".T_COMMENTS."` as comments ON posts.postid = comments.postid $wherestart $where GROUP BY posts.postid $order $limit";
+        $q = "SELECT posts.postid FROM ".T_POSTS." AS posts LEFT JOIN ".T_AUTHORS." AS authors ON posts.ownerid = authors.id LEFT JOIN `".T_COMMENTS."` as comments ON posts.postid = comments.postid $wherestart $where GROUP BY posts.postid $order $limit";
         return $q;
     }
 
@@ -260,8 +255,6 @@ class posthandler {
             $draft_q = "AND posts.status='live' ";
         else
             $draft_q = '';
-
-
         $q = "SELECT posts.*, authors.nickname, authors.email, authors.fullname FROM ".T_POSTS." AS posts LEFT JOIN ".T_AUTHORS." AS authors ON posts.ownerid = authors.id WHERE posts.postid='$postid' $draft_q LIMIT 0,1";
         $post = $this->_db->GetRow($q);
         if($raw)
