@@ -90,16 +90,16 @@ function admin_plugin_comments_run(&$bBlog) {
 
 function deleteComment(&$bBlog, $id){
   $id = intval($id);
-  $postid = $bBlog->get_var('select postid from '.T_COMMENTS.' where commentid="'.$id.'"');
-  $childcount = $bBlog->get_var('select count(*) as c from '.T_COMMENTS .' where parentid="'.$id.'" group by commentid');
+  $postid = $bBlog->_adb->GetOne('select postid from '.T_COMMENTS.' where commentid="'.$id.'"');
+  $childcount = $bBlog->_adb->GetOne('select count(*) as c from '.T_COMMENTS .' where parentid="'.$id.'" group by commentid');
   if($childcount > 0) { // there are replies to the comment so we can't delete it.
     $bBlog->_adb->Execute('update '.T_COMMENTS.' set deleted="true", postername="", posteremail="", posterwebsite="", pubemail=0, pubwebsite=0, commenttext="Deleted Comment" where commentid="'.$id.'"');
   } else { // just delete the comment
     $bBlog->_adb->Execute('delete from '.T_COMMENTS.' where commentid="'.$id.'"');
   }
-  $newnumcomments = $bBlog->get_var('SELECT count(*) as c FROM '.T_COMMENTS.' WHERE postid="'.$postid.'" and deleted="false" group by postid');
+  $newnumcomments = $bBlog->_adb->GetOne('SELECT count(*) as c FROM '.T_COMMENTS.' WHERE postid="'.$postid.'" and deleted="false" group by postid');
   $bBlog->_adb->Execute('update '.T_POSTS.' set commentcount="'.$newnumcomments.'" where postid="'.$postid.'"');
-  $bBlog->modifiednow();
+  //$bBlog->modifiednow();
 }
 
 function editComment(&$bBlog, $commentid, $postid){
