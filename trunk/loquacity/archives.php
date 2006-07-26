@@ -35,9 +35,10 @@ include "bblog/config.php";
 // xushi: This fix is so that the archives.html in
 // kubrik and relaxation displays only the required
 // month, and not all posts.
-$bBlog->assign('year',$_GET['year']);
-$bBlog->assign('month',$_GET['month']);
-$bBlog->assign('day',$_GET['day']);
+// stan: Check if the variables exist, before assigning them.
+if (isset($_GET['year'])) $bBlog->assign('year',$_GET['year']);
+if (isset($_GET['year'])) $bBlog->assign('month',$_GET['month']);
+if (isset($_GET['year'])) $bBlog->assign('day',$_GET['day']);
 
 // Move on to the template's archive
 $bBlog->display('archives.html');
