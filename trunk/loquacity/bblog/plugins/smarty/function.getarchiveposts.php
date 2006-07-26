@@ -124,7 +124,7 @@ function smarty_function_getarchiveposts($params, &$bBlog) {
 		$opt['sectionid'] = $bBlog->sect_by_name[$params['section']];
 	}
 
-  $ar['posts'] = $bBlog->get_posts($opt);
+  $ar['posts'] = $bBlog->_ph->get_posts($opt);
         
 	// No posts.
   if(!is_array($ar['posts'])) {
