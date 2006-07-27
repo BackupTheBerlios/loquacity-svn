@@ -1,0 +1,33 @@
+{assign var=title value="$blogname :: Archives"}
+{assign var=pagetitle value="`$blogname` :: Archives"}
+{include file="header.html"}
+    <div id="contentBox">
+      <div id="googleAds">
+        <script type="text/javascript"><!--
+          google_ad_client = "pub-8450313379584078";
+          google_alternate_color = "CCCCCC";
+          google_ad_width = 468;
+          google_ad_height = 60;
+          google_ad_format = "468x60_as";
+          google_ad_channel ="";
+          google_ad_type = "text";
+          google_color_border = "CCCCCC";
+          google_color_bg = "FFFFFF";
+          google_color_link = "000000";
+          google_color_url = "666666";
+          google_color_text = "333333";
+        //--></script>
+        <script type="text/javascript"
+          src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+        </script>
+      </div>
+      {getarchiveposts assign=archives}
+      {foreach from=$archives item=archive}
+      <div class="article">
+          {if $archive.newmonth}
+          <h2>Posts for {$archive.posttime|date_format:'F of Y'}</h1>
+          {/if}
+          <h4>{$archive.posttime|date_format:"j<\s\u\p>S</\s\u\p>"} <a href="{$archive.permalink}">{$archive.title}</a></h4>
+       </div>
+      {/foreach}
+    {include file="footer.html"}

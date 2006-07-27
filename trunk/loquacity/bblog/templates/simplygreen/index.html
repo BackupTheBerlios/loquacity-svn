@@ -1,0 +1,49 @@
+{$sectionname}
+{assign var=title value=$blogname}
+{assign var=pagetitle value="$blogname}
+{include file="header.html"}
+        <div id="contentBox">
+            <div id="googleAds">
+                <script type="text/javascript"><!--
+                    google_ad_client = "pub-8450313379584078";
+                    google_alternate_color = "CCCCCC";
+                    google_ad_width = 468;
+                    google_ad_height = 60;
+                    google_ad_format = "468x60_as";
+                    google_ad_channel ="";
+                    google_ad_type = "text";
+                    google_color_border = "CCCCCC";
+                    google_color_bg = "FFFFFF";
+                    google_color_link = "000000";
+                    google_color_url = "666666";
+                    google_color_text = "333333";
+                //--></script>
+                <script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js"></script>
+            </div>
+            {getposts num=10 assign=posts home=true}
+            <h2>Contents</h2>
+            <div id="toc" class="box">
+                <p>On this page:</p>
+                <ol class="toc">
+                {foreach from=$posts item=post}
+                    <li><a href="#{$post.title}">{$post.title}</a> &nbsp; (Posted: {$post.posttime|date_format:s1})</li>
+                {/foreach}
+                </ol>
+            </div>
+            {foreach from=$posts item=post}
+            {if $post.newday}
+            <h3 class="date">{$post.posttime|date_format:s2}</h3>
+            {/if}
+            <div class="article">
+                <h4 id="{$post.title}"><a href="{$post.permalink}">{$post.title}</a></h4>
+                <div class="box nobb">
+                {$post.body}
+                </div>
+                <div class="articleMeta">
+                    Category: {sectionlinks sep=" &middot; " sections=$post.sections} &#8226; 
+                    Author: {$post.author.fullname} &#8226;
+                    <a href="{$post.permalink}">{$post.commenttext}</a>
+                </div>
+            </div>
+            {/foreach}
+{include file="footer.html"}

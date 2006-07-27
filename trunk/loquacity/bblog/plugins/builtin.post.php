@@ -51,7 +51,9 @@ $bBlog->assign('form_type','post'); // used in the template post_edit.html
 $bBlog->assign('commentsallowvalue', " checked='checked' ");
 if((isset($_POST['newpost'])) && ($_POST['newpost'] == 'true')) {    // we have a poster
       // make the data sql save
-      $post = prep_new_post();
+      //$post = prep_new_post();
+      $ph =& $bBlog->_ph;
+      
       $res = $bBlog->new_post($post);
       if(is_numeric($res)) {
              $bBlog->assign('post_message',"Post #$res Added :)");

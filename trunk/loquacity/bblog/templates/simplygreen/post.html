@@ -1,0 +1,108 @@
+{assign var=title value=$blogname}
+{getposts assign=post postid=$postid}
+{assign var=pagetitle value="`$blogname` :: `$post.title`"}
+{include file="header.html"}
+    <div id="contentBox">
+      <div id="googleAds">
+        <script type="text/javascript"><!--
+          google_ad_client = "pub-8450313379584078";
+          google_alternate_color = "CCCCCC";
+          google_ad_width = 468;
+          google_ad_height = 60;
+          google_ad_format = "468x60_as";
+          google_ad_channel ="";
+          google_ad_type = "text";
+          google_color_border = "CCCCCC";
+          google_color_bg = "FFFFFF";
+          google_color_link = "000000";
+          google_color_url = "666666";
+          google_color_text = "333333";
+        //--></script>
+        <script type="text/javascript"
+          src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+        </script>
+      </div>
+      <h2>{$post.title}</h2>
+      <div class="article">
+          <div class="box nobb">
+            {$post.body}
+          </div>
+          <div class="articleMeta">
+            {$post.posttime|date_format:jim}
+            The trackback url for this post is {$post.trackbackurl}
+          </div>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:trackback="http://madskills.com/public/xml/rss/module/trackback/">
+            <rdf:Description rdf:about="{$post.permalink}" dc:identifer="{$post.permalink}" dc:title="{$post.title}" trackback:ping="{$post.trackbackurl}" />
+          </rdf:RDF>
+          <h2>Comments</h2>
+          {getcomments assign=comments}
+          {if count($comments) gt 0}
+          {foreach from=$comments item=comment}
+          <div class="comment{if $comment.deleted eq 'true'} deleted{elseif $comment.onhold} onhold{/if}" style="margin-left: {$comment.level25}px;{if $comment.level25 gt 1}border-top: none;{/if}">
+            {if $comment.deleted eq "true"}
+            <div class="comment-body"><strong>Deleted</strong></div>
+            {elseif $comment.onhold}
+              <div class="comment-body">Comment pending moderation</div>
+            {else}
+              <div class="comment-head">{$comment.title|nohtml}</div>
+              <div class="comment-body">
+                {$comment.commenttext|nl2br|kses}
+                <div class="comment-meta">
+                  {if $comment.type eq 'trackback'}
+                  <p>Trackback from <a href="{$comment.posterwebsite}">{$comment.postername}</a> {$comment.posttime|date_format:since} &#8226; <a href="replyto={$comment.id}#commentform">Reply</a></p>
+                  {else}
+                  <p>Comment #{$comment.id} &nbsp; {$comment.posttime|date_format:since} by {$comment.postername} &#8226; {$comment.emaillink} &#8226; {$comment.posterwebsite} &#8226; <a href="replyto={$comment.id}#commentform">Reply</a></p>
+                  {/if}
+                  <div class="comment-trackback">Comment Trackback URL : {$comment.trackbackurl}</div>
+                </div>
+              </div>
+              {/if}
+            </div>
+          {/foreach}
+          {/if}
+          {if $post.allowcomments}
+          <form method="post" action="{$commentformaction}">
+            {$commentformhiddenfields}
+            <h3 class="title">Add Comment</h3>
+            <p><em>( to reply to a comment, click the reply link next to the comment )</em></p>
+            <div class="clear"><p><i>Allowed XHTML tags : a, b, i, strong, code, acrynom, blockquote, abbr. Linebreaks will be converted automatically.</i></p>
+            <div class="form">
+                <div class="clear">&nbsp;</div>
+                    <div class="formleft"><label for="title">Comment Title:</label></div>
+                    <div class="formright"><input name="title" type="text" id="title" value="{$commentreplytitle}"/></div>
+                <div class="clear">&nbsp;</div>
+                    <div class="formleft"><label for="name">Your Name:</label></div>
+                    <div class="formright"><input name="name" type="text" id="author" /></div>
+                <div class="clear">&nbsp;</div>
+                    <div class="formleft"><label for="email">Email Address:</label></div>
+                    <div class="formright"><input name="email" type="text" id="email" /> <label for="public_email">Make Public?</label> <input class="checkbox" name="public_email" type="checkbox" id="public_email" value="1" checked="checked"/></div>
+                <div class="clear">&nbsp;</div>
+                    <div class="formleft"><label for="website">Website:</label></div>
+                    <div class="formright"><input name="website" type="text" id="url" /> <label for="public_website">Make Public?</label> <input class="checkbox" name="public_website" type="checkbox" id="public_website" value="1" checked="checked" /></div>
+{if $C_CAPTCHA_ENABLE === 'true'}
+		<div class="clear">&nbsp;</div>
+		<div class="formleft"><label for="imagecode">Captcha:</label></div>
+		<div class="formright">
+			<div class="formfieldcontainer">
+				<div>
+					<img src="{$blogurl}visualcaptcha.php" alt="Visual CAPTCHA" />
+				</div>
+				Text: <input name="imagecode" id="imagecode" type="text" class="formfield" />
+			</div>
+		</div>
+        {/if}
+                <div class="clear">&nbsp;</div>
+                    <div class="formleft"><label for="comment">Comment:</label></div>
+                    <div class="formright"><textarea name="comment" cols="30" rows="6" wrap="VIRTUAL" id="text"></textarea></div>
+                <div class="clear">&nbsp;</div>
+                    <div class="formleft">&nbsp;</div> 
+                    <div class="formright"><input name="submit" type="submit" id="submit" value="Submit Comment" /><input type="hidden" name="do" value="submitcomment" /></div>
+                <div class="clear">&nbsp;</div>
+            </div> 
+          </form>
+          {else}
+          <p>Comments have now been turned off for this post</p>
+          {/if}
+          </div>
+    </div>
+    {include file="footer.html"}

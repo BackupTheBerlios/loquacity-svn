@@ -1,0 +1,238 @@
+body{
+  font-family: Tahoma, Verdana, Arial, Helvetica, sans-serif;
+  font-size: 0.8em;
+  /*font-size: 1.0em;*/
+  background-color: #fff;
+  color: #000;
+  padding: 0px;
+  margin: 0px;
+}
+a{
+    text-decoration: none;
+}
+.box{
+    border: 2px solid #4FAA39;
+    padding: 1ex;
+}
+.nobb{
+    border-bottom: none;
+}
+#siteMenu{
+  position: absolute;
+  width: 600px;
+  left: 50%;
+  top: 132px;
+  margin-left: -316px;
+  z-index: 15;
+  /*border-bottom: 12px solid #4FAA39;*/
+}
+#siteMenu a, #siteMenu a:link, #siteMenu a:active{
+  color: #28551C;
+  padding-right: 3px;
+}
+#siteMenu a:hover{
+  background-color: #28551C;
+  color: #B3DFA7;
+}
+#contentBox{
+  position: absolute;
+  width: 600px;
+  left: 50%;
+  top: 150px;
+  margin-left: -316px;
+  z-index: 10;
+}
+#googleAds{
+    display: inline;
+}
+#contentBox #toc{
+}
+#contentBox h2{
+    background-color: #387728;
+    color: #BBFFAA;
+    padding-bottom: 0;
+    padding-left: 1em;
+    margin-bottom: 0;
+}
+#toc.box{
+    background-color: #DDFFD5;
+    color: #387728;
+    border-color: #387728;
+}
+#toc p{
+}
+ol.toc{
+}
+ol.toc li{
+    margin-left: 0;
+    padding-left: 0;
+}
+#toc a{
+    color: black;
+    border-bottom: 1px dotted black;
+}
+#toc a:hover{
+    background-color: #387728;
+    color: #BBFFAA;
+}
+#contentBox h3.date{
+    color: black;
+    text-align: right;
+}
+#contentBox div.article{
+}
+div.article h4{
+    color: #387728;
+    padding-bottom: 0;
+    margin-bottom: 0;
+}
+div.article h4 a{
+    background-color: #4FAA39;
+    color: black;
+    padding-right: 1em;
+    padding-left: 5px;
+}
+div.article p{
+}
+.articleMeta{
+    background-color: #DDFFD5;
+    color: #50AA39;
+    border-style: solid;
+    border-width: 2px;
+    border-color: #4FAA39;
+    border-top: none;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+.articleMeta a{
+    color: #4FAA39;
+    font-weight: bold;
+}
+#footer{
+  font-size: smaller;
+  margin-top: 1cm;
+  text-align: center;
+}
+p{
+  z-index: 30;
+}
+#leftBar{
+    position: absolute;
+    top: 215px;
+    left: 50%;
+    width: 200px;
+    margin-left: -525px;
+}
+#leftBar h2{
+    background-color: #387728;
+    color: #BBFFAA;
+    text-align: center;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+#leftBar .box{
+    /*background-color: #BBFFAA;*/
+    background-color: #DDFFD5;
+    border: 2px solid #387728;
+    color: #000;
+}
+#leftBar .box a{
+    font-weight: 200%;
+    color: #387728;
+}
+.leftMenu{
+  float: left;
+  margin-right: 25px;
+  height: 100%;
+  clear: right;
+  width: 200px;
+}
+.leftMenu a,
+.leftMenu a:link,
+.leftMenu a:active{
+  position: relative;
+  display: block;
+  padding: 5px 5px 5px 10px;
+  margin: 0px;
+  idth: 120px;
+  height: 20px;
+  z-index: 45;
+  color: #4FAA39;
+}
+.leftMenu a:hover{
+  border-left: 1px solid #33FF00;
+  color: #28551C;
+}
+.leftMenu a:hover:after{
+  position: relative;
+  content: attr(title);
+  z-index: 50;
+  background-color: #CCFFBF;
+  margin: 0px 0px 0px 5px;
+  width: 100px;
+  white-space: nowrap;
+}
+.txt{
+  margin-left: 210px;
+  padding-left: 1em;
+  padding-right: 1em;
+}
+.comment{
+    border: solid 1px #387728;
+    background-color: #DDFFD5;
+    color: #000;
+    margin-bottom: 1ex;
+}
+.comment a{
+}
+.deleted{
+    background-color: #387728;
+    color: #fff;
+    font-weight: bolder;
+    font-family: san-serif;
+}
+.onhold{
+    background-color: #33FF00;
+    border: none;
+    color: #000;
+    font-weight: bold;
+    font-family: Helvetica;
+}
+.comment-head{
+    background-color: #50AA39;
+    color: #fff;
+    font-weight: bold;
+}
+.comment-body{
+}
+.comment-meta{
+    background-color: #BBFFAA;
+    color: #50AA39;
+    margin-top: 1ex;
+    padding-left: 5px;
+    padding-right: 5px;
+    font-size: small;
+    font-family: san-serif;
+}
+.comment-meta p{
+    margin: 0;
+}
+.comment-meta a{
+    color: #000;
+}
+.comment-trackback{
+}
+.clear{
+    clear: both;
+}
+.formleft{
+    width: 8em;
+    float: left;
+}
+.formright{
+    width: 8em;
+    float: right;
+}
+label{
+    font-weight: bold;
+}

@@ -7,7 +7,6 @@
     <div class="box1" style="padding: 0px;">
     	<h3 class="date">{$post.author.fullname} | {$post.posttime|date_format:s2}</h3>
     </div>
-    {referers}
 	<div class="box2">
 		{$post.body}
 	</div><!-- .box2 -->
@@ -20,8 +19,5 @@
 </div><!-- .blog -->
 <!-- </div>  .box1 -->
 </div><!-- #content -->
-
-
- 
 {include file="side.html"}
 {include file="footer.html"}

@@ -83,7 +83,7 @@ function smarty_function_getposts($params, &$bBlog) {
 	}
 
     if($postid && is_int($postid)){
-        $bBlog->assign($params['assign'],get_single_post($bBlog, $ph, $postid));
+        $bBlog->assign($params['assign'], get_single_post($bBlog, $ph, $postid));
         return;
     }
 
@@ -127,33 +127,28 @@ function smarty_function_getposts($params, &$bBlog) {
 
 	$opt['home'] = $params['home'];
 
-    $ar['posts'] = $ph->get_posts($opt);    
-	// No posts.
-    if(!is_array($ar['posts'])) {
-	   return;
+    if(($posts = $ph->get_posts($opt)) !== false){
+        $posts = apply_modifier($bBlog, $posts);
+        $bBlog->assign($params['assign'],$posts);
+    }
+    else{
+        //var_dump($ph->status);
+        $bBlog->assign($params['assign'],array(0 => array('title' => $ph->status)));
     }
 
-    $lastmonth = 0;
+    /*$lastmonth = 0;
     $lastdate = 0;
 
     foreach($ar['posts'] as $key => $value) {
-        /* check if new day  - used by block.newday.php */
-        if(date('Ymd',$ar['posts'][$key]['posttime']) != $lastdate) {
+        if(date('Ymd',intval($ar['posts'][$key]['posttime'])) != $lastdate) {
           $ar['posts'][$key]['newday'] = TRUE;
         }
-        $lastdate = date('Ymd',$ar['posts'][$key]['posttime']);
-    
-        /* check if new month - use by block.newmonth.php */
-        if(date('Fy',$ar['posts'][$key]['posttime']) != $lastmonth) {
+        $lastdate = intval(date('Ymd',$ar['posts'][$key]['posttime']));
+        if(intval(date('Fy',$ar['posts'][$key]['posttime'])) != $lastmonth) {
           $ar['posts'][$key]['newmonth'] = TRUE;
         }
-        $lastmonth = date('Fy',$ar['posts'][$key]['posttime']);
-    }
-    $posts = apply_modifier($bBlog, $ar['posts']);
-    $bBlog->assign($params['assign'],$posts);
-
-    return;
-	
+        $lastmonth = strftime('%B%Y', intval($ar['posts'][$key]['posttime'])); //date('Fy',$ar['posts'][$key]['posttime']);
+    }*/
 }
 
 function get_single_post(&$bBlog, &$ph, $postid){

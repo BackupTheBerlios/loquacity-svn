@@ -1,0 +1,26 @@
+{if $charset != ''}
+<?xml version="1.0" encoding="{$charset}"?>
+{/if}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        {if $charset != ''}
+        <meta http-equiv="content-type" content="text/html; charset={$charset}" />
+        {/if}
+        <meta http-equiv="content-Type" content="text/html" />
+        <title>{$pagetitle|htmlspecialchars}</title>
+        <meta name="description" content="{$metadescription}" />
+        <meta name="keywords" content="{$metakeywords}" />
+        <meta name="generator" content="bBlog {$bBlog_version}" />
+        <link rel="stylesheet" type="text/css" href="{$bblogurl}templates/simplygreen/styles/primary.css" />
+        {if $direction == 'RTL'}
+        <link rel="stylesheet" type="text/css" href="{$bblogurl}templates/simplygreen/styles/rtl.css" />
+        {/if}
+    </head>
+    <body>
+        <h1><a href="{$blogurl}" title="Browse to homepage">{$title}</a></h1>
+        <div id="siteMenu">
+            {links cat="Navigation" sep=" | "}
+            <a href="{$blogurl}?postid=65">Contact Me</a> |
+            <a href="{$blogurl}?postid=64">About Me</a>
+        </div>

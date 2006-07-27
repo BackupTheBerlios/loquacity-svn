@@ -1,0 +1,10 @@
+        <div id="contentBox">
+            {foreach from=$posts item=post}
+            <div class="article">
+                <h4><a href="{$post.permalink}">{$post.title}</a></h4>
+                {$post.body}
+                <div class="articleMeta">
+                    {sectionlinks sep=" &middot; " sections=$post.sections} &#8226; <a href="{$post.permalink}">{$post.commentcount} Comments/Trackbacks</a>
+                </div>
+            </div>
+        </div>

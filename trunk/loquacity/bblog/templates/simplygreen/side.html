@@ -1,0 +1,13 @@
+        <div id="leftBar">
+            <h2>Earlier Posts</h2>
+            <div class="box">
+                {getposts num=10 skip=10 assign=recent mode="list"}
+                <ol>
+                {foreach item=post from=$recent}
+                    <li><a href="{$post.permalink}">{$post.title}</a></li>
+                {/foreach}
+                </ul>
+            </div>
+        </div>
+        <div id="rightBar">
+        </div>

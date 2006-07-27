@@ -103,7 +103,7 @@ class posthandler {
      *
      * @param array $crit Hash of selection criteria
      * @param bool $raw If false return in a format sufficient for browser display
-     * @return array
+     * @return mixed False on error, arroy of posts on success
      */
     function get_posts($crit, $raw=FALSE) {
         if(is_array($crit)){
@@ -115,11 +115,14 @@ class posthandler {
                 }
                 return $posts;
             }
-            else
-                return array("title"=>"No posts found");
+            else{
+                $this->status = "No posts found";
+                return false;
+            }
         }
         else{
-            return array("title"=>"No selection cirteria supplied");
+            $this->status = 'No selection criteria supplied';
+            return false;
         }
     }
 
@@ -257,6 +260,10 @@ class posthandler {
             $draft_q = '';
         $q = "SELECT posts.*, authors.nickname, authors.email, authors.fullname FROM ".T_POSTS." AS posts LEFT JOIN ".T_AUTHORS." AS authors ON posts.ownerid = authors.id WHERE posts.postid='$postid' $draft_q LIMIT 0,1";
         $post = $this->_db->GetRow($q);
+        if(!$post){
+            $this->status = 'No post found';
+            return false;
+        }
         if($raw)
             return $post;
         else{

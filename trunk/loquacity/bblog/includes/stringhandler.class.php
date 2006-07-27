@@ -255,7 +255,7 @@ class stringHandler{
                 $clean = array_map(array('stringHandler', 'clean'), $var);
             }
         }
-        return stringHandler::trimWhitespace($clean);
+        return stringHandler::removeMagicQuotes(stringHandler::trimWhitespace($clean));
     }
     function removeJs($var){
         if (isset($var)) {
@@ -282,7 +282,7 @@ class stringHandler{
         if (!is_array($str)) {
             $clean = trim($str);
         } else {
-            $clean = array_map(array('stringHandler', 'trimWhitespace'), $var);
+            $clean = array_map(array('stringHandler', 'trimWhitespace'), $str);
         }
         return $clean;
 

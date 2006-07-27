@@ -82,7 +82,6 @@ class commentHandler {
     function get_comments($fordisplay=false){
         if($fordisplay){
             if(is_array($this->_comments)){
-                //$this->debug($this->_thread);
                 foreach($this->_comments as $id=>$comment){
                     $this->_comments[$id] = $this->prepFieldsForDisplay($comment);
                 }
