@@ -39,7 +39,7 @@
 include_once("bblog/config.php");
 
 if(is_numeric(@$_GET['postid'])) {
-    if($_COOKIE['bBcomment']){
+    if(isset($_COOKIE['bBcomment'])){
         $cdata = unserialize(base64_decode($_COOKIE['bBcomment']));
         $bBlog->assign('cdata',$cdata);
     }
