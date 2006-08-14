@@ -32,15 +32,25 @@
  
 function identify_function_sectionlinks () {
     $help = '
-    <p>Sectionlinks is a Smarty function to be used in templates.
-    <p>Example usage
-    <ul><li>To create a link list of sections, one per line :<br>
-       {sectionlinks}
-       <li>To create a link list of sections, seperated by a # <br>
-         {sectionlinks sep="#"}
-         <li>To make a list with &lt;ul&gt use {sectionlinkd mode="list"}<br />
-       <li>Used within a {posts} loop, to link to sections that the post is in, seperated by a commer :<br>
-          {sectionlinks sep=", " sections=$post.sections}
+    <p>Sectionlinks is a Smarty function to be used in templates. It returns a
+    list of sections as hyperlinks.</p>
+    <p>This function accepts the follwing parameters:</p>
+    <dl>
+        <dt>mode</dt>
+            <dd><strong>Type: </strong><em>String</em>. Either &quot;list&quot; or &quot;break&quot;.
+                <em>List</em> returns an unordered list (ul). <em>Break</em> returns a list with elements
+                separated by line breaks.</dd>
+        <dt>sections</dt>
+            <dd><strong>Type: </strong><em>Array</em>. If not specified, all sections defined within the blog are used.</dd>
+        <dt>sep</dt>
+            <dd><strong>Type: </strong><em>String</em>. Used to separate the sections.</dd>
+    </dl>
+    <p>Example usage:</p>
+    <ul>
+        <li>To create a link list of sections, one per line: <em>{sectionlinks}</em></li>
+        <li>To create a link list of sections, seperated by a #: <em>{sectionlinks sep="#"}</em></li>
+        <li>To make a list with &lt;ul&gt;: <em>{sectionlinks mode="list"}</em></li>
+        <li>Within a {posts} loop, to link to sections that the post is in, seperated by a comma: <em>{sectionlinks sep=", " sections=$post.sections}</em></li>
     </ul>';
 
   return array (
@@ -62,9 +72,12 @@ function smarty_function_sectionlinks($params, &$bBlog) {
     $sections = (isset($params['sections'])) ? $params['sections'] : $bBlog->sections;
      
 
-    if($mode=='list') $sep = "";
-    else if(!isset($params['sep'])) $sep = "<br />";
-    else $sep = $params['sep'];
+    if($mode=='list')
+        $sep = "";
+    else if(!isset($params['sep']))
+        $sep = "<br />";
+    else
+        $sep = $params['sep'];
 
     $num = count($sections);
     $i=0;
@@ -73,7 +86,7 @@ function smarty_function_sectionlinks($params, &$bBlog) {
     foreach ($sections as $section) {
         $i++;
         //we using arrays in the template and objects in the core..
-        $url = $section['url'];
+        $url = urlencode($section['url']);
         $nicename = $section['nicename'];
         if($mode=='list')
             $linkcode .= "<li>";
@@ -83,10 +96,10 @@ function smarty_function_sectionlinks($params, &$bBlog) {
             $linkcode .= "</li>";
         else if($num > $i)
             $linkcode .= $sep;
-
     }
 
-    if ($mode=='list') $linkcode .= "</ul>";
+    if ($mode=='list')
+        $linkcode .= "</ul>";
     return $linkcode;
 }
 

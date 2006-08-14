@@ -44,17 +44,15 @@
  
 function identify_function_referers () {
 $help = '
-<p>Referers is a Smarty function to be used in templates that captures and lists referers to the current page.
-<p>Example usage ( in a template put ) : {referers}
-<p>The referer link list is seperate by a &lt;br&gt; by default. To override :<br>
-{referers sep=", "} to seperate by a commar.
-<p>Other paramaters :<br>
-{referers num=10} - show 10 referers. Default is 5<br>
-{referers top=TRUE} - show top referes instead of newest<br>
-{referers global=TRUE} - show referers for all pages, not just the current one<br>
-Those paramaters may be combined : {referers num=10 global=TRUE sep=" | "}';
-
-
+    <p>Referers is a Smarty function to be used in templates that captures and lists referers to the current page.</p>
+    <p>Example usage ( in a template put ) : {referers}</p>
+    <p>The referer link list is seperate by a &lt;br&gt; by default. To override :<br>
+    {referers sep=", "} to seperate by a commar.</p>
+    <p>Other paramaters :<br>
+    {referers num=10} - show 10 referers. Default is 5<br>
+    {referers top=TRUE} - show top referes instead of newest<br>
+    {referers global=TRUE} - show referers for all pages, not just the current one<br>
+    Those paramaters may be combined : {referers num=10 global=TRUE sep=" | "}</p>';
   return array (
     'name'           =>'referers',
     'type'             =>'function',

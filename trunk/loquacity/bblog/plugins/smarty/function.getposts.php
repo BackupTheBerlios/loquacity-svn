@@ -128,7 +128,7 @@ function smarty_function_getposts($params, &$bBlog) {
 	$opt['home'] = $params['home'];
 
     if(($posts = $ph->get_posts($opt)) !== false){
-        $posts = apply_modifier($bBlog, $posts);
+        //$posts = apply_modifier($bBlog, $posts);
         $bBlog->assign($params['assign'],$posts);
     }
     else{

@@ -69,20 +69,24 @@ function identify_function_archivemonths(){
 function smarty_function_archivemonths($params, &$bBlog) {
     $sep = (isset($params['sep'])) ? $params['sep'] : "<br />";
     $list = (isset($params['aslist'])) ? true : false;
-    $showcount = (isset($params['showcount'])) ? intval($params['showcount']) : 0;
-    $where = (isset($params['year'])) ? ' AND YEAR(FROM_UNIXTIME(posttime)) = "'.intval($params['year']).'"' : '';
-    $limit = 'limit 0, ' . (isset($params['num'])) ? inval($params['num']) : 10;
+    $showcount = (isset($params['showcount']) && intval($params['showcount']) == 0) ? false : true;
+    $year = (isset($params['year'])) ? 'YEAR(FROM_UNIXTIME(posttime)) = "'.intval($params['year']).'"' : '';
+    if($year != '')
+        $where = 'WHERE '.$year;
+    $num = (isset($params['num'])) ? intval($params['num']) : 10;
+    $limit = 'limit 0, ' . $num;
     
-    $rs = $bBlog->_adb->Execute("SELECT DISTINCT YEAR(FROM_UNIXTIME(posttime)) AS `year`, DATE_FORMAT(FROM_UNIXTIME(posttime), '%m') AS `month`, COUNT(postid) AS `posts` FROM `".T_POSTS."` $where GROUP BY `year`, `month` ORDER BY posttime DESC $limit;");
+    $sql = 'SELECT DISTINCT YEAR(FROM_UNIXTIME(posttime)) AS `year`, DATE_FORMAT(FROM_UNIXTIME(posttime), "%M") AS `month`, COUNT(postid) AS `posts` FROM `'.T_POSTS.'` '.$where.' GROUP BY `year`, `month` ORDER BY posttime DESC '.$limit;
+    $rs = $bBlog->_adb->Execute($sql);
     if($rs && !$rs->EOF){
         if($list)
             $monthslist = '<ul>';
         while($row = $rs->FetchRow()){
             if($list)
                 $monthslist .= '<li>';
-            $monthslist .= '<a href="archives.php?month='.$month['month'].'&year='.$month['year'].'">'.getmonthfriendlyname($month['month']). $month['year'].'</a>';
+            $monthslist .= '<a href="archives.php?month='.$row['month'].'&year='.$row['year'].'">'.$row['month']. '&nbsp;'. $row['year'].'</a>';
             if($showcount) {
-                $monthslist .= ' <em>'.$month['posts'].'</em>';
+                $monthslist .= ' <em>('.$row['posts'].')</em>';
             }
             if($list)
                 $monthslist .= '<li>';
@@ -93,6 +97,7 @@ function smarty_function_archivemonths($params, &$bBlog) {
             $monthslist .='</ul>';
     }
     return $monthslist;
+    //var_dump($sql);
 }
 
 function getmonthfriendlyname($month) {
