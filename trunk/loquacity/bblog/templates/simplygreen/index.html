@@ -3,6 +3,8 @@
 {assign var=pagetitle value="$blogname}
 {include file="header.html"}
         <div id="contentBox">
+	    <div id="headerAds">
+	    </div>
             {getposts num=10 assign=posts home=true}
             <h2>Contents</h2>
             <div id="toc" class="box">
@@ -21,6 +23,7 @@
                 <h4 id="{$post.title}"><a href="{$post.permalink}">{$post.title}</a></h4>
                 <div class="box nobb">
                 {$post.body}
+		{$post.modifier}
                 </div>
                 <div class="articleMeta">
                     Category: {sectionlinks sep=" &middot; " sections=$post.sections} &#8226; 

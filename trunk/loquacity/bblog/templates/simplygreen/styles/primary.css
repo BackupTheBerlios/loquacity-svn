@@ -42,8 +42,12 @@ a{
   margin-left: -316px;
   z-index: 10;
 }
-#googleAds{
-    display: inline;
+#headerAds{
+    /*display: inline;*/
+    position: relative;
+    left: 0;
+    height: 65px;
+    width: 468px;
 }
 #contentBox #toc{
 }
