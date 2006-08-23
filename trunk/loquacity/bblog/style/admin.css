@@ -87,28 +87,23 @@ td.action{
 div#header{
 	/*
 	background-color: #444;
-  */
+	*/
 	background-image: url(admin_header_trans.png);
 	background:-repeat: repeat-x ;
-	background-position: bottom;
-	
+	background-position: bottom;	
 	color: #fff; 
-  position: fixed;
-  
-  
-  top: 0;
-  left: 0;
-  margin: 0px;
-  width: 100%;
-  height: 60px;
+	position: fixed;
+	top: 0;
+	left: 0;
+	margin: 0px;
+	width: 100%;
+	height: 60px;
 }
 
 div#header div{
-
   right: 5px;
   position: absolute;
   top: 5px;
-
 }
 
 div#header div a:link,
@@ -156,6 +151,7 @@ div#teaser, div#content{
 div#content{
   margin-left: 140px;
   margin-right: 20px;
+  margin-bottom: 35px;
 }
 
 div#content.popup {
@@ -188,7 +184,6 @@ div#content h3{
   letter-spacing: 2px;
   padding: 2px 8px 2px 8px;
   border: 1px solid #555;
-
 }
 
 div#content div.frame{
@@ -283,22 +278,20 @@ div#content input.submit:hover{
 
 div#footer{
 	clear: both;
-  bottom: 0;
-  position: fixed;
+	bottom: 0;
+	position: fixed;
 	background-color: #444;
 	color: #fff;
-	
-  font-size: 11px;
-  margin-top: auto;
-  width: 100%;
-  padding: 5px 20px 5px 20px;
+	font-size: 11px;
+	margin-top: auto;
+	width: 100%;
+	padding: 5px 20px 5px 20px;
 }
 
 div#footer a:link,
 div#footer a:visited{
   color: #ffffff;
   text-decoration: none;
-
 }
 
 div#footer a:hover,
@@ -319,9 +312,8 @@ div#teaser{
   background-color: #f1f1f1; 
   padding: 10px;
   padding-top: 0px;
-  margin-top: 0px;
+  margin-top: 60px;
   float: left;
-
 }
 
 div#teaser a:link,
@@ -386,7 +378,7 @@ ul#tabs li {
 ul#tabs li.ontab {
 	background-color: #eeffee;
 }
-/* Mozilla users will see it at width: 99, and IE won't fuck up. */
+/* Mozilla users will see it at width: 99, and IE won't **** up. */
 /*
 html>body textarea#postarea { width:99%; }
 */
