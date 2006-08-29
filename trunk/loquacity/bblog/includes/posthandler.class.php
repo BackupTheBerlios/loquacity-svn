@@ -38,8 +38,9 @@
 
 class posthandler {
 
-    function postHandler(&$db) {
+    function postHandler(&$db, $m_paths) {
         $this->_db = $db;
+        $this->modifier_paths = $m_paths;
     }
     ////
     // !inserts a new entry
@@ -142,21 +143,9 @@ class posthandler {
         $npost['title'] = $post['title'];
 
         // do the body text
-        /*if($post->modifier != '') {
-             // apply a smarty modifier to the body
-             // in the future we could have multi modifiers
-             // but I decided agains that for now, you can always make a
-             // modifier that calls other modifiers if you really want to .
-             $mod_func = 'smarty_modifier_'.$post->modifier;
-             $npost['body'] = $mod_func($post->body);
-             $npost['applied_modifier'] = $post->modifier;
+        if($post['modifier'] != '') {
+            $npost = $this->apply_modifier($post);
         }
-        else {*/
-        if($post['modifier'] !== '')
-            $npost['modifier'] = $post['modifier'];
-         $npost['body'] = $post['body'];
-             #$npost['applied_modifier'] = 'none';
-        //}
         $npost['status'] = $post['status'];
 
         // in the future
@@ -325,6 +314,43 @@ class posthandler {
         else{
             return BLOGURL.'?postid='.$postid;
         }
+    }
+    /**
+     * Loads and applies a Smarty based modifier to a post
+     *
+     * NOTE This is a hack and should be better designed
+     * 
+     * @param array $post
+     * @return array
+     */
+    function apply_modifier($post){
+        if(is_array($post)){
+            if(array_key_exists('modifier', $post)){
+                $modifier = 'modifier.'.$post['modifier'].'.php';
+                if(($m_path = $this->find_path($modifier)) !== false){
+                    require_once($m_path);
+                    $mod_func = 'smarty_modifier_'.$post['modifier'];
+                    $post['body'] = $mod_func($post['body']);
+                    $post['applied_modifier'] = $post['modifier'];
+                }
+            }
+        }
+        return $post;
+    }
+    /**
+    * Searches the modifier paths looking for the requested modifier
+    *
+    * @param string $modifier File name of modifier
+    * @return mixed Fullty qualified path on success; False on failure
+    */
+    function find_path($modifier){
+        foreach($this->modifier_paths as $path){
+            $f_path = $path.'/'.$modifier;
+            //var_dump($f_path);
+            if(file_exists($f_path))
+                return $f_path;
+        }
+        return false;
     }
 }
 ?>

@@ -74,8 +74,17 @@ class bBlog extends Smarty {
         if(!session_id()) {
 	  	    session_start();
 	    }
-        $this->_ph =& new postHandler($this->_adb);
+        $mtime = explode(" ",microtime());
+        $this->begintime = $mtime[1] + $mtime[0];
         Smarty::Smarty();
+        
+        $this->template_dir = BBLOGROOT.'templates/'.C_TEMPLATE;
+        $this->compile_dir = BBLOGROOT.'generated/templates/';
+        $this->plugins_dir = array(BBLOGROOT.'plugins', BBLOGROOT.'plugins/smarty',BBLOGROOT.'3rdparty/smarty/libs/plugins');
+        $this->use_sub_dirs	= FALSE; // change to true if you have a lot of templates
+
+        $this->_ph =& new postHandler($this->_adb, $this->plugins_dir);
+        
 	} // end of function bBlog
     /**
      * A place holder for calling $this->_ph->new_post

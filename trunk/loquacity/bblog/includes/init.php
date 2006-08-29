@@ -74,15 +74,15 @@ include_once('includes/templates.php');
 
 // start your engines
 $bBlog = new bBlog();
-$mtime = explode(" ",microtime());
-$bBlog->begintime = $mtime[1] + $mtime[0];
+/* $mtime = explode(" ",microtime());
+$bBlog->begintime = $mtime[1] + $mtime[0]; */
 
 // this is only here until I work out the best way to do theming.
 //$bBlog->clear_compiled_tpl();
 
 
-$bBlog->template_dir = BBLOGROOT.'templates/'.C_TEMPLATE;
-$bBlog->compile_dir = BBLOGROOT.'generated/templates/';
+/* $bBlog->template_dir = BBLOGROOT.'templates/'.C_TEMPLATE;
+$bBlog->compile_dir = BBLOGROOT.'generated/templates/'; */
 
 if(defined('IN_BBLOG_ADMIN')) {
        $bBlog->compile_id = 'admin';
@@ -90,9 +90,9 @@ if(defined('IN_BBLOG_ADMIN')) {
 	$bBlog->compile_id = C_TEMPLATE;
 }
 
-$bBlog->plugins_dir = array(BBLOGROOT.'plugins', BBLOGROOT.'plugins/smarty',BBLOGROOT.'3rdparty/smarty/libs/plugins');
+/* $bBlog->plugins_dir = array(BBLOGROOT.'plugins', BBLOGROOT.'plugins/smarty',BBLOGROOT.'3rdparty/smarty/libs/plugins');
 $bBlog->use_sub_dirs	= FALSE; // change to true if you have a lot of templates
-
+ */
 define('BBLOG_VERSION',"0.8-alpha2");
 $bBlog->assign("bBlog_version",BBLOG_VERSION);
 

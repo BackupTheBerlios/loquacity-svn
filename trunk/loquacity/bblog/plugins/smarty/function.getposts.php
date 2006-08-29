@@ -128,7 +128,6 @@ function smarty_function_getposts($params, &$bBlog) {
 	$opt['home'] = $params['home'];
 
     if(($posts = $ph->get_posts($opt)) !== false){
-        //$posts = apply_modifier($bBlog, $posts);
         $bBlog->assign($params['assign'],$posts);
     }
     else{
@@ -161,25 +160,5 @@ function get_single_post(&$bBlog, &$ph, $postid){
     $post['newmonth'] = 'yes';
     
     return $post;
-}
-
-/**
- * Loads and applies a Smarty based modifier to a post
- * 
- * @param array $posts
- * @return array
- */
-function apply_modifier(&$bBlog, $posts){
-    if(is_array($posts)){
-        foreach($posts as $key => $post){
-            if(array_key_exists('modifier', $post)){
-                require_once( $bBlog->_get_plugin_filepath('modifier', $post['modifier']));
-                $mod_func = 'smarty_modifier_'.$post['modifier'];
-                $posts[$key]['body'] = $mod_func($post['body']);
-                $posts[$key]['applied_modifier'] = $post['modifier'];
-            }
-        }
-    }
-    return $posts;
 }
 ?>
