@@ -229,7 +229,7 @@ class stringHandler{
         }
         if ($magicQuotes) {
             if (!is_array($data)) {
-                $var = stripslashes($data);
+                $data = stripslashes($data);
             } else {
                 array_walk($data, array('stringHandler', 'removeMagicQuotes'));
             }

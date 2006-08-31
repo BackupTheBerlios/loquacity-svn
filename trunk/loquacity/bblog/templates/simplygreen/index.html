@@ -11,7 +11,7 @@
                 <p>On this page:</p>
                 <ol class="toc">
                 {foreach from=$posts item=post}
-                    <li><a href="#{$post.title}">{$post.title}</a> &nbsp; (Posted: {$post.posttime|date_format:s1})</li>
+                    <li><a href="#{$post.title|escape:'url'}">{$post.title}</a> &nbsp; (Posted: {$post.posttime|date_format:s1})</li>
                 {/foreach}
                 </ol>
             </div>
@@ -20,10 +20,9 @@
             <h3 class="date">{$post.posttime|date_format:s2}</h3>
             {/if}
             <div class="article">
-                <h4 id="{$post.title}"><a href="{$post.permalink}">{$post.title}</a></h4>
+                <h4 id="{$post.title|escape}"><a href="{$post.permalink|escape}">{$post.title}</a></h4>
                 <div class="box nobb">
                 {$post.body}
-		{$post.modifier}
                 </div>
                 <div class="articleMeta">
                     Category: {sectionlinks sep=" &middot; " sections=$post.sections} &#8226; 

@@ -50,27 +50,29 @@ function identify_admin_post () {
 $bBlog->assign('form_type','post'); // used in the template post_edit.html
 $bBlog->assign('commentsallowvalue', " checked='checked' ");
 if((isset($_POST['newpost'])) && ($_POST['newpost'] == 'true')) {    // we have a poster
-      // make the data sql save
-      //$post = prep_new_post();
-      $ph =& $bBlog->_ph;
-      
-      $res = $bBlog->new_post($post);
-      if(is_numeric($res)) {
-             $bBlog->assign('post_message',"Post #$res Added :)");
+    // make the data sql save
+    //$post = prep_new_post();
+    $ph =& $bBlog->_ph;
+    
+    $res = $ph->new_post($_POST);
+    if(is_int($res)) {
+        $bBlog->assign('post_message',"Post #$res Added :)");
+        if(strlen(C_PING)>0) {
+            include BBLOGROOT.'libs/rpc.php'; // include stuff needed to ping
+            register_shutdown_function('ping'); // who wants to wait for 4
+            // requests before the page loads ?
+        }
+        
+        if ((isset($_POST['send_trackback'])) && ($_POST['send_trackback'] == "TRUE")) {
+            // send a trackback
+            include "./trackback.php";
+            send_trackback($bBlog->_get_entry_permalink($res), $_POST['title_text'], $_POST['excerpt'], $_POST['tburl']);
+        }
 
-	     if(strlen(C_PING)>0) {
-	         include BBLOGROOT.'libs/rpc.php'; // include stuff needed to ping
-	     	 register_shutdown_function('ping'); // who wants to wait for 4
-				// requests before the page loads ?
- 	     }
-	     
-	     if ((isset($_POST['send_trackback'])) && ($_POST['send_trackback'] == "TRUE")) {
-	     	// send a trackback
-		include "./trackback.php";
-		send_trackback($bBlog->_get_entry_permalink($res), $_POST['title_text'], $_POST['excerpt'], $_POST['tburl']);
-	     }
-
-      } else $bBlog->assign('post_message',"Sorry, error adding post: $res");
+      }
+      else{
+          $bBlog->assign('post_message',"Sorry, error adding post: ".$ph->lastError());
+      }
 }
 
 // get modifiers

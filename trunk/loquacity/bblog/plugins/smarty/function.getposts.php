@@ -128,10 +128,10 @@ function smarty_function_getposts($params, &$bBlog) {
 	$opt['home'] = $params['home'];
 
     if(($posts = $ph->get_posts($opt)) !== false){
+        //var_dump($posts);
         $bBlog->assign($params['assign'],$posts);
     }
     else{
-        //var_dump($ph->status);
         $bBlog->assign($params['assign'],array(0 => array('title' => $ph->status)));
     }
 

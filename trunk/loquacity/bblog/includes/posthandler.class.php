@@ -42,54 +42,40 @@ class posthandler {
         $this->_db = $db;
         $this->modifier_paths = $m_paths;
     }
-    ////
-    // !inserts a new entry
-    // returns the new entryid on success
-    // error message on fail
-    // assumes that my_addslashes() has already been applied and data is safe.
+    /**
+    * !inserts a new entry
+    * returns the new entryid on success
+    * error message on fail
+    * assumes that my_addslashes() has already been applied and data is safe.
+    */
     function new_post($post) {
         //$this->modifiednow();
         $now = time();
-        $section = '';
-        if(sizeof($post->sections)>0) {
-            $sections = implode(":",$post->sections);
-            // We add an extra ":" at the begging and end
-            // of this string to ensure that we can locate
-            // the sections properly.
-            $section_q = " sections =':$sections:', ";
+        $sections = ':';
+        if(count($post['frm_sections'])>0) {
+            $sections = ':'.implode(":", $post['frm_sections']).':';
+        //    $section_q = " sections =':$sections:', ";
         }
-        if (!isset($post->ownerid)) {
-            $post->ownerid = $_SESSION['user_id'];
+        //$rs['postid']
+        $rs['title'] = stringHandler::removeMagicQuotes($post['frm_post_title']);
+        $rs['body'] = stringHandler::removeMagicQuotes($post['frm_post_body']);
+        $rs['posttime'] = $now;
+        $rs['modifytime'] = $now;
+        $rs['status'] = $post['frm_post_status'];
+        $rs['modifier'] = $post['frm_modifier'];
+        $rs['sections'] = $sections;
+        $rs['ownerid'] = (!isset($post['ownerid'])) ? intval($post['ownerid']) : $_SESSION['user_id'];
+        $rs['hidefromhome'] = ($post['frm_post_hidefromhome'] == 'hide') ? 1: 0;
+        $rs['allowcomments'] = ($post['frm_post_allowcomments'] == ('allow' or 'disallow' or 'timed')) ? $post['frm_post_allowcomments'] : 'disallow';
+        $rs['autodisabledate'] = (is_numeric($post['frm_post_autodisabledate'])) ? intval($post['frm_post_autodisabledate']) : '';
+        
+        if($this->_db->AutoExecute(T_POSTS, $rs, 'INSERT') !== false){
+            return $this->_db->insert_id;
         }
-
-        $hidefromhome_q = ($post->hidefromhome == 'hide') ? " hidefromhome=1, " : " hidefromhome=0, ";
-
-        if($post->allowcomments == ('allow' or 'disallow' or 'timed'))
-            $allowcomments_q = " allowcomments='{$post->allowcomments}', ";
-
-        if(is_numeric($post->autodisabledate))
-            $autodisable_q = " autodisabledate='{$post->autodisabledate}', ";
-
-        $q_insert = "INSERT INTO ".T_POSTS." SET
-            title       ='$post->title',
-            body        ='$post->body',
-            posttime    ='$now',
-            modifytime  ='$now',
-            status      ='$post->status',
-            $section_q
-            $hidefromhome_q
-            $allowcomments_q
-            $autodisable_q
-            modifier    ='$post->modifier',
-            ownerid    ='$post->ownerid'";
-
-            $this->_db->query($q_insert);
-            $postid = $this->_db->insert_id;
-        if($postid > 0)
-            return $postid;
-        else
+        else{
+            $this->_last_error = $this->_db->ErrorMsg();
             return false;
-
+        }
     }
     /**********************************************************************
     ** get_entries
@@ -127,24 +113,27 @@ class posthandler {
         }
     }
 
-    ////
-    // !formats a single post into a useful array suitable for smarty
-    // i.e. an associatve array not an object
-    // this function is pretty basic at the moment, but all
-    // sorts of things will happen in the future.
-    // it assumes that the required plugin modifiers have been loaded
+    /**
+    * !formats a single post into a useful array suitable for smarty
+    * i.e. an associatve array not an object
+    * this function is pretty basic at the moment, but all
+    * sorts of things will happen in the future.
+    * it assumes that the required plugin modifiers have been loaded
+    */
     function prep_post(&$post) {
         //first do the basics
 
         $npost['id'] = $post['postid'];
         $npost['postid'] = $post['postid'];
-        $npost['permalink'] = (defined('CLEANURLS')) ? str_replace('%postid%',$post['postid'],URL_POST) : BLOGURL.'?postid='.$post['postid'];
-        $npost['trackbackurl'] = (defined('CLEANURLS')) ?  BLOGURL.'trackback/tbpost='.$post['postid'] : BBLOGURL.'trackback.php&amp;tbpost='.$post['postid'];
-        $npost['title'] = $post['title'];
-
+        $npost['permalink'] = (defined(CLEANURLS)) ? str_replace('%postid%',$post['postid'],URL_POST) : BLOGURL.'?postid='.$post['postid'];
+        $npost['trackbackurl'] = (defined(CLEANURLS)) ?  BLOGURL.'trackback/tbpost='.$post['postid'] : BBLOGURL.'trackback.php&amp;tbpost='.$post['postid'];
+        $npost['title'] = htmlspecialchars($post['title']);
+        //var_dump($npost['permalink']);
         // do the body text
         if($post['modifier'] != '') {
-            $npost = $this->apply_modifier($post);
+            $npost['body'] = $this->apply_modifier($post['modifier'], $post['body']);
+            // replace only &'s that are by themselves, else we risk converting an entity
+            $npost['body'] = str_replace(' & ', ' &amp; ', $npost['body']);
         }
         $npost['status'] = $post['status'];
 
@@ -247,7 +236,7 @@ class posthandler {
             $draft_q = "AND posts.status='live' ";
         else
             $draft_q = '';
-        $q = "SELECT posts.*, authors.nickname, authors.email, authors.fullname FROM ".T_POSTS." AS posts LEFT JOIN ".T_AUTHORS." AS authors ON posts.ownerid = authors.id WHERE posts.postid='$postid' $draft_q LIMIT 0,1";
+        $q = "SELECT posts.*, authors.nickname, authors.email, authors.fullname, COUNT(comments.commentid) AS NUMCOMMENTS FROM `".T_POSTS."` AS posts LEFT JOIN `".T_AUTHORS."` AS authors ON posts.ownerid = authors.id LEFT JOIN `".T_COMMENTS."` AS comments ON posts.postid = comments.postid WHERE posts.postid='$postid' $draft_q GROUP BY posts.postid LIMIT 0,1";
         $post = $this->_db->GetRow($q);
         if(!$post){
             $this->status = 'No post found';
@@ -318,24 +307,20 @@ class posthandler {
     /**
      * Loads and applies a Smarty based modifier to a post
      *
-     * NOTE This is a hack and should be better designed
+     * TODO This is a hack and should be better designed
      * 
      * @param array $post
      * @return array
      */
-    function apply_modifier($post){
-        if(is_array($post)){
-            if(array_key_exists('modifier', $post)){
-                $modifier = 'modifier.'.$post['modifier'].'.php';
-                if(($m_path = $this->find_path($modifier)) !== false){
-                    require_once($m_path);
-                    $mod_func = 'smarty_modifier_'.$post['modifier'];
-                    $post['body'] = $mod_func($post['body']);
-                    $post['applied_modifier'] = $post['modifier'];
-                }
-            }
+    function apply_modifier($mod, $body){
+        $modifier = 'modifier.'.$mod.'.php';
+        if(($m_path = $this->find_path($modifier)) !== false){
+            require_once($m_path);
+            $mod_func = 'smarty_modifier_'.$mod;
+            $body = $mod_func($body);
+            //$post['applied_modifier'] = $mod;
         }
-        return $post;
+        return $body;
     }
     /**
     * Searches the modifier paths looking for the requested modifier
@@ -346,11 +331,13 @@ class posthandler {
     function find_path($modifier){
         foreach($this->modifier_paths as $path){
             $f_path = $path.'/'.$modifier;
-            //var_dump($f_path);
             if(file_exists($f_path))
                 return $f_path;
         }
         return false;
+    }
+    function lastError(){
+        return $this->_last_error;
     }
 }
 ?>
