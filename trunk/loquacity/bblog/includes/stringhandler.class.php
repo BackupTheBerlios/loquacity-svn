@@ -158,7 +158,7 @@ class stringHandler{
         return $rval;
     }
 
-    /**
+     /**
      * Reports whether a link contains the Google Redirector.
      * This is meant to be used after a string successfully passes the containsTransformedLinks
      * check. If used without first passing that check unexpected results may return.
@@ -188,6 +188,9 @@ class stringHandler{
         return $result;
     }
 
+    /**
+    * Reports whether a string contains links external to the blog/domain
+    */
     function containsExternalLinks($str){
         $str = $str;
         return true;
@@ -201,7 +204,7 @@ class stringHandler{
     * @return string
     */
     function redirectHref($str){
-    // Google link redirector
+        // Google link redirector
         return preg_replace("/href=\"/i","href=\"http://www.google.com/url?sa=D&q=", $str);
     }
 
@@ -244,8 +247,8 @@ class stringHandler{
      * html tags and ASCII zeros
      *
      * @access  public
-     * @param   string $var  The string to clean.
-     * @return  string       $cleaned result.
+     * @param   mixed $var  Could be a string or an arry of strings
+     * @return  string      $cleaned result.
      */
     function clean($var){
         if (isset($var)) {
@@ -257,6 +260,13 @@ class stringHandler{
         }
         return stringHandler::removeMagicQuotes(stringHandler::trimWhitespace($clean));
     }
+    /**
+    * Returns a string cleaned of script tags
+    *
+    * @access public
+    * @param mixed $var Can be a string or an array of strings
+    * @return string
+    */
     function removeJs($var){
         if (isset($var)) {
             if (!is_array($var)) {
@@ -270,7 +280,7 @@ class stringHandler{
         return stringHandler::trimWhitespace($clean);
     }
 
-    /**
+     /**
      * This removes whitespace at front and end of a string
      *
      * Borrowed from the Seagull project

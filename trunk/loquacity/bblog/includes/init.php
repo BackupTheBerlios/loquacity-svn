@@ -53,23 +53,24 @@ define('T_LINKS',TBL_PREFIX.'links');
 define('T_CATEGORIES',TBL_PREFIX.'categories');
 define('T_RSS',TBL_PREFIX.'rss');
 
-// prevent errors when _open_basedir is set
-#ini_set('include_path','./:../');
-$cur_path = ini_get('include_path');
-ini_set('include_path', BBLOGROOT.PATH_SEPARATOR.$cur_path);
+// If ini_set is available, set our include path
+if(function_exists('ini_set')){
+    $cur_path = ini_get('include_path');
+    ini_set('include_path', BBLOGROOT.PATH_SEPARATOR.$cur_path);
+}
 
 define('SMARTY_DIR', BBLOGROOT.'3rdparty/smarty/libs/');
 
 // include  needed files
 include_once(SMARTY_DIR.'Smarty.class.php');
-include_once('3rdparty/adodb/adodb.inc.php');
-include_once('includes/stringhandler.class.php');
-include_once('includes/confighandler.class.php');
-include_once('includes/posthandler.class.php');
-include_once('includes/commenthandler.class.php');
-include_once('includes/sectionhandler.class.php');
-include_once('includes/bBlog.class.php');
-include_once('includes/templates.php');
+include_once(BBLOGROOT.'3rdparty/adodb/adodb.inc.php');
+include_once(BBLOGROOT.'includes/stringhandler.class.php');
+include_once(BBLOGROOT.'includes/confighandler.class.php');
+include_once(BBLOGROOT.'includes/posthandler.class.php');
+include_once(BBLOGROOT.'includes/commenthandler.class.php');
+include_once(BBLOGROOT.'includes/sectionhandler.class.php');
+include_once(BBLOGROOT.'includes/bBlog.class.php');
+include_once(BBLOGROOT.'includes/templates.php');
 
 
 // start your engines

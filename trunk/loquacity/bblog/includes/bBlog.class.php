@@ -47,22 +47,7 @@ class bBlog extends Smarty {
     ////
     // !bBlog constructor function
 	function bBlog() {
-        // connect to database
-        $this->_adb = NewADOConnection('mysql://'.DB_USERNAME.':'.DB_PASSWORD.'@'.DB_HOST.'/'.DB_DATABASE.'?persist');
-        
-        //Load the config
-        $config =& new configHandler($this->_adb);
-        $config->loadConfig();
-        $this->assign('blogname',C_BLOGNAME);
-        $this->assign('blogdescription',C_BLOG_DESCRIPTION);
-        $this->assign('blogurl',BLOGURL);
-	  	$this->assign('bblogurl',BBLOGURL);
-	  	$this->assign('metakeywords',C_META_KEYWORDS);
-	  	$this->assign('metadescription',C_META_DESCRIPTION);
-		$this->assign('charset',C_CHARSET);
-		$this->assign('direction', C_DIRECTION);
-        $this->assign('C_CAPTCHA_ENABLE', C_CAPTCHA_ENABLE);
- 
+        $this->__init();
         // initial time from config table, based on last updated stuff.
         // this is just the initial value.
         //$this->lastmodified = C_LAST_MODIFIED;
@@ -78,14 +63,32 @@ class bBlog extends Smarty {
         $this->begintime = $mtime[1] + $mtime[0];
         Smarty::Smarty();
         
+        //Smarty setup
         $this->template_dir = BBLOGROOT.'templates/'.C_TEMPLATE;
         $this->compile_dir = BBLOGROOT.'generated/templates/';
         $this->plugins_dir = array(BBLOGROOT.'plugins', BBLOGROOT.'plugins/smarty',BBLOGROOT.'3rdparty/smarty/libs/plugins');
         $this->use_sub_dirs	= FALSE; // change to true if you have a lot of templates
-
-        $this->_ph =& new postHandler($this->_adb, $this->plugins_dir);
-        
 	} // end of function bBlog
+    
+    function __init(){
+        // connect to database
+        $this->_adb = NewADOConnection('mysql://'.DB_USERNAME.':'.DB_PASSWORD.'@'.DB_HOST.'/'.DB_DATABASE.'?persist');
+        $this->_ph =& new postHandler($this->_adb, $this->plugins_dir);
+    }
+    function __load_configuration(){
+        //Load the config
+        $config =& new configHandler($this->_adb);
+        $config->loadConfig();
+        $this->assign('blogname',C_BLOGNAME);
+        $this->assign('blogdescription',C_BLOG_DESCRIPTION);
+        $this->assign('blogurl',BLOGURL);
+	  	$this->assign('bblogurl',BBLOGURL);
+	  	$this->assign('metakeywords',C_META_KEYWORDS);
+	  	$this->assign('metadescription',C_META_DESCRIPTION);
+		$this->assign('charset',C_CHARSET);
+		$this->assign('direction', C_DIRECTION);
+        $this->assign('C_CAPTCHA_ENABLE', C_CAPTCHA_ENABLE);
+    }
     /**
      * A place holder for calling $this->_ph->new_post
      */
