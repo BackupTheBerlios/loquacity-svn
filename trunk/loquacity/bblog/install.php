@@ -19,10 +19,30 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * ratehr than duplicating effort, use as much internal stuff as possible
 **/
 
+if(file_exists(__FILE__.'/bblog')){
+    define(LOQ_APP_ROOT, dirname(__FILE__.PATH_SEPARATOR.'bblog'));
+    define(LOQ_INSTALLER, LOQ_APP_ROOT.PATH_SEPARATOR.'install');
+    include_once(LOQ_APP_ROOT.'3rdparty/adodb/adodb.inc.php');
+    include_once(LOQ_APP_ROOT.'includes/stringhandler.class.php');
+    include_once(LOQ_APP_ROOT.'includes/confighandler.class.php');
+    include_once(LOQ_APP_ROOT.'includes/posthandler.class.php');
+    include_once(LOQ_APP_ROOT.'includes/commenthandler.class.php');
+    include_once(LOQ_APP_ROOT.'includes/sectionhandler.class.php');
+    include_once(LOQ_APP_ROOT.'includes/bBlog.class.php');
+    define(LOQ_CUR_VERSION, '0.8.0-alpha2');
+}
+else{
+    die("Unsupported configuration. The installer does not support altered configurations, you must configure this application manually. If this is not your intent, perhaps your isntallation is corrupt. Try unzipping (de-compressing) all the files again.");
+}
 	// using sessions becasue it makes things easy
 	session_start();
+$smarty = new Smarty();
+$smarty->template_dir = LOQ_INSTALLER.'/templates';
+$smarty->compile_dir = '/tmp'; //This probably won't work on Windows
 
 	// start install all over, forget everything.
 	if (isset($_GET['reset'])) {
@@ -41,22 +61,23 @@
 	// provide some useful defaults, and prevents undefined indexes.
 	if(!isset($config['path'])) $config['path'] = dirname(__FILE__).'/';
 	if(!isset($config['url'])) $config['url'] = 'http://'.$_SERVER['HTTP_HOST'].str_replace('bblog/install.php','',$_SERVER['REQUEST_URI']);
-	if(!isset($config['mysql_host'])) $config['mysql_host'] = 'localhost';
-	if(!isset($config['username'])) $config['username'] = 'admin';
-	if(!isset($config['table_prefix'])) $config['table_prefix'] = 'bB_';
+	
+	if(!isset($config['author'])) $config['author'] = 'admin';
+	if(!isset($config['table_prefix'])) $config['table_prefix'] = 'loq_';
 	if(!isset($config['password'])) $config['password'] = "";
-	if(!isset($config['secondPassword'])) $config['secondPassword'] = "";
+	if(!isset($config['passwd_verify'])) $config['passwd_verify'] = "";
 	if(!isset($config['email'])) $config['email'] = "";
-	if(!isset($config['fullname'])) $config['fullname'] = "";
-	if(!isset($config['mysql_username'])) $config['mysql_username'] = "";
-	if(!isset($config['mysql_password'])) $config['mysql_password'] = "";
-	if(!isset($config['mysql_database'])) $config['mysql_database'] = "";
+	if(!isset($config['real_name'])) $config['real_name'] = "";
+    if(!isset($config['db_host'])) $config['db_host'] = 'localhost';
+	if(!isset($config['db_username'])) $config['db_username'] = "";
+	if(!isset($config['db_password'])) $config['db_password'] = "";
+	if(!isset($config['db_database'])) $config['db_database'] = "";
 	if(!isset($config['blogname'])) $config['blogname'] = "";
 	if(!isset($config['blogdescription'])) $config['blogdescription'] = "";
 	
-	$config['version'] = "0.7.6";
+	$config['version'] = LOQ_CUR_VERSION;
 
-	include './libs/ez_sql.php';
+	
 	include './install/steps.php';
 	include './install/header.php';
 
@@ -76,37 +97,7 @@
 	}
 	switch ($step) {
 		case 0:
-			?>
-			<h3>Welcome to the bBlog installer</h3>
-			<br />
-			<?php echo $message; ?>
-			<h4>Introduction</h4>
-			<p>Welcome to the bBlog installer. If you get stuck, please see www.bblog.com.<br />One thing to note: this installer uses sessions, so if you have disabled cookies, please re-enable them.</p>
-			<h4>Licence Agreement</h4>
-			<p>First things first, the licence agreement:</p>
-			<textarea rows="8" cols="80" style="border: 2px dotted #333; background: #f0f0f0; font-size:10px;" readonly><?php include 'docs/LICENCE.txt'; ?></textarea>
-			<p><input type="checkbox" class="checkbox" name="agree" value="1"> I agree to these terms </p>
-			<h4>Install Type</h4>
-			<ul class="form">
-
-			<li><input type="radio" class="radio" name="install_type" value="fresh" checked="checked" onClick=" document.forms.install.elements['upgrade_from'].disabled = true;" /> Fresh Install</li>
-			<li><input type="radio" class="radio" name="install_type" value="upgrade" onClick=" document.forms.install.elements['upgrade_from'].disabled = false;" /> Upgrade from
-
-			<select name="upgrade_from" id="upgrade_from" disabled>
-			<option value="bblog07">bBlog 0.7</option>
-			<!--
-			<option value="textpattern">Textpattern 0.6</option>
-			<option value="b2_061">b2 0.61</option>
-			<option value="mt">Movable Type (using mysql)</option>
-			<option value="wordpress">Wordpress 0.71</option>
-			<option value="nucleus">Nucleus</option>
-			-->
-			</select>
-			</ul>
-
-			<div class='frame'><input type="submit" value="Next &gt;" name="submit" /></div>
-	
-			<?php
+			$smarty->display('welcome.html');
 		break;
 		
 		// Case 1: Find out if the user is installing a new version,
@@ -270,176 +261,7 @@
 		// do sql.
 
 		$q = array();
-/* Creating Tables */
 $pfx = $config['table_prefix'];
-$q[]="CREATE TABLE `{$pfx}comments` (
-  `commentid` int(10) unsigned NOT NULL auto_increment,
-  `parentid` int(10) unsigned NOT NULL default '0',
-  `postid` int(10) unsigned NOT NULL default '0',
-  `title` varchar(255) NOT NULL default '',
-  `type` enum('comment','trackback') NOT NULL default 'comment',
-  `posttime` int(11) default NULL,
-  `postername` varchar(100) NOT NULL default '',
-  `posteremail` varchar(100) NOT NULL default '',
-  `posterwebsite` varchar(255) NOT NULL default '',
-  `posternotify` tinyint(1) NOT NULL default '0',
-  `pubemail` tinyint(1) NOT NULL default '0',
-  `pubwebsite` tinyint(1) NOT NULL default '0',
-  `ip` varchar(16) NOT NULL default '',
-  `commenttext` text NOT NULL,
-  `deleted` enum('true','false') NOT NULL default 'false',
-  `onhold` tinyint(1) NOT NULL default '0',
-  PRIMARY KEY  (`commentid`),
-  FULLTEXT KEY `commenttext` (`commenttext`)
-) TYPE=MyISAM;";
-
-$q[]="CREATE TABLE `{$pfx}config` (
-  `id` int(11) NOT NULL auto_increment,
-  `name` varchar(50) NOT NULL default '',
-  `value` varchar(255) NOT NULL default '',
-  PRIMARY KEY  (`id`)
-) TYPE=MyISAM;";
-
-
-$q[]="CREATE TABLE `{$pfx}plugins` (
-`id` int(11) NOT NULL auto_increment,
-`type` varchar(50) NOT NULL default 'admin',
-`name` varchar(60) NOT NULL default '',
-`ordervalue` decimal(3,2) NOT NULL default '50.00',
-`nicename` varchar(127) NOT NULL default '',
-`description` text NOT NULL,
-`template` varchar(100) NOT NULL default '',
-`help` mediumtext NOT NULL,
-`authors` varchar(255) NOT NULL default '',
-`licence` varchar(50) NOT NULL default '',
-PRIMARY KEY  (`id`)
-) TYPE=MyISAM;";
-
-$q[]="CREATE TABLE `{$pfx}posts` (
-  `postid` int(10) unsigned NOT NULL auto_increment,
-  `title` varchar(255) NOT NULL default '',
-  `body` mediumtext NOT NULL,
-  `posttime` int(11) NOT NULL default '0',
-  `modifytime` int(11) NOT NULL default '0',
-  `status` enum('live','draft') NOT NULL default 'live',
-  `modifier` varchar(30) NOT NULL default '',
-  `sections` varchar(255) NOT NULL default '',
-  `ownerid` int(10) NOT NULL default '0',
-  `hidefromhome` tinyint(1) NOT NULL default '0',
-  `allowcomments` enum('allow','timed','disallow') NOT NULL default 'allow',
-  `autodisabledate` int(11) NOT NULL default '0',
-  `commentcount` int(11) NOT NULL default '0',
-  PRIMARY KEY  (`postid`),
-  KEY ownerid (ownerid)
-) TYPE=MyISAM;";
-
-
-$q[] = "CREATE TABLE `{$pfx}sections` (
-  `sectionid` int(11) NOT NULL auto_increment,
-  `nicename` varchar(255) NOT NULL default '',
-  `name` varchar(60) NOT NULL default '',
-  PRIMARY KEY  (`sectionid`)
-) TYPE=MyISAM ;";
-
-
-
-$q[] = "CREATE TABLE `{$pfx}referers` (
- `visitID` int(11) NOT NULL auto_increment,
- `visitTime` timestamp(14) NOT NULL,
- `visitURL` char(250) default NULL,
- `referingURL` char(250) default NULL,
- `baseDomain` char(250) default NULL,
- PRIMARY KEY  (`visitID`)
-) TYPE=MyISAM;";
-
-$q[] = "CREATE TABLE {$pfx}authors (
-  id int(10) NOT NULL auto_increment,
-  nickname varchar(20) NOT NULL default '',
-  email varchar(100) NOT NULL default '',
-  password varchar(20) NOT NULL default '',
-  fullname varchar(50) NOT NULL default '',
-  url varchar(50) NOT NULL default '',
-  icq int(10) unsigned NOT NULL default '0',
-  profession varchar(30) NOT NULL default '',
-  likes text NOT NULL,
-  dislikes text NOT NULL,
-  location varchar(25) NOT NULL default '',
-  aboutme text NOT NULL,
-  PRIMARY KEY  (id)
-) TYPE=MyISAM;";
-
-
-$q[] = "
-CREATE TABLE `{$pfx}rss` (
-  `id` int(11) NOT NULL auto_increment,
-  `url` text NOT NULL,
-  `input_charset` text NOT NULL,
-  PRIMARY KEY  (`id`)
-) TYPE=MyISAM ";
-
-$q[] = "
-CREATE TABLE {$pfx}links (
-  linkid int(11) NOT NULL auto_increment,
-  nicename varchar(255) NOT NULL,
-  url varchar(255) NOT NULL default '',
-  category int(11) NOT NULL, 
-  position int(8) NOT NULL default '10',
-  PRIMARY KEY  (linkid)) TYPE=MyISAM";
-
-$q[] = "
-CREATE TABLE {$pfx}categories (categoryid int(11) NOT NULL auto_increment
-, name varchar(60) NOT NULL, PRIMARY KEY  (categoryid)) TYPE=MyISAM
-";
-
-/* inserting data */
-$q[]= "INSERT INTO `{$pfx}rss` VALUES (9, '', '')";
-$q[]= "INSERT INTO `{$pfx}rss` VALUES (8, '', '')";
-$q[]= "INSERT INTO `{$pfx}rss` VALUES (7, '', '')";
-$q[]= "INSERT INTO `{$pfx}rss` VALUES (6, '', '')";
-$q[]= "INSERT INTO `{$pfx}rss` VALUES (5, '', '')";
-$q[]= "INSERT INTO `{$pfx}rss` VALUES (4, '', '')";
-$q[]= "INSERT INTO `{$pfx}rss` VALUES (3, '', '')";
-$q[]= "INSERT INTO `{$pfx}rss` VALUES (2, '', '')";
-$q[]= "INSERT INTO `{$pfx}rss` VALUES (1, 'http://www.bblog.com/rdf.php', 'I88592')";
-
-$q[]="INSERT INTO `{$pfx}config` (`id`, `name`, `value`) VALUES
-('', 'EMAIL', '".$config['email']."'),
-('', 'BLOGNAME', '".$config['blogname']."'),
-('', 'TEMPLATE', 'lines'),
-('', 'DB_TEMPLATES', 'false'),
-('', 'DEFAULT_MODIFIER', 'simple'),
-('', 'CHARSET', 'UTF-8'),
-('', 'VERSION', '0.76'),
-('', 'DIRECTION', 'LTR'),
-('', 'DEFAULT_STATUS', 'live'),
-('', 'PING','bblog.com/ping.php'),
-('', 'COMMENT_TIME_LIMIT','1'),
-('', 'NOTIFY','false'),
-('', 'BLOG_DESCRIPTION', '".$config['blogdescription']."'),
-('', 'COMMENT_MODERATION','urlonly'),
-('', 'META_DESCRIPTION','Some words about this blog'),
-('', 'META_KEYWORDS','work,life,play,web design'),
-('', 'LAST_MODIFIED', UNIX_TIMESTAMP());";
-        $q[] = "INSERT INTO {$pfx}categories VALUES (1,'Navigation');";
-	$q[] = "INSERT INTO {$pfx}categories VALUES (2,'Blogs I read');";
-$url = $config['url'];
-	$q[]= "INSERT INTO {$pfx}links VALUES (1,'Home','{$url}',1,20);";
-        $q[]= "INSERT INTO {$pfx}links VALUES (2,'Archives','{$url}archives.php',1,30);";
-	$q[]= "INSERT INTO {$pfx}links VALUES (3,'RSS 2.0 Feed','{$url}rss.php?ver=2',1,40);";
-        $q[]="INSERT INTO {$pfx}links VALUES (4,'bBlog Dev','http://dev2.bblog.com/',2,50);";
-	$q[]="INSERT INTO {$pfx}links VALUES (5, 'Eadz::Blog','http://www.eadz.co.nz/blog/',2,60);";
-        
-
-
-$q[]="INSERT INTO `{$pfx}authors` (`nickname`,`password`,`email`,`fullname`) VALUES
-('".$config['username']."','".$config['password']."','".$config['email']."','".$config['fullname']."');";
-
-
-$q[] = "INSERT INTO `{$pfx}posts` (`postid`, `title`, `body`, `posttime`, `modifytime`, `status`, `modifier`, `sections`, `commentcount`,`ownerid`) VALUES (1, 'First Post', '[b]This is the first post of bBlog.[/b]\r\n\r\nYou may delete this post in the admin section. Make sure you have deleted the install file and changed the admin password. \r\n\r\nBe sure to visit the [url=http://www.bblog.com/forum.php]bBlog forum[/url] if you have any questions, comments, bug reports etc. \r\n\r\nHappy bBlogging!', UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'live', 'bbcode', '', 0, 1);";
-
-$q[] = "INSERT INTO `{$pfx}sections` (`sectionid`, `nicename`, `name`) VALUES (1, 'News', 'news'),
-(2, 'Work', 'work'),
-(3, 'Play', 'play');";
 
 
 
