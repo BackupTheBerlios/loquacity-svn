@@ -48,34 +48,7 @@ class bBlog extends Smarty {
     // !bBlog constructor function
 	function bBlog() {
         $this->__init();
-        // initial time from config table, based on last updated stuff.
-        // this is just the initial value.
-        //$this->lastmodified = C_LAST_MODIFIED;
-        //$this->register_postfilter("update_when_compiled");
-        // load up the sections
         $this->get_sections();
-
-        //start the session that we need so much ;)
-        if(!session_id()) {
-	  	    session_start();
-	    }
-        $mtime = explode(" ",microtime());
-        $this->begintime = $mtime[1] + $mtime[0];
-        Smarty::Smarty();
-        
-        //Smarty setup
-        $this->template_dir = BBLOGROOT.'templates/'.C_TEMPLATE;
-        $this->compile_dir = BBLOGROOT.'generated/templates/';
-        $this->plugins_dir = array(BBLOGROOT.'plugins', BBLOGROOT.'plugins/smarty',BBLOGROOT.'3rdparty/smarty/libs/plugins');
-        $this->use_sub_dirs	= FALSE; // change to true if you have a lot of templates
-	} // end of function bBlog
-    
-    function __init(){
-        // connect to database
-        $this->_adb = NewADOConnection('mysql://'.DB_USERNAME.':'.DB_PASSWORD.'@'.DB_HOST.'/'.DB_DATABASE.'?persist');
-        $this->_ph =& new postHandler($this->_adb, $this->plugins_dir);
-    }
-    function __load_configuration(){
         //Load the config
         $config =& new configHandler($this->_adb);
         $config->loadConfig();
@@ -88,6 +61,38 @@ class bBlog extends Smarty {
 		$this->assign('charset',C_CHARSET);
 		$this->assign('direction', C_DIRECTION);
         $this->assign('C_CAPTCHA_ENABLE', C_CAPTCHA_ENABLE);
+        
+        Smarty::Smarty();
+        //Smarty setup
+        $this->template_dir = BBLOGROOT.'templates/'.C_TEMPLATE;
+        $this->compile_dir = BBLOGROOT.'generated/templates/';
+        $this->plugins_dir = array(BBLOGROOT.'plugins', BBLOGROOT.'plugins/smarty',BBLOGROOT.'3rdparty/smarty/libs/plugins');
+        $this->use_sub_dirs	= FALSE; // change to true if you have a lot of templates
+        $this->_ph =& new postHandler($this->_adb, $this->plugins_dir);
+        // initial time from config table, based on last updated stuff.
+        // this is just the initial value.
+        //$this->lastmodified = C_LAST_MODIFIED;
+        //$this->register_postfilter("update_when_compiled");
+        // load up the sections
+        
+
+        //start the session that we need so much ;)
+        if(!session_id()) {
+	  	    session_start();
+	    }
+        $mtime = explode(" ",microtime());
+        $this->begintime = $mtime[1] + $mtime[0];
+        $this->__load_configuration();
+	} // end of function bBlog
+    
+    function __init(){
+        // connect to database
+        $this->_adb = NewADOConnection('mysql://'.DB_USERNAME.':'.DB_PASSWORD.'@'.DB_HOST.'/'.DB_DATABASE.'?persist');
+        
+    }
+    function __load_configuration(){
+        
+        
     }
     /**
      * A place holder for calling $this->_ph->new_post

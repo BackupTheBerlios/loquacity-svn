@@ -3,14 +3,16 @@
     <head>
         <meta http-equiv="content-type" content="text/html"; charset="UTF-8" />
         <title>bBlog Installer</title>
-        <link rel="stylesheet" type="text/css" title="Main" href="style/admin.css" media="screen" />
+        <link rel="stylesheet" type="text/css" title="Main" href="bblog/style/admin.css" media="screen" />
         <style type="text/css">
+	{literal}
             #teaser a {
                 cursor:default;
             }
             #teader a:hover {
             
             }
+	{/literal}
         </style>
     </head>
     <body>
@@ -18,12 +20,10 @@
             <h1>Loquacity Guided Installer</h1>
         </div>
         <div id="teaser">
-            <a  class="active" href="Javascript:;">Welcome</a>
-            <a  <?php if ($step>1) echo 'class="active" '; ?> href="Javascript:;">File Permissions</a>
-            <a <?php if ($step >2) echo 'class="active" '; ?> href="Javascript:;">Database Settings</a>
-            <a <?php if ($step >3) echo 'class="active" '; ?> href="Javascript:;">Config</a>
-            <a <?php if ($step >4) echo 'class="active" '; ?> href="Javascript:;">Finish</a>
+            <a {if $step eq 0}class="active" {/if}href="Javascript:;">Welcome</a>
+            <a {if $step eq 1}class="active" {/if}href="Javascript:;">File Permissions</a>
+            <a {if $step eq 2}class="active" {/if}href="Javascript:;">Database Settings</a>
+            <a {if $step eq 3}class="active" {/if}href="Javascript:;">Config</a>
+            <a {if $step eq 4}class="active" {/if}href="Javascript:;">Finish</a>
             <a href="install.php?reset=true" style="cursor:pointer;">Reset install, start over.</a>
         </div>
-        <div id="content">
-            <form action="install.php" method="POST" name="install">

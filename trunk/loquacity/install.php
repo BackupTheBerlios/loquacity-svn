@@ -23,26 +23,24 @@
  * ratehr than duplicating effort, use as much internal stuff as possible
 **/
 
-if(file_exists(__FILE__.'/bblog')){
-    define(LOQ_APP_ROOT, dirname(__FILE__.PATH_SEPARATOR.'bblog'));
-    define(LOQ_INSTALLER, LOQ_APP_ROOT.PATH_SEPARATOR.'install');
+if(file_exists(dirname(__FILE__).'/bblog')){
+    define(LOQ_APP_ROOT, dirname(__FILE__).DIRECTORY_SEPARATOR.'bblog'.DIRECTORY_SEPARATOR);
+    define(LOQ_INSTALLER, LOQ_APP_ROOT.'install');
+    define('SMARTY_DIR', LOQ_APP_ROOT.'3rdparty/smarty/libs/');
+    include_once(SMARTY_DIR.'Smarty.class.php');
     include_once(LOQ_APP_ROOT.'3rdparty/adodb/adodb.inc.php');
     include_once(LOQ_APP_ROOT.'includes/stringhandler.class.php');
     include_once(LOQ_APP_ROOT.'includes/confighandler.class.php');
-    include_once(LOQ_APP_ROOT.'includes/posthandler.class.php');
-    include_once(LOQ_APP_ROOT.'includes/commenthandler.class.php');
-    include_once(LOQ_APP_ROOT.'includes/sectionhandler.class.php');
-    include_once(LOQ_APP_ROOT.'includes/bBlog.class.php');
     define(LOQ_CUR_VERSION, '0.8.0-alpha2');
 }
 else{
-    die("Unsupported configuration. The installer does not support altered configurations, you must configure this application manually. If this is not your intent, perhaps your isntallation is corrupt. Try unzipping (de-compressing) all the files again.");
+    die("Unsupported configuration. The installer does not support altered configurations, you must configure this application manually. If this is not your intent, perhaps your installation is corrupt. Try unzipping (de-compressing) all the files again.");
 }
 	// using sessions becasue it makes things easy
 	session_start();
-$smarty = new Smarty();
-$smarty->template_dir = LOQ_INSTALLER.'/templates';
-$smarty->compile_dir = '/tmp'; //This probably won't work on Windows
+    $smarty = new Smarty();
+    $smarty->template_dir = LOQ_INSTALLER.'/templates';
+    $smarty->compile_dir = '/tmp'; //This probably won't work on Windows
 
 	// start install all over, forget everything.
 	if (isset($_GET['reset'])) {
@@ -58,29 +56,7 @@ $smarty->compile_dir = '/tmp'; //This probably won't work on Windows
 
 	if(!isset($_SESSION['step'])) $step=0;
 
-	// provide some useful defaults, and prevents undefined indexes.
-	if(!isset($config['path'])) $config['path'] = dirname(__FILE__).'/';
-	if(!isset($config['url'])) $config['url'] = 'http://'.$_SERVER['HTTP_HOST'].str_replace('bblog/install.php','',$_SERVER['REQUEST_URI']);
 	
-	if(!isset($config['author'])) $config['author'] = 'admin';
-	if(!isset($config['table_prefix'])) $config['table_prefix'] = 'loq_';
-	if(!isset($config['password'])) $config['password'] = "";
-	if(!isset($config['passwd_verify'])) $config['passwd_verify'] = "";
-	if(!isset($config['email'])) $config['email'] = "";
-	if(!isset($config['real_name'])) $config['real_name'] = "";
-    if(!isset($config['db_host'])) $config['db_host'] = 'localhost';
-	if(!isset($config['db_username'])) $config['db_username'] = "";
-	if(!isset($config['db_password'])) $config['db_password'] = "";
-	if(!isset($config['db_database'])) $config['db_database'] = "";
-	if(!isset($config['blogname'])) $config['blogname'] = "";
-	if(!isset($config['blogdescription'])) $config['blogdescription'] = "";
-	
-	$config['version'] = LOQ_CUR_VERSION;
-
-	
-	include './install/steps.php';
-	include './install/header.php';
-
 	if($step > 2) {
 		$db = new db($config['mysql_username'], $config['mysql_password'], $config['mysql_database'], $config['mysql_host']);
 	}
@@ -97,6 +73,7 @@ $smarty->compile_dir = '/tmp'; //This probably won't work on Windows
 	}
 	switch ($step) {
 		case 0:
+            $smarty->assign('step', 0);
 			$smarty->display('welcome.html');
 		break;
 		
@@ -109,13 +86,6 @@ $smarty->compile_dir = '/tmp'; //This probably won't work on Windows
 				$intro_func = 'upgrade_from_'.$config['upgrade_from'].'_intro';
 				if(function_exists($intro_func)) $intro_func();
 			}
-			?>
-			<h3>File Permissions</h3>
-			<p>bBlog need to be able to write to disk to store it's cache of templates, and if you want to use the blo.gs favorites functionality.</p>
-			<p>We will now check the permissions of the 'cache' folder, the 'compiled_templates' folder, and the 'cache/favorites.xml' file. They all need to be writable by the webserver. This will involve chmodding the folders and files with your ftp client ( if you're not using ftp you probally know what do do here ). Permissions should either be 775. If that doesn't work, 777 will. </p>
-			<p>Additionally, ./config.php should be writable during the install. At the end of the install when the config file is written to disk, you should change the permissions back so it is not writable by the webserver.</p>
-			<?php
-		
 			$test = check_writable();
 			if($test) echo "<p>Great, all working. <input type='submit' name='continue' value='Click here to continue' /></p>";
 			else echo "<p>Please fix above errors, then <input type='submit' name='continue' value='Click here to try again' /></p>";
@@ -457,7 +427,7 @@ include BBLOGROOT.'inc/init.php';
 
 }
 
-include 'install/footer.php';
+#include 'install/footer.php';
 function check_writable() {
 	$ok = TRUE;
 	if(is_writable("./cache")) {
