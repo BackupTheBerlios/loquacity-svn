@@ -30,9 +30,8 @@
  */
 include_once('bblog/config.php');
 if(defined(C_CAPTCHA_ENABLE) && C_CAPTCHA_ENABLE == 'true'){
-    require_once('bblog/libs/captcha/php-captcha.inc.php');
-    
-    $fonts = 'bblog/libs/captcha/fonts/';
+    include_once('bblog/3rdparty/captcha/php-captcha.inc.php');
+    $fonts = 'bblog/3rdparty/captcha/fonts/';
     $aFonts = array($fonts.'VeraBd.ttf', $fonts.'VeraIt.ttf', $fonts.'Vera.ttf');
     
     $captcha = new PhpCaptcha($aFonts, 200, 60);

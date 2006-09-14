@@ -113,9 +113,8 @@ class commentHandler {
     * @param array  $post_vars $_POST
     */
     function new_comment($post, $replyto, $post_vars) {
-        $result = $this->canProceed($post, $post_vars['imagecode'], $post_vars['comment']);
-        if($result['proceed'] === true){
-            unset($result);
+	$result = false;
+        if($this->canProceed($post, $post_vars['imagecode'], $post_vars['comment'])){
             $vars = $this->prepFieldsForDB($post_vars, $post['postid'], $replyto);
             if ($post_vars['set_cookie']) {
                 $this->setCommentCookie($vars['postername'], $vars['posteremail'], $vars['posterwebsite']);
@@ -123,14 +122,14 @@ class commentHandler {
 
             $id = $this->saveComment($vars);
             if($id !== false && $id > 0){
-                if(C_NOTIFY == true){
+                if(C_NOTIFY == 'true'){
                     $this->notify($vars['postername'], $post['permalink'],$vars['onhold'], $vars['commenttext']);
                 }
                 $result = $id;
             }
             else{
-                $result['error'] = true;
-                $result['message'][] = array("Error", "Error inserting comment for post ".$post['title']);
+                $result = true;
+                $this->_errors[] = array("Error", "Error inserting comment for post ".$post['title']);
                 error_log(mysql_error(), 0);
             }
         }
@@ -154,7 +153,7 @@ class commentHandler {
         $rval['posteremail'] = stringHandler::clean($vars["email"]);
         $rval['title'] = stringHandler::clean($vars["title"]);
         $rval['posterwebsite'] = stringHandler::clean($vars["website"]);
-        $rval['commenttext'] = stringHandler::processCommentText($vars["comment"]);
+        $rval['commenttext'] = $this->processCommentText($vars["comment"]);
         $rval['pubemail'] = ($vars["public_email"] == 1) ? 1 : 0;
         $rval['pubwebsite'] = ($vars["public_website"] == 1) ? 1 : 0;
         $rval['posternotify'] = ($vars["notify"] == 1) ? 1 : 0;
@@ -231,19 +230,18 @@ class commentHandler {
     * @return array
     */
     function canProceed(&$post, $code, $comment){
-        $rval['proceed'] = true;
-        $rval['message'] = array();
+        $rval = true;
         if($this->isFlooding( $_SERVER['REMOTE_ADDR'], time())){
-            $rval['proceed'] = false;
-            $rval['message'][] = array("Comment Flood Protection" => "Error adding comment. You have tried to make a comment too soon after your last one. Please try again later. This is a bBlog spam prevention measure");
+            $rval = false;
+            $this->_errors[] = array("Comment Flood Protection" => "Error adding comment. You have tried to make a comment too soon after your last one. Please try again later. This is a bBlog spam prevention measure");
         }
         if($this->isDisabled($post)){
-            $rval['proceed'] = false;
-            $rval['message'][] = array("Error adding comment" => "Comments have been turned off for this post");
+            $rval = false;
+            $this->_errors[] = array("Error adding comment" => "Comments have been turned off for this post");
         }
         if($this->failsCaptcha($code)){
-            $rval['proceed'] = false;
-            $rval['message'][] = array('Error adding comment' => 'Supplied text does not match what was on the image');
+            $rval = false;
+            $this->_errors[] = array('Error adding comment' => 'Supplied text does not match what was on the image');
         }
         return $rval;
     }
@@ -323,11 +321,10 @@ class commentHandler {
     * @return bool
     */
     function failsCaptcha($code){
-        require_once(BBLOGROOT.'libs/captcha/php-captcha.inc.php');
-        $rval = false;
+        $rval = true;
         if(C_IMAGE_VERIFICATION == 'true' && !empty($code)) { //Some templates may not have the iamge verification enabled
             if (!PhpCaptcha::Validate($code)){
-                $rval = true;
+                $rval = false;
             }
         }
         return $rval;
@@ -343,7 +340,7 @@ class commentHandler {
     * @return void
     */
     function notify($name, $link, $onhold, $comment){
-        include_once (BBLOGROOT."inc/mail.php");
+        include_once (BBLOGROOT."includes/mail.php");
         $message = $name." has posted a comment in reply to your blog entry at ".$link."\n\nComment: ".$comment."\n\n";
         if ($onhold == 1)
             $message .= "You have selected comment moderation and this comment will not appear until you approve it, so please visit your blog and log in to approve or reject any comments\n";

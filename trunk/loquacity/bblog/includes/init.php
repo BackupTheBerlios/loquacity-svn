@@ -75,6 +75,9 @@ include_once(BBLOGROOT.'includes/templates.php');
 
 // start your engines
 $bBlog = new bBlog();
+if(defined(C_CAPTCHA_ENABLE) && C_CAPTCHA_ENABLE == 'true'){
+    include_once(BBLOGROOT.'3rdparty/captcha/php-captcha.inc.php');
+}
 /* $mtime = explode(" ",microtime());
 $bBlog->begintime = $mtime[1] + $mtime[0]; */
 

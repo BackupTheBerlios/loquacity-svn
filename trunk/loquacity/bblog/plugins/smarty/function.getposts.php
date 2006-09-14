@@ -153,12 +153,9 @@ function smarty_function_getposts($params, &$bBlog) {
 function get_single_post(&$bBlog, &$ph, $postid){
     $post = $ph->get_post($postid);
     if(!is_array($post))
-        return false;
-    $post = apply_modifier($bBlog, array($post));
-    $post = $post[0];
+        return false;;
     $post['newday'] = 'yes';
     $post['newmonth'] = 'yes';
-    
     return $post;
 }
 ?>
