@@ -86,11 +86,17 @@ function smarty_function_sectionlinks($params, &$bBlog) {
     foreach ($sections as $section) {
         $i++;
         //we using arrays in the template and objects in the core..
-        $url = urlencode($section['url']);
+        $url = '';
         $nicename = $section['nicename'];
+        if(defined(CLEAN_URLS) && CLEAN_URLS == 'true'){
+                $url = '<a href="'.BLOGURL .'/section/'.urlencode($section['name']).'">'.$nicename.'</a>';
+        }
+        else{
+                $url = '<a href="'.BLOGURL .'?sectionid='.urlencode($section['id']).'">'.$nicename.'</a>';
+        }
         if($mode=='list')
             $linkcode .= "<li>";
-        $linkcode .= '<a href="'.$url.'">'.$nicename.'</a>';
+        $linkcode .= $url;
 
         if($mode=='list')
             $linkcode .= "</li>";

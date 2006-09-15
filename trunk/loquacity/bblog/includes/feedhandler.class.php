@@ -52,7 +52,7 @@ class feedhandler{
     *  @return mixed If a filename is passed, then nothing is returned, otherwise an XML datastream
     */
     function generate($type=null,$f=null){
-        include_once('ext-libs/feedcreator/feedcreator.class.php');
+        include_once('3rdparty/feedcreator/feedcreator.class.php');
         $ft = (!is_null($type) && count($ft) > 0) ? $type : 'RSS2.0';
         $feed = new UniversalFeedCreator();
         $feed->UseCached();
@@ -61,7 +61,7 @@ class feedhandler{
         $feed->link = BLOGURL;
         $feed->syndicationURL = BLOGURL.basename($_SERVER['SCRIPT_NAME']);
 
-        $posts = $this->_ph->get_posts(array('order' => 'ORDER BY posttime DESC', 'num' => 20));
+        $posts = $this->_ph->get_posts(array('order' => 'ORDER BY posts.posttime DESC', 'num' => 20));
         foreach($posts as $post){
             $item = new FeedItem();
             $item->title = $post['title'];

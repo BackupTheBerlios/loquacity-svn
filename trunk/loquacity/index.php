@@ -47,7 +47,7 @@ if(isset($_GET['postid']) && is_numeric($_GET['postid'])) {
     $bBlog->show_post = (int)$_GET['postid'];
     $bBlog->display('post.html');
 }
-else if(isset($_GET['postid']) && is_numeric($_GET['sectionid'])) {
+else if(isset($_GET['sectionid']) && is_numeric($_GET['sectionid'])) {
    	$bBlog->assign('sectionid', (int)$_GET['sectionid']);
    	$bBlog->assign('sectionname',$bBlog->sect_by_name[(int)$_GET['sectionid']]);
    	$bBlog->show_section = (int)$_GET['sectionid'];

@@ -206,7 +206,7 @@ class posthandler {
         if (isset($day))                                    $where .= " AND FROM_UNIXTIME(posttime,'%D') = '" . addslashes($day) . "' ";
         if (isset($hour))                                   $where .= " AND FROM_UNIXTIME(posttime,'%H') = '" . addslashes($hour) . "' ";
         if (isset($minute))                                 $where .= " AND FROM_UNIXTIME(posttime,'%i') = '" . addslashes($minute) . "' ";
-        if (isset($second))                                 $where .= " AND FROM_UNIXTIME(posttime,'%S') = '" . addslashes($second) . "' ";
+        if (isset($second))                                 $where .= " AND FROM_UNIXTIME(posts.posttime,'%S') = '" . addslashes($second) . "' ";
 
         // There should be a ":" at the beginning and end of
         // any sections list

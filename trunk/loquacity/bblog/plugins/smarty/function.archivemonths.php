@@ -89,7 +89,7 @@ function smarty_function_archivemonths($params, &$bBlog) {
                 $monthslist .= ' <em>('.$row['posts'].')</em>';
             }
             if($list)
-                $monthslist .= '<li>';
+                $monthslist .= '</li>';
             else
                 $monthslist .= $sep;
         }
