@@ -106,36 +106,6 @@ if (isset($_POST['edit']) && is_numeric($_POST['edit'])){
             $sects[$id] = $sect;
         }
     }
-    //var_dump($sects);
-/*        if(isset($editpostsections[$sect['sectionid']])){
-            $sect['checked'] = TRUE;
-            $nsects[] = $sect;
-        }
-    }
-
-    if(strlen($epost['sections']) > 1){
-        $_post_secs = explode(":",$epost['sections']);
-        if(is_array($_post_secs)){
-            foreach($_post_secs as $_post_sec){
-                if(!empty($_post_sec)){
-                    $editpostsections[$_post_sec] = TRUE;
-                }
-            }
-        }
-    }
-    else{
-        $editpostsections[$epost['sections']] = true;
-    }
-    $bBlog->assign('editpostsections',$editpostsections);
-    $sects = $bBlog->sections;
-    $nsects = array();
-    foreach($sects as $sect){
-        if(isset($editpostsections[$sect['sectionid']])){
-            $sect['checked'] = TRUE;
-            $nsects[] = $sect;
-        }
-    }
-    var_dump($nsects);*/
     $bBlog->assign("sections",$sects);
     //$bBlog->assign_by_ref("sections",$nsects);
 }
@@ -147,65 +117,16 @@ if ((isset($_POST['postedit'])) && ($_POST['postedit'] == 'true')){
         die;
     }
 
-    $newsections = '';
-
-    if ((isset($_POST['sections'])) && (sizeof($_POST['sections']) > 0))
-    {
-        $newsections = implode(":",$_POST['sections']);
-    }
-
-    if ((isset($_POST['edit_timestamp'])) && ($_POST['edit_timestamp'] == 'TRUE'))
-    {
-	    // the timestamp will be changed.
-	    if (!isset($_POST['ts_day']))       { $_POST['ts_day']      = 0;    }
-    	if (!isset($_POST['ts_month']))     { $_POST['ts_month']    = 0;    }
-    	if (!isset($_POST['ts_year']))      { $_POST['ts_year']     = 0;    }
-	    if (!isset($_POST['ts_hour']))      { $_POST['ts_hour']     = 0;    }
-    	if (!isset($_POST['ts_minute']))    { $_POST['ts_minute']   = 0;    }
-
-	    $timestamp = maketimestamp($_POST['ts_day'],$_POST['ts_month'],$_POST['ts_year'],$_POST['ts_hour'],$_POST['ts_minute']);
-    }
-    else{
-	    $timestamp = FALSE;
-    }
-
-    if($_POST['hidefromhome'] == 'hide') $hidefromhome='hide';
-    else $hidefromhome='donthide';
-	// there is a reason for not using booleans here.
-	// is because the bBlog->edit_post function needs to know if to change it or not.
-
-     $disdays = (int)$_POST['disallowcommentsdays'];
-     $time = (int)time();
-     $autodisabledate = $time + $disdays * 3600 * 24;
-
-
-    $params = array(
-        "postid"    => $_POST['postid'],
-        "title"     => stringHandler::clean($_POST['title_text']),
-        "body"      => stringHandler::removeMagicQuotes($_POST['body_text']),
-        "modifier"  => stringHandler::clean($_POST['modifier']),
-        "status"    => stringHandler::clean($_POST['pubstatus']),
-        "edit_sections" => TRUE,
-	    "hidefromhome" => $hidefromhome,
-	    "allowcomments" => stringHandler::clean($_POST['commentoptions']),
-	    "autodisabledate" => $autodisabledate,
-        "sections"  => $newsections,
-        "timestamp" => $timestamp
-    );
-
-    //$bBlog->edit_post($params);
-    if($ph->edit_post($params)){
-        $bBlog->modifiednow();
-    }
-
-    if ((isset($_POST['send_trackback'])) && ($_POST['send_trackback'] == "TRUE")){
-        // send a trackback
-    	include "./trackback.php";
-
-	    if (!isset($_POST['title_text']))   { $_POST['title_text']  = ""; }
-    	if (!isset($_POST['excerpt']))      { $_POST['excerpt']     = ""; }
-    	if (!isset($_POST['tburl']))        { $_POST['tburl']       = ""; }
-    	send_trackback($bBlog->_get_entry_permalink($_POST['postid']), $_POST['title_text'], $_POST['excerpt'], $_POST['tburl']);
+    if($ph->edit_post($_POST)){
+	if ((isset($_POST['send_trackback'])) && ($_POST['send_trackback'] == "TRUE")){
+		// send a trackback
+		include "includes/trackbackhandler.class.php";
+		$tb = new trackbackhandler($bBlog->_adb);
+		if (!isset($_POST['title_text']))   { $_POST['title_text']  = ""; }
+		if (!isset($_POST['excerpt']))      { $_POST['excerpt']     = ""; }
+		if (!isset($_POST['tburl']))        { $_POST['tburl']       = ""; }
+		$tb->send_trackback($ph->get_post_permalink($_POST['postid']), $_POST['title_text'], $_POST['excerpt'], $_POST['tburl']);
+	}
     }
 }
 
@@ -216,8 +137,8 @@ if ((isset($_POST['filter'])) && ($_POST['filter'] == 'true')){
     }
     else
     {
-	    $num=20;
-	}
+	$num=20;
+    }
 
 	$searchopts['num'] = $num;
 	$searchopts['wherestart'] = ' WHERE 1 ';

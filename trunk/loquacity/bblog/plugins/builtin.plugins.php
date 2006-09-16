@@ -62,41 +62,9 @@ function scan_for_plugins () {
             $have_plugins[$plugin['type']][$plugin['name']] = TRUE;
         }
     }
-
-
-  $plugin_files=array();
-  $dir="./plugins";
-  $dh = opendir( $dir ) or die("couldn't open directory");
-  while ( ! ( ( $file = readdir( $dh ) ) === false ) ) {
-    if(substr($file, -3) == 'php') $plugin_files[]=$file;
-  }
-  closedir( $dh );
-  foreach($plugin_files as $plugin_file) {
-    $far = explode('.',$plugin_file);
-    $type = $far[0];
-    $name = $far[1];
-    if($type != 'builtin') {
-       include_once './plugins/'.$plugin_file;
-       $func = 'identify_'.$type.'_'.$name;
-       if(function_exists($func)) {
-                $newplugin = $func();
-                if($have_plugins[$newplugin['type']][$newplugin['name']]!==TRUE) {
-			 $q = "insert into ".T_PLUGINS." set
-                         `type`='".$newplugin['type']."',
-                        `name`='".$newplugin['name']."',
-                         nicename='".$newplugin['nicename']."',
-                         description='".stringHandler::clean($newplugin['description'])."',
-			 template='".$newplugin['template']."',
-                         help='".stringHandler::removeMagicQuotes($newplugin['help'])."',
-                         authors='".stringHandler::clean($newplugin['authors'])."',
-                         licence='".$newplugin['licence']."'";
-			 $bBlog->_adb->Execute($q);
-			 $newplugincount++;
-			 $newpluginnames[]=$newplugin['nicename'];
-
-                }
-       }
-    }
+	$plugin_files=array();
+	$dir=dirname(__FILE__);
+	$plugins = scanPluginDir($dir);
 
   }
   if($newplugincount == 0) return "No new plugins found";
@@ -156,4 +124,46 @@ $bBlog->assign('show_plugin_menu',$show_plugin_menu);
 
 $bBlog->display("plugins.html");
 
+function scanPluginDir($dir){
+	$dh = opendir($dir);
+	while((($file = readdir( $dh )) !== false )){
+		if($file === 'smarty'){
+			scanPluginDir($dir . DIRECTORY_SEPARATOR . $file);
+		}
+		else if(substr($file, -3) == 'php'){
+			$parts = explode('.',$plugin_file);
+			if($parts[0] !== 'builtin'){
+				
+			}
+			$plugin_files[]=$file;
+		}
+	}
+	closedir( $dh );
+foreach($plugin_files as $plugin_file) {
+    $far = ;
+    $type = $far[0];
+    $name = $far[1];
+    if($type != 'builtin') {
+       include_once './plugins/'.$plugin_file;
+       $func = 'identify_'.$type.'_'.$name;
+       if(function_exists($func)) {
+                $newplugin = $func();
+                if($have_plugins[$newplugin['type']][$newplugin['name']]!==TRUE) {
+			 $q = "insert into ".T_PLUGINS." set
+                         `type`='".$newplugin['type']."',
+                        `name`='".$newplugin['name']."',
+                         nicename='".$newplugin['nicename']."',
+                         description='".stringHandler::clean($newplugin['description'])."',
+			 template='".$newplugin['template']."',
+                         help='".stringHandler::removeMagicQuotes($newplugin['help'])."',
+                         authors='".stringHandler::clean($newplugin['authors'])."',
+                         licence='".$newplugin['licence']."'";
+			 $bBlog->_adb->Execute($q);
+			 $newplugincount++;
+			 $newpluginnames[]=$newplugin['nicename'];
+
+                }
+       }
+    }
+}
 ?>

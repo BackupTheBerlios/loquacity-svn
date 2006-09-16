@@ -43,33 +43,32 @@ class posthandler {
         $this->modifier_paths = $m_paths;
     }
     /**
-    * !inserts a new entry
+    * inserts a new entry
     * returns the new entryid on success
     * error message on fail
     * assumes that my_addslashes() has already been applied and data is safe.
     */
     function new_post($post) {
-        //$this->modifiednow();
-        $now = time();
+        return $this->modifyPost($post, 'INSERT');
+    }
+    function modifyPost($post, $method='INSERT', $where=null){
+	$now = time();
         $sections = ':';
         if(count($post['frm_sections'])>0) {
             $sections = ':'.implode(":", $post['frm_sections']).':';
-        //    $section_q = " sections =':$sections:', ";
         }
-        //$rs['postid']
         $rs['title'] = stringHandler::removeMagicQuotes($post['frm_post_title']);
         $rs['body'] = stringHandler::removeMagicQuotes($post['frm_post_body']);
-        $rs['posttime'] = $now;
-        $rs['modifytime'] = $now;
+        $rs['posttime'] = (isset($post['posttime'])) ? $post['posttime'] : $now;
+        $rs['modifytime'] = (isset($post['modifytime'])) ? $post['modifytime'] : $now;
         $rs['status'] = $post['frm_post_status'];
         $rs['modifier'] = $post['frm_modifier'];
         $rs['sections'] = $sections;
-        $rs['ownerid'] = (!isset($post['ownerid'])) ? intval($post['ownerid']) : $_SESSION['user_id'];
-        $rs['hidefromhome'] = ($post['frm_post_hidefromhome'] == 'hide') ? 1: 0;
+        $rs['ownerid'] = (isset($post['ownerid'])) ? intval($post['ownerid']) : $_SESSION['user_id'];
+        $rs['hidefromhome'] = ($post['frm_post_hidefromhome'] == 1) ? 1: 0;
         $rs['allowcomments'] = ($post['frm_post_allowcomments'] == ('allow' or 'disallow' or 'timed')) ? $post['frm_post_allowcomments'] : 'disallow';
         $rs['autodisabledate'] = (is_numeric($post['frm_post_autodisabledate'])) ? intval($post['frm_post_autodisabledate']) : '';
-        
-        if($this->_db->AutoExecute(T_POSTS, $rs, 'INSERT') !== false){
+        if($this->_db->AutoExecute(T_POSTS, $rs, $method, $where) !== false){
             return $this->_db->insert_id;
         }
         else{
@@ -263,38 +262,21 @@ class posthandler {
         $this->_db->Execute($q2);
     }
 
-    ////
-    // !edits a post
+    /**
+    * TODO Make a way to keep the prior timestamp
+    */
     function edit_post($params) {
-        $now = time();
-        if(!is_numeric($params['postid'])) return false;
-
-        $q = 'UPDATE '.T_POSTS.' SET title="'.$params['title'].'", body="'.$params['body'].'" ';
-        $q .= ", modifytime='$now'";
-        if($params['sections']) {
-            // We place a ":" at the beginning and end of the sections
-            // string to ensure that we can locate the sections
-            // properly.
-            $q .= ', sections=";'.$params['sections'].':"';
-        }
-        elseif ($params['edit_sections']) {
-            $q .=", sections='' ";
-        }
-        if($params['hidefromhome'] == 'hide') $q .= ", hidefromhome=1";
-        if($params['hidefromhome'] == 'donthide') $q .= ", hidefromhome=0";
-
-        if($params['allowcomments'] == ('allow' or 'disallow' or 'timed' )){
-            $q .= ', allowcomments="'.$params['allowcomments'].'"';
-            if($params['allowcomments'] == 'timed' && is_numeric($params['autodisabledate']))
-                $q .= ', autodisabledate="'.$params['autodisabledate'].'"';
-        }
-        if($params['status'])   $q .= ', status="'.$params['status'].'"';
-        if($params['modifier']) $q .= ',modifier="'.$params['modifier'].'"';
-        if($params['timestamp']) $q .= ',posttime="'.$params['timestamp'].'"';
-        $q .=' WHERE postid='.$params['postid'];
-
-        $res = $this->_db->Execute($q);
-        return true;
+	if ((isset($params['edit_timestamp'])) && ($params['edit_timestamp'] == 'TRUE')){
+		// the timestamp will be changed.
+		$params['ts_day'] =  (isset($params['ts_day'])) ? $params['ts_day'] : 0;
+		$params['ts_month'] =  (isset($params['ts_month'])) ? $params['ts_day'] : 0;
+		$params['ts_year']  = (isset($params['ts_year'])) ? $params['ts_year'] : 0;
+		$params['ts_hour']  = (isset($params['ts_hour'])) ? $params['ts_year'] : 0;
+		$params['ts_minute']  = (isset($params['ts_minute'])) ? $params['ts_minute'] : 0;
+		$timestamp = maketimestamp($params['ts_day'],$params['ts_month'],$params['ts_year'],$params['ts_hour'],$params['ts_minute']);
+		$params['posttime'] = $timestamp;
+	}
+	return $this->modifyPost($params, 'UPDATE', 'postid='.intval($params['postid']));
     }
     function get_post_permalink($postid){
         if(defined('CLEANURLS')){

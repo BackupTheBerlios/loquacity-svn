@@ -48,7 +48,7 @@ class trackbackhandler extends commentHandler {
      * @param object $db
      * @param int $post The post receiving the trackback
      */
-    function trackbackhandler(&$db, $post){
+    function trackbackhandler(&$db, $post=null){
         commentHandler::commentHandler(&$db, $post);
     }
     /**
@@ -201,5 +201,49 @@ class trackbackhandler extends commentHandler {
             $rval = $rs;
         return $rval;
     }
+	// Send a trackback-ping.
+	function send_trackback($url, $title="", $excerpt="",$t) {
+		//parse the target-url
+		$target = parse_url($t);
+		
+		if ($target["query"] != "") $target["query"] = "?".$target["query"];
+		
+		//set the port
+		if (!is_numeric($target["port"])) $target["port"] = 80;
+		
+		//connect to the remote-host
+		$fp = fsockopen($target["host"], $target["port"]);
+		
+		if ($fp){		
+			// build the Send String
+			$Send = "url=".rawurlencode($url).
+				"&title=".rawurlencode($title).
+				"&blog_name=".rawurlencode(C_BLOGNAME).
+				"&excerpt=".rawurlencode($excerpt);
+		
+			// send the ping
+			fputs($fp, "POST ".$target["path"].$target["query"]." HTTP/1.1\n");
+			fputs($fp, "Host: ".$target["host"]."\n");
+			fputs($fp, "Content-type: application/x-www-form-urlencoded\n");
+			fputs($fp, "Content-length: ". strlen($Send)."\n");
+			fputs($fp, "Connection: close\n\n");
+			fputs($fp, $Send);
+		
+			//read the result
+			while(!feof($fp)) {
+				$res .= fgets($fp, 128);
+			}
+			//close the socket again
+			fclose($fp);
+			//return success
+			return true;
+		}else{
+		
+			//return failure
+			return false;
+		}
+	
+	}
+
 }
 ?>
