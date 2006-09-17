@@ -52,29 +52,39 @@ function identify_admin_plugins () {
 // PLUGINS :
 
 function scan_for_plugins () {
-    global $bBlog;
-    $newplugincount = 0;
-    $newpluginnames = array();
-    $have_plugins = array();
-    $rs = $bBlog->_adb->Execute("select * from ".T_PLUGINS);
-    if($rs !== false && !$rs->EOF){
-        while($plugin = $rs->FetchRow()){
-            $have_plugins[$plugin['type']][$plugin['name']] = TRUE;
-        }
-    }
-	$plugin_files=array();
+	global $bBlog;
+	$currentPlugins = currentPlugins($bBlog->_adb);
 	$dir=dirname(__FILE__);
-	$plugins = scanPluginDir($dir);
-
-  }
-  if($newplugincount == 0) return "No new plugins found";
-  else return "New plugins found : ".implode(", ",$newpluginnames);
+	$scanned = scanPluginDir($dir);
+	$installed = 0;
+	foreach($scanned as $type => $typeList){
+		foreach($typeList as $ind=>$member){
+			if((!isset($currentPlugins[$type])) || (isset($currentPlugins[$type]) && !in_array($member, $currentPlugins[$type]))){
+				if(installPlugin($bBlog->_adb, $type, $member)){
+					$installed++;
+				}
+			}
+		}
+	}
+	return $installed;
 }
+	
+function installPlugin($db, $type, $plugin){
+	$loader = 'identify_'.$type.'_'.$plugin;
+	if(function_exists($loader)){
+		$newplugin = $loader();
+		$sql = 'INSERT INTO `'.T_PLUGINS.'`(type,name,nicename,description,template,help,authors,licence) VALUES("'.$type.'","'.$newplugin['name'].'","'.$newplugin['nicename'].'","'.$newplugin['description'].'",	"'.$newplugin['template'].'","'.$newplugin['help'].'","'.$newplugin['authors'].'", "'.$newplugin['license'].'")';
+		//$db->debug = true;
+		if($db->Execute($sql)){
+			return true;
+		}
+	}
+	return false;
+}	
 
 if(isset($_POST['scan'])) $np = scan_for_plugins();
 
 if(isset($_POST['scan_refresh'])) {
-	$bBlog->_adb->Execute("delete  from ".T_PLUGINS);
 	$np = scan_for_plugins();
 	$bBlog->assign('np',"<b style='color: red;'>$np</b><br />");
 }
@@ -114,8 +124,8 @@ if($p && is_array($plugins['admin'][$p])) { // successful call to plugin
 	$bBlog->assign('plugin_template','plugins/'.$plugins['admin'][$p]['template']);
 	$bBlog->assign('title',$plugins['admin'][$p]['displayname']);
 	include_once('plugins/'.$plugins['admin'][$p]['file']);
-    $func = "admin_plugin_".$p."_run";
-    $func($bBlog);
+	$func = "admin_plugin_".$p."_run";
+	$func($bBlog);
 }
 
 $bBlog->assign('plugin_ar',$plugin_ar);
@@ -125,45 +135,53 @@ $bBlog->assign('show_plugin_menu',$show_plugin_menu);
 $bBlog->display("plugins.html");
 
 function scanPluginDir($dir){
+	$pluginList = array();
 	$dh = opendir($dir);
 	while((($file = readdir( $dh )) !== false )){
 		if($file === 'smarty'){
-			scanPluginDir($dir . DIRECTORY_SEPARATOR . $file);
+			$list1 = scanPluginDir($dir . DIRECTORY_SEPARATOR . $file);
+			foreach($list1 as $type => $plugins){
+				if(is_array($pluginList[$type])){
+					array_merge($pluginList[$type],  $plugins);
+				}
+				else{
+					$pluginList[$type] = $plugins;
+				}
+			}
 		}
 		else if(substr($file, -3) == 'php'){
-			$parts = explode('.',$plugin_file);
+			$parts = explode('.',$file);
 			if($parts[0] !== 'builtin'){
-				
+				if(isValidPlugin($dir, $file)){
+					$pluginList[$parts[0]][] = $parts[1];
+				}
 			}
-			$plugin_files[]=$file;
 		}
 	}
 	closedir( $dh );
-foreach($plugin_files as $plugin_file) {
-    $far = ;
-    $type = $far[0];
-    $name = $far[1];
-    if($type != 'builtin') {
-       include_once './plugins/'.$plugin_file;
-       $func = 'identify_'.$type.'_'.$name;
-       if(function_exists($func)) {
-                $newplugin = $func();
-                if($have_plugins[$newplugin['type']][$newplugin['name']]!==TRUE) {
-			 $q = "insert into ".T_PLUGINS." set
-                         `type`='".$newplugin['type']."',
-                        `name`='".$newplugin['name']."',
-                         nicename='".$newplugin['nicename']."',
-                         description='".stringHandler::clean($newplugin['description'])."',
-			 template='".$newplugin['template']."',
-                         help='".stringHandler::removeMagicQuotes($newplugin['help'])."',
-                         authors='".stringHandler::clean($newplugin['authors'])."',
-                         licence='".$newplugin['licence']."'";
-			 $bBlog->_adb->Execute($q);
-			 $newplugincount++;
-			 $newpluginnames[]=$newplugin['nicename'];
+	return $pluginList;
+}
 
-                }
-       }
-    }
+function currentPlugins(&$db){
+	$current = array();
+	$rs = $db->Execute("select type, name from ".T_PLUGINS);
+	if($rs !== false && !$rs->EOF){
+        	while($plugin = $rs->FetchRow()){
+            		$current[$plugin['type']][] = $plugin['name'];
+        	}
+    	}
+	return $current;
+}
+
+function isValidPlugin($dir, $file){
+	$parts = explode('.', $file);
+	if(file_exists($dir. DIRECTORY_SEPARATOR . $file)){
+		include_once($dir. DIRECTORY_SEPARATOR . $file);
+		$loader = 'identify_'.$parts[0].'_'.$parts[1];
+		if(function_exists($loader)){
+			return true;
+		}
+	}
+	return false;
 }
 ?>

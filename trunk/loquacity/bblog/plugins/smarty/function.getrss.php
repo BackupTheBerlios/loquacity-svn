@@ -33,8 +33,7 @@
 // Modified inc/init.php
 //	Libraries
 
-$library_dir = dirname(__FILE__).'/rss/';
-require_once($library_dir.'rss.php');
+require_once(BBLOGROOT.'3rdparty/rss/rss.php');
 
 function identify_function_getrss() {
 $help = '
