@@ -8,15 +8,14 @@
   	<meta http-equiv="content-type" content="text/html; charset={$charset}" />
     {/if}
     <meta http-equiv="Content-Type" content="text/html" />
-    <title>{$title}</title>
+    <title>{$pagetitle}</title>
+    <link rel="alternate" type="application/rss+xml" title="{$pagetitle|htmlspecialchars} Syndication" href="{$blogurl}feed.php">
     <meta name="description" content="{$metadescription}" />
     <meta name="keywords" content="{$metakeywords}" />
     <link rel="stylesheet" type="text/css" href="{$bblogurl}templates/lines/lines.css" />
-		{if $direction == 'RTL'}
-		<link rel="stylesheet" type="text/css" href="{$bblogurl}templates/lines/rtl.css" />
-		{/if}
-		
-		
+	{if $direction == 'RTL'}
+	<link rel="stylesheet" type="text/css" href="{$bblogurl}templates/lines/rtl.css" />
+	{/if}
 </head>
 <body>
 <div id="banner">

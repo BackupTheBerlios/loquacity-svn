@@ -9,9 +9,10 @@
         {/if}
         <meta http-equiv="content-Type" content="text/html" />
         <title>{$pagetitle|htmlspecialchars}</title>
+        <link rel="alternate" type="application/rss+xml" title="{$pagetitle|htmlspecialchars} Syndication" href="{$blogurl}feed.php">
         <meta name="description" content="{$metadescription}" />
         <meta name="keywords" content="{$metakeywords}" />
-        <meta name="generator" content="bBlog {$bBlog_version}" />
+        <meta name="generator" content="Loquacity {$bBlog_version}" />
         <link rel="stylesheet" type="text/css" href="{$bblogurl}templates/simplygreen/styles/primary.css" />
         {if $direction == 'RTL'}
         <link rel="stylesheet" type="text/css" href="{$bblogurl}templates/simplygreen/styles/rtl.css" />

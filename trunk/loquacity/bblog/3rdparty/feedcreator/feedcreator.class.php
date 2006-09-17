@@ -970,7 +970,11 @@ class RSSCreator091 extends FeedCreator {
 			$feed.= "            <description>".$this->items[$i]->getDescription()."</description>\n";
 			
 			if ($this->items[$i]->author!="") {
-				$feed.= "            <author>".htmlspecialchars($this->items[$i]->author)."</author>\n";
+				$feed.= "            <author>".htmlspecialchars($this->items[$i]->author);
+				if ($this->items[$i]->authorEmail!="") {
+						$feed.= " ".$this->items[$i]->authorEmail;
+				}
+				$feed .= "</author>\n";
 			}
 			/*
 			// on hold

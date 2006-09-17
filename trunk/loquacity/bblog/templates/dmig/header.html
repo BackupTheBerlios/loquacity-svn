@@ -8,14 +8,15 @@
   	<meta http-equiv="content-type" content="text/html; charset={$charset}" />
     {/if}
     <meta http-equiv="content-Type" content="text/html" />
-    <title>{$title|htmlspecialchars}</title>
+    <title>{$pagetitle|htmlspecialchars}</title>
+    <link rel="alternate" type="application/rss+xml" title="{$pagetitle|htmlspecialchars} Syndication" href="{$blogurl}feed.php">
     <meta name="description" content="{$metadescription}" />
     <meta name="keywords" content="{$metakeywords}" />
-   	<meta name="generator" content="bBlog {$bBlog_version}" />
+   	<meta name="generator" content="Loquacity {$bBlog_version}" />
     <link rel="stylesheet" type="text/css" href="{$bblogurl}templates/dmig/dmig.css" />
-		{if $direction == 'RTL'}
-		<link rel="stylesheet" type="text/css" href="{$bblogurl}templates/dmig/rtl.css" />
-		{/if}
+	{if $direction == 'RTL'}
+	<link rel="stylesheet" type="text/css" href="{$bblogurl}templates/dmig/rtl.css" />
+	{/if}
 
 </head>
 <body>
