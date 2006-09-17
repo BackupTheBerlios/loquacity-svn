@@ -1146,6 +1146,9 @@ class PIECreator01 extends FeedCreator {
 			if ($this->items[$i]->author!="") {
 				$feed.= "        <author>\n";
 				$feed.= "            <name>".htmlspecialchars($this->items[$i]->author)."</name>\n";
+				if ($this->items[$i]->authorEmail!="") {
+					$feed.= "            <email>".$this->items[$i]->authorEmail."</email>\n";
+				}
 				$feed.= "        </author>\n";
 			}
 			if ($this->items[$i]->description!="") {

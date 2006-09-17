@@ -53,7 +53,7 @@ class feedhandler{
     */
     function generate($type=null,$f=null){
         include_once('3rdparty/feedcreator/feedcreator.class.php');
-        $ft = (!is_null($type) && count($ft) > 0) ? $type : 'RSS2.0';
+        $ft = $type;
         $feed = new UniversalFeedCreator();
         $feed->UseCached();
         $feed->title = C_BLOGNAME;
@@ -66,9 +66,11 @@ class feedhandler{
             $item = new FeedItem();
             $item->title = $post['title'];
             $item->link = $post['permalink'];
+            $item->guid = $post['permalink'];
             $item->description = $post['body'];
-            $item->source = $rss->link;
+            $item->source = $feed->link;
             $item->author = $post['author']['fullname'];
+            $item->authorEmail = $post['author']['email'];
             $feed->additem($item);
         }
         if(!is_null($f)){

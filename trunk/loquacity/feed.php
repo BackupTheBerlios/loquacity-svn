@@ -31,7 +31,7 @@
  */
 
 include_once('bblog/config.php');
-$type = strtoupper($_GET['ft']);
+$type = (isset($_GET['ft'])) ? strtoupper($_GET['ft']) : 'RSS2.0';
 include_once('includes/feedhandler.class.php');
 //Until the redesign, we pass both the database and posthandler to the FeedHandler
 $fh = new FeedHandler($bBlog->_adb, $bBlog->_ph);
