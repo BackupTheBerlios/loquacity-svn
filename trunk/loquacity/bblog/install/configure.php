@@ -31,21 +31,5 @@
  */
 
  
- // provide some useful defaults, and prevents undefined indexes.
-if(!isset($config['path'])) $config['path'] = dirname(__FILE__).'/';
-if(!isset($config['url'])) $config['url'] = 'http://'.$_SERVER['HTTP_HOST'].str_replace('bblog/install.php','',$_SERVER['REQUEST_URI']);
-if(!isset($config['author'])) $config['author'] = 'admin';
-if(!isset($config['table_prefix'])) $config['table_prefix'] = 'loq_';
-if(!isset($config['password'])) $config['password'] = "";
-if(!isset($config['passwd_verify'])) $config['passwd_verify'] = "";
-if(!isset($config['email'])) $config['email'] = "";
-if(!isset($config['real_name'])) $config['real_name'] = "";
-if(!isset($config['db_host'])) $config['db_host'] = 'localhost';
-if(!isset($config['db_username'])) $config['db_username'] = "";
-if(!isset($config['db_password'])) $config['db_password'] = "";
-if(!isset($config['db_database'])) $config['db_database'] = "";
-if(!isset($config['blogname'])) $config['blogname'] = "";
-if(!isset($config['blogdescription'])) $config['blogdescription'] = "";
 
-$config['version'] = LOQ_CUR_VERSION;
 ?>
