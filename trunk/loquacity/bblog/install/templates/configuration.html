@@ -2,7 +2,15 @@
 	<div id="content">
 		<h3>Database and blog settings</h3>
 		<form action="{$form_action}" method="POST" name="install">
-			<p>Please fill in the config settings below</p>
+			<p>Please fill in the config settings below - all values, except for table prefix, are required</p>
+			{if isset($errors)}
+			<p class="errorMsg">The following errors occured:</p>
+			<ol>
+				{section name=err loop=$errors}
+				<li class="errorMsg">{$errors[err]}</li>
+				{/section}
+			</ol>
+			{/if}
 			<table border="0" class='list' cellpadding="4" cellspacing="0">
 				<tr>
 				  <td colspan="3"><h4>General Config</h4></td>
@@ -47,7 +55,7 @@
 				</tr>
 				</td>
 				<tr bgcolor="#ddd">
-				  <td width="33%">Db Username</td>
+				  <td width="33%">DB Username</td>
 				  <td width="200"><input type="text" name="db_username" value="{$db_username}"/></td>
 				  <td width="33%" class='si'>Your DB username</td>
 				</tr>
@@ -58,7 +66,7 @@
 				</tr>
 				<tr bgcolor="#ddd">
 				  <td width="33%">Database Name</td>
-				  <td width="200"><input type="text" name="db_database" value="{$db_name}"/></td>
+				  <td width="200"><input type="text" name="db_database" value="{$db_database}"/></td>
 				  <td width="33%" class='si'>Your database name</td>
 				</tr>
 				<tr bgcolor="#eeeeee">

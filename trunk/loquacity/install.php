@@ -22,16 +22,17 @@
  *
  * ratehr than duplicating effort, use as much internal stuff as possible
 **/
+error_reporting(E_ALL);
 
 if(file_exists(dirname(__FILE__).'/bblog')){
-    define(LOQ_APP_ROOT, dirname(__FILE__).DIRECTORY_SEPARATOR.'bblog'.DIRECTORY_SEPARATOR);
-    define(LOQ_INSTALLER, LOQ_APP_ROOT.'install');
+    define('LOQ_APP_ROOT', dirname(__FILE__).DIRECTORY_SEPARATOR.'bblog'.DIRECTORY_SEPARATOR);
+    define('LOQ_INSTALLER', LOQ_APP_ROOT.'install');
     define('SMARTY_DIR', LOQ_APP_ROOT.'3rdparty/smarty/libs/');
     include_once(SMARTY_DIR.'Smarty.class.php');
     include_once(LOQ_APP_ROOT.'3rdparty/adodb/adodb.inc.php');
     include_once(LOQ_APP_ROOT.'includes/stringhandler.class.php');
     include_once(LOQ_APP_ROOT.'includes/confighandler.class.php');
-    define(LOQ_CUR_VERSION, '0.8.0-alpha2');
+    define('LOQ_CUR_VERSION', '0.8.0-alpha2');
 }
 else{
     die("Unsupported configuration. The installer does not support altered configurations, you must configure this application manually. If this is not your intent, perhaps your installation is corrupt. Try unzipping (de-compressing) all the files again.");
@@ -59,6 +60,7 @@ else{
         //$db = new db($config['db_username'], $config['db_password'], $config['db_database'], $config['db_host']);
         include_once(LOQ_INSTALLER.'/installbase.class.php');
         include_once(LOQ_APP_ROOT.'includes/stringhandler.class.php');
+        include_once(LOQ_APP_ROOT.'3rdparty/adodb/adodb.inc.php');
         if(in_array($_GET['install'], array('prescan', 'install', 'postscan'))){
             include_once(LOQ_INSTALLER.'/install'.$_GET['install'].'.class.php');
             $class = 'install'.$_GET['install'];
