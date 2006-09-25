@@ -322,9 +322,9 @@ else{
                 case "charsetselect":
                          $formright = '<select name="'.$option['name'].'" class="bf">';
                          foreach ($charsets as $charset){
-                                $formright .='<option value="'.$charset[value].'" ';
-                                if ($charset[value] == C_CHARSET) $formright .='selected';
-                                $formright .='>'.$charset[description].'</option>';
+                                $formright .='<option value="'.$charset['value'].'" ';
+                                if ($charset['value'] == C_CHARSET) $formright .='selected';
+                                $formright .='>'.$charset['description'].'</option>';
                          }
                          $formright .= '</select>';
                          break;

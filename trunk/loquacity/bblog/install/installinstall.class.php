@@ -3,21 +3,22 @@
 class installinstall extends installbase{
 	function installinstall(){
         installbase::installbase();
-        //$this->template = 'bob';
+        $this->template = 'configuration.html';
 	}
     function __init(){
+        $this->checkPrereq();
         if($this->checkConfigSettings()){
             $dsn = 'mysql://'.$_POST['db_username'].':'.rawurlencode($_POST['db_password']).'@'.$_POST['db_host'].'/'.$_POST['db_database'];
-            if(($db = NewADOConnection($dsn)) !== false){
+            $db = NewADOConnection($dsn);
+            if($db !== false){
                 $this->db =& $db;
             }
+            /*else{
+                $this->errors[] = 'Unable to connect to the database. The reported error was: '.$db->ErrorMsg();
+            }*/
         }
         if(isset($this->errors) && count($this->errors) > 0){
-            $this->template = 'configuration.html';
             $this->loadconfiguration();
-        }
-        else{
-            $this->template = '';
         }
     }
     /**
@@ -38,6 +39,10 @@ class installinstall extends installbase{
                 $this->errors[] = ucwords($label).' value not set';
                 $rval = false;
             }
+        }
+        //Not mandatory, but set if defined
+        if(isset($_POST['table_prefix'])){
+            $_SESSION['config']['table_prefix'] = $_POST['table_prefix'];
         }
         return $rval;
     }
@@ -206,5 +211,14 @@ class installinstall extends installbase{
 			$step = 5;
 
 		break;
+    }
+    function checkPrereq(){
+        if(isset($_POST['prescan_errors'])){
+            include_once(LOQ_INSTALLER.'/installprescan.class.php');
+            $ps = new installprescan();
+            if(isset($ps->errors) && count($ps->errors) > 0){
+                $this->errors = $ps->errors;
+            }
+        }
     }
 }

@@ -11,11 +11,10 @@ class installprescan extends installbase{
         $this->checkwritable();
         $this->loadconfiguration();
         if(isset($this->errors) && count($this->errors) > 0){
-            $this->template = '';
+            $this->assign("errors", $this->errors);
+            $this->assign("prescan_errors", true);
         }
-        else{
-            $this->assign('form_action', $this->form_action);
-        }
+        $this->assign('form_action', $this->form_action);
     }
     function checkwritable() {
         foreach(array('generated', 'generated/cache', 'generated/templates', 'generated/cache/favorites.xml', 'config.php') as $target){

@@ -29,6 +29,7 @@ if(file_exists(dirname(__FILE__).'/bblog')){
     define('LOQ_INSTALLER', LOQ_APP_ROOT.'install');
     define('SMARTY_DIR', LOQ_APP_ROOT.'3rdparty/smarty/libs/');
     include_once(SMARTY_DIR.'Smarty.class.php');
+    include_once(LOQ_APP_ROOT.'3rdparty/adodb/adodb-errorhandler.inc.php');
     include_once(LOQ_APP_ROOT.'3rdparty/adodb/adodb.inc.php');
     include_once(LOQ_APP_ROOT.'includes/stringhandler.class.php');
     include_once(LOQ_APP_ROOT.'includes/confighandler.class.php');

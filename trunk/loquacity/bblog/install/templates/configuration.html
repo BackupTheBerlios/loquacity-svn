@@ -4,6 +4,9 @@
 		<form action="{$form_action}" method="POST" name="install">
 			<p>Please fill in the config settings below - all values, except for table prefix, are required</p>
 			{if isset($errors)}
+				{if isset($prescan_errors)}
+				<input type="hidden" name="prescan_errors" value="true" />
+				{/if}
 			<p class="errorMsg">The following errors occured:</p>
 			<ol>
 				{section name=err loop=$errors}

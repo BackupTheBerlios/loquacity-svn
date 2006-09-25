@@ -7,7 +7,6 @@
 class installbase extends Smarty{
 	function installbase(){
         stringHandler::removeMagicQuotes($_POST);
-        
         Smarty::Smarty();
         $this->assign('version', LOQ_CUR_VERSION);
         $this->template_dir = LOQ_INSTALLER.'/templates';

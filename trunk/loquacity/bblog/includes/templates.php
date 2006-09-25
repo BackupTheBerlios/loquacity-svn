@@ -80,9 +80,7 @@ function buildfoot() {
 	$foot = "
 <!--//
 This page took $pagetime seconds to make
-and executed {$bBlog->db->querycount} SQL queries.
-Last modified: ".gmdate('D, d M Y H:i:s \G\M\T',$bBlog->lastmodified)."
-Powered by bBlog : http://www.bBlog.com/
+Powered by Loquacity : http://www.loquacity.info/
 //-->";
 	return $foot;
 }

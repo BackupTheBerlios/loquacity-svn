@@ -55,11 +55,11 @@ class bBlog extends Smarty {
         $this->assign('blogname',C_BLOGNAME);
         $this->assign('blogdescription',C_BLOG_DESCRIPTION);
         $this->assign('blogurl',BLOGURL);
-	  	$this->assign('bblogurl',BBLOGURL);
-	  	$this->assign('metakeywords',C_META_KEYWORDS);
-	  	$this->assign('metadescription',C_META_DESCRIPTION);
-		$this->assign('charset',C_CHARSET);
-		$this->assign('direction', C_DIRECTION);
+        $this->assign('bblogurl',BBLOGURL);
+        $this->assign('metakeywords',C_META_KEYWORDS);
+        $this->assign('metadescription',C_META_DESCRIPTION);
+        $this->assign('charset',C_CHARSET);
+        $this->assign('direction', C_DIRECTION);
         $this->assign('C_CAPTCHA_ENABLE', C_CAPTCHA_ENABLE);
         
         Smarty::Smarty();
@@ -71,7 +71,7 @@ class bBlog extends Smarty {
         $this->_ph =& new postHandler($this->_adb, $this->plugins_dir);
         // initial time from config table, based on last updated stuff.
         // this is just the initial value.
-        //$this->lastmodified = C_LAST_MODIFIED;
+        $this->lastmodified = C_LAST_MODIFIED;
         //$this->register_postfilter("update_when_compiled");
         // load up the sections
         
