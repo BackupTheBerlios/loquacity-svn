@@ -1,6 +1,4 @@
---Creating Tables 
-
-CREATE TABLE `__pfx__comments` (
+CREATE TABLE `__pfx__comments`(
 	`commentid` int(10) unsigned NOT NULL auto_increment,
 	`parentid` int(10) unsigned NOT NULL default '0',
 	`postid` int(10) unsigned NOT NULL default '0',
@@ -19,14 +17,14 @@ CREATE TABLE `__pfx__comments` (
 	`onhold` tinyint(1) NOT NULL default '0',
 	PRIMARY KEY  (`commentid`),
 	FULLTEXT KEY `commenttext` (`commenttext`)
-) TYPE=MyISAM;
+) TYPE=MyISAM__charset__;
 
 CREATE TABLE `__pfx__config` (
 	`id` int(11) NOT NULL auto_increment,
 	`name` varchar(50) NOT NULL default '',
 	`value` varchar(255) NOT NULL default '',
 	PRIMARY KEY  (`id`)
-) TYPE=MyISAM;
+) TYPE=MyISAM__charset__;
 
 
 CREATE TABLE `__pfx__plugins` (
@@ -41,7 +39,7 @@ CREATE TABLE `__pfx__plugins` (
 	`authors` varchar(255) NOT NULL default '',
 	`licence` varchar(50) NOT NULL default '',
 	PRIMARY KEY  (`id`)
-) TYPE=MyISAM;
+) TYPE=MyISAM__charset__;
 
 CREATE TABLE `__pfx__posts` (
 	`postid` int(10) unsigned NOT NULL auto_increment,
@@ -59,7 +57,7 @@ CREATE TABLE `__pfx__posts` (
 	`commentcount` int(11) NOT NULL default '0',
 	PRIMARY KEY  (`postid`),
 	KEY ownerid (ownerid)
-) TYPE=MyISAM;
+) TYPE=MyISAM__charset__;
 
 
 CREATE TABLE `__pfx__sections` (
@@ -67,7 +65,7 @@ CREATE TABLE `__pfx__sections` (
 	`nicename` varchar(255) NOT NULL default '',
 	`name` varchar(60) NOT NULL default '',
 	PRIMARY KEY  (`sectionid`)
-) TYPE=MyISAM;
+) TYPE=MyISAM__charset__;
 
 
 
@@ -78,7 +76,7 @@ CREATE TABLE `__pfx__referers` (
 	`referingURL` char(250) default NULL,
 	`baseDomain` char(250) default NULL,
 	PRIMARY KEY  (`visitID`)
-) TYPE=MyISAM;
+) TYPE=MyISAM__charset__;
 
 CREATE TABLE __pfx__authors (
 	id int(10) NOT NULL auto_increment,
@@ -94,7 +92,7 @@ CREATE TABLE __pfx__authors (
 	location varchar(25) NOT NULL default '',
 	aboutme text NOT NULL,
 	PRIMARY KEY  (id)
-) TYPE=MyISAM;
+) TYPE=MyISAM__charset__;
 
 
 
@@ -103,7 +101,7 @@ CREATE TABLE `__pfx__rss` (
 	`url` text NOT NULL,
 	`input_charset` text NOT NULL,
 	PRIMARY KEY  (`id`)
-) TYPE=MyISAM;
+) TYPE=MyISAM__charset__;
 
 
 CREATE TABLE __pfx__links (
@@ -113,16 +111,16 @@ CREATE TABLE __pfx__links (
 	category int(11) NOT NULL, 
 	position int(8) NOT NULL default '10',
 	PRIMARY KEY  (linkid)
-) TYPE=MyISAM;
+) TYPE=MyISAM__charset__;
 
 
 CREATE TABLE __pfx__categories (
 	categoryid int(11) NOT NULL auto_increment,
 	name varchar(60) NOT NULL,
 	PRIMARY KEY  (categoryid)
-) TYPE=MyISAM;
+) TYPE=MyISAM__charset__;
 
--- inserting data 
+
 INSERT INTO `__pfx__rss` VALUES (9, '', '');
 INSERT INTO `__pfx__rss` VALUES (8, '', '');
 INSERT INTO `__pfx__rss` VALUES (7, '', '');
@@ -133,49 +131,49 @@ INSERT INTO `__pfx__rss` VALUES (3, '', '');
 INSERT INTO `__pfx__rss` VALUES (2, '', '');
 INSERT INTO `__pfx__rss` VALUES (1, 'http://www.loquacity.info/rdf.php', 'I88592');
 
-INSERT INTO `__pfx__config` (`id`, `name`, `value`) VALUES
-	(null, 'EMAIL', '".$config['email']."'),
-	(null, 'BLOGNAME', '".$config['blogname']."'),
-	(null, 'TEMPLATE', 'lines'),
-	(null, 'DB_TEMPLATES', 'false'),
-	(null, 'DEFAULT_MODIFIER', 'simple'),
-	(null, 'CHARSET', 'UTF-8'),
-	(null, 'VERSION', '0.76'),
-	(null, 'DIRECTION', 'LTR'),
-	(null, 'DEFAULT_STATUS', 'live'),
-	(null, 'PING','bblog.com/ping.php'),
-	(null, 'COMMENT_TIME_LIMIT','1'),
-	(null, 'NOTIFY','false'),
-	(null, 'BLOG_DESCRIPTION', '".$config['blogdescription']."'),
-	(null, 'COMMENT_MODERATION','urlonly'),
-	(null, 'META_DESCRIPTION','Some words about this blog'),
-	(null, 'META_KEYWORDS','work,life,play,web design'),
-	(null, 'LAST_MODIFIED', UNIX_TIMESTAMP();
-	(null,'CAPTCHA_ENABLE','false'),
-	(null,'CAPTCHA_WIDTH','200'),
-	(null,'CAPTCHA_HEIGHT','50'),
-	(null,'CAPTCHA_CHARACTERS','5'),
-	(null,'CAPTCHA_LINES','70'),
-	(null,'CAPTCHA_ENABLE_SHADOWS','false'),
-	(null,'CAPTCHA_OWNER_TEXT','false'),
-	(null,'CAPTCHA_CHARACTER_SET','A-Z'),
-	(null,'CAPTCHA_CASE_INSENSITIVE','false'),
-	(null,'CAPTCHA_BACKGROUND',''),
-	(null,'CAPTCHA_MIN_FONT','16'),
-	(null,'CAPTCHA_MAX_FONT','25'),
-	(null,'CAPTCHA_USE_COLOR','false'),
-	(null,'CAPTCHA_GRAPHIC_TYPE','jpg');
+INSERT INTO `__pfx__config` (`name`, `value`) VALUES
+	('EMAIL', '__email_address__'),
+	('BLOGNAME', '__blog_name__'),
+	('TEMPLATE', 'lines'),
+	('DB_TEMPLATES', 'false'),
+	('DEFAULT_MODIFIER', 'simple'),
+	('CHARSET', 'UTF-8'),
+	('VERSION', '__loq_version__'),
+	('DIRECTION', 'LTR'),
+	('DEFAULT_STATUS', 'live'),
+	('PING',''),
+	('COMMENT_TIME_LIMIT','1'),
+	('NOTIFY','false'),
+	('BLOG_DESCRIPTION', '__blog_description__'),
+	('COMMENT_MODERATION','urlonly'),
+	('META_DESCRIPTION','__blog_description__'),
+	('META_KEYWORDS','work,life,play,web design'),
+	('LAST_MODIFIED', UNIX_TIMESTAMP()),
+	('CAPTCHA_ENABLE','true'),
+	('CAPTCHA_WIDTH','200'),
+	('CAPTCHA_HEIGHT','50'),
+	('CAPTCHA_CHARACTERS','5'),
+	('CAPTCHA_LINES','70'),
+	('CAPTCHA_ENABLE_SHADOWS','false'),
+	('CAPTCHA_OWNER_TEXT','false'),
+	('CAPTCHA_CHARACTER_SET','A-Z'),
+	('CAPTCHA_CASE_INSENSITIVE','false'),
+	('CAPTCHA_BACKGROUND',''),
+	('CAPTCHA_MIN_FONT','16'),
+	('CAPTCHA_MAX_FONT','25'),
+	('CAPTCHA_USE_COLOR','false'),
+	('CAPTCHA_GRAPHIC_TYPE','jpg');
 	
 INSERT INTO __pfx__categories VALUES (1,'Navigation');
 INSERT INTO __pfx__categories VALUES (2,'Blogs I read');
 
-INSERT INTO __pfx__links VALUES (1,'Home','__url__',1,20);
-INSERT INTO __pfx__links VALUES (2,'Archives','__url__archives.php',1,30);
-INSERT INTO __pfx__links VALUES (3,'RSS 2.0 Feed','__url__rss.php?ver=2',1,40);
+INSERT INTO __pfx__links VALUES (1,'Home','__blog_url__',1,20);
+INSERT INTO __pfx__links VALUES (2,'Archives','__blog_url__archives.php',1,30);
+INSERT INTO __pfx__links VALUES (3,'RSS 2.0 Feed','__blog_url__feed.php',1,40);
 
 
 INSERT INTO `__pfx__authors` (`nickname`,`password`,`email`,`fullname`) VALUES
-('__author__','__password__','__email__','__real_name__');
+('__login_name__','__login_password__','__email_address__','__author_name__');
 
 
 INSERT INTO `__pfx__posts` (`postid`, `title`, `body`, `posttime`, `modifytime`, `status`, `modifier`, `sections`, `commentcount`,`ownerid`) VALUES (1, 'First Post', '[b]This is the first post of Loquacity.[/b][p]You may delete this post in the admin section. Make sure you have deleted the install file and changed the admin password.[/p] [p]Be sure to visit the [url=http://forum.loquacity.info]Loqucity forum[/url] if you have any questions, comments, bug reports etc.[/p] [p]Happy bBlogging![/p]', UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'live', 'bbcode', '', 0, 1);

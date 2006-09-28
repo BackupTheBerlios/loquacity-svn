@@ -4,7 +4,6 @@ class installprescan extends installbase{
 	function installprescan(){
         $this->form_action = 'install.php?install=install';
         $this->template = 'configuration.html';
-        $this->error_template = '';
         installbase::installbase();
 	}
     function __init(){

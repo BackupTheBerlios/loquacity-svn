@@ -3,22 +3,16 @@
 class installinstall extends installbase{
 	function installinstall(){
         installbase::installbase();
-        $this->template = 'configuration.html';
+        $this->template = 'complete.html';
 	}
     function __init(){
         $this->checkPrereq();
         if($this->checkConfigSettings()){
-            $dsn = 'mysql://'.$_POST['db_username'].':'.rawurlencode($_POST['db_password']).'@'.$_POST['db_host'].'/'.$_POST['db_database'];
-            $db = NewADOConnection($dsn);
-            if($db !== false){
-                $this->db =& $db;
-            }
-            /*else{
-                $this->errors[] = 'Unable to connect to the database. The reported error was: '.$db->ErrorMsg();
-            }*/
+            $this->install();
         }
         if(isset($this->errors) && count($this->errors) > 0){
             $this->loadconfiguration();
+            $this->template = 'configuration.html';
         }
     }
     /**
@@ -30,7 +24,6 @@ class installinstall extends installbase{
         //only table prefix is not required
         $rval = true;
         foreach(array('blog_name', 'blog_description', 'author_name', 'login_name', 'login_password', 'verify_password', 'email_address', 'db_username', 'db_password', 'db_database', 'db_host', 'blog_url', 'fs_path') as $setting){
-            //var_dump(strlen($_POST[$setting]) > 0);
             if(isset($_POST[$setting]) && strlen($_POST[$setting]) > 0){
                 $_SESSION['config'][$setting] = $_POST[$setting];
             }
@@ -46,8 +39,31 @@ class installinstall extends installbase{
         }
         return $rval;
     }
+    /**
+    * Executes the install routines
+    *
+    */
+    function install(){
+        if($this->db()){
+            $this->installplugins();
+        }
+    }
+    function db(){
+        $dsn = 'mysql://'.$_POST['db_username'].':'.rawurlencode($_POST['db_password']).'@'.$_POST['db_host'].'/'.$_POST['db_database'];
+            $db = NewADOConnection($dsn);
+            if($db !== false){
+                $this->db =& $db;
+                //$this->createdatabase();
+            }
+            return true;
+            /*else{
+                $this->errors[] = 'Unable to connect to the database. The reported error was: '.$db->ErrorMsg();
+            }*/
+    }
     function installplugins(){
-        echo "<h3>Loading Plugins</h3>";
+        include_once(LOQ_APP_ROOT.'plugins/builtin.plugins.php');
+        scan_for_plugins($this->db);
+        /*echo "<h3>Loading Plugins</h3>";
 		$newplugincount = 0;
 		$newpluginnames = array();
 		$plugin_files=array();
@@ -90,7 +106,7 @@ class installinstall extends installbase{
 		$func = 'upgrade_from_'.$config['upgrade_from'].'_post';
 		if($config['install_type'] == 'upgrade' && function_exists($func)) $step = 6;
 			else $step = 7;
-		break;
+		break;*/
     }
     function writeconfig(){
         // Write config!
@@ -187,30 +203,40 @@ class installinstall extends installbase{
 		$step = 8;
 		break;
     }
+    /**
+    * Retrieves the proper SQL file and replaces the tokens with the user's configuration
+    * Uses result to create the database and populate it with the configuration and sample data
+    *
+    * TODO abstract some of the specifics away so it is easier to support different DBs
+    */
     function createdatabase(){
-        //For MySQL there are three main versions to worry about:
-        // 4.0, 4.1 and 5.0
-        //4.1+ has real charset support, while <4.1 doesn't
-        // do sql.
-
-		$q = array();
-        $pfx = $config['table_prefix'];
-
-
-
-			$i=0;
-			echo "<h3>Creating tables</h3><p>";
-			$db = new db($config['mysql_username'],$config['mysql_password'],$config['mysql_database'],$config['mysql_host']);
-			foreach($q as $q2do) {
-				$i++;
-				echo $i." ";
-				//echo "<pre>$q2do</pre>";
-				$db->Execute($q2do);
-			}
-			echo ' done.<input type="submit" name="submit" value="Next &gt;" /></p>';
-			$step = 5;
-
-		break;
+        /* For MySQL there are three main versions to worry about:
+         * 4.0, 4.1 and 5.0
+         * 4.1+ has real charset support, while < 4.1 doesn't
+         */
+        $info = $this->db->ServerInfo();
+        $charset = null;
+        if((strstr($info['version'], '4.1') !== false) || (strstr($info['version'], '5.0') !== false)){
+            //We have a database that supports chartsets properly!
+            $charset = ' CHARACTER SET utf8 COLLATE utf8_bin';
+        }
+        if(file_exists(LOQ_INSTALLER.'/sql/mysql.sql') && is_readable(LOQ_INSTALLER.'/sql/mysql.sql')){
+            $sql = file_get_contents(LOQ_INSTALLER.'/sql/mysql.sql');
+            $sql = str_replace('__pfx__', $_SESSION['config']['table_prefix'], $sql);
+            if(!is_null($charset)){
+                $sql = str_replace('__charset__', $charset, $sql);
+            }
+            foreach($_SESSION['config'] as $setting=>$value){
+                $sql = str_replace('__'.$setting.'__', $value, $sql);
+            }
+            $sql = str_replace('__loq_version__', LOQ_CUR_VERSION, $sql);
+            $statements = explode(';', $sql);
+            foreach($statements as $line){
+                if(trim($line) !== ''){
+                    $this->db->Execute($line);
+                }
+            }
+        }
     }
     function checkPrereq(){
         if(isset($_POST['prescan_errors'])){
