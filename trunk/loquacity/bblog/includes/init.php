@@ -35,9 +35,9 @@
  *
  * @version $Revision$
  */
-if ( ! is_dir(BBLOGROOT) ) {
+if ( ! is_dir(LOQ_APP_ROOT) ) {
   // throw meaningful error here ( OK tim ! )
-  echo "There was an error : BBLOGROOT is not a directory. Please check that you have configured bBlog correctly by checking values in config.php";
+  echo "There was an error : LOQ_APP_ROOT is not a directory. Please check that you have configured bBlog correctly by checking values in config.php";
   die();
    
 }    
@@ -56,27 +56,27 @@ define('T_RSS',TBL_PREFIX.'rss');
 // If ini_set is available, set our include path
 if(function_exists('ini_set')){
     $cur_path = ini_get('include_path');
-    ini_set('include_path', BBLOGROOT.PATH_SEPARATOR.$cur_path);
+    ini_set('include_path', LOQ_APP_ROOT.PATH_SEPARATOR.$cur_path);
 }
 
-define('SMARTY_DIR', BBLOGROOT.'3rdparty/smarty/libs/');
+define('SMARTY_DIR', LOQ_APP_ROOT.'3rdparty/smarty/libs/');
 
 // include  needed files
 include_once(SMARTY_DIR.'Smarty.class.php');
-include_once(BBLOGROOT.'3rdparty/adodb/adodb.inc.php');
-include_once(BBLOGROOT.'includes/stringhandler.class.php');
-include_once(BBLOGROOT.'includes/confighandler.class.php');
-include_once(BBLOGROOT.'includes/posthandler.class.php');
-include_once(BBLOGROOT.'includes/commenthandler.class.php');
-include_once(BBLOGROOT.'includes/sectionhandler.class.php');
-include_once(BBLOGROOT.'includes/bBlog.class.php');
-include_once(BBLOGROOT.'includes/templates.php');
+include_once(LOQ_APP_ROOT.'3rdparty/adodb/adodb.inc.php');
+include_once(LOQ_APP_ROOT.'includes/stringhandler.class.php');
+include_once(LOQ_APP_ROOT.'includes/confighandler.class.php');
+include_once(LOQ_APP_ROOT.'includes/posthandler.class.php');
+include_once(LOQ_APP_ROOT.'includes/commenthandler.class.php');
+include_once(LOQ_APP_ROOT.'includes/sectionhandler.class.php');
+include_once(LOQ_APP_ROOT.'includes/bBlog.class.php');
+include_once(LOQ_APP_ROOT.'includes/templates.php');
 
 
 // start your engines
 $bBlog = new bBlog();
 if(defined(C_CAPTCHA_ENABLE) && C_CAPTCHA_ENABLE == 'true'){
-    include_once(BBLOGROOT.'3rdparty/captcha/php-captcha.inc.php');
+    include_once(LOQ_APP_ROOT.'3rdparty/captcha/php-captcha.inc.php');
 }
 /* $mtime = explode(" ",microtime());
 $bBlog->begintime = $mtime[1] + $mtime[0]; */
@@ -85,8 +85,8 @@ $bBlog->begintime = $mtime[1] + $mtime[0]; */
 //$bBlog->clear_compiled_tpl();
 
 
-/* $bBlog->template_dir = BBLOGROOT.'templates/'.C_TEMPLATE;
-$bBlog->compile_dir = BBLOGROOT.'generated/templates/'; */
+/* $bBlog->template_dir = LOQ_APP_ROOT.'templates/'.C_TEMPLATE;
+$bBlog->compile_dir = LOQ_APP_ROOT.'generated/templates/'; */
 
 if(defined('IN_BBLOG_ADMIN')) {
        $bBlog->compile_id = 'admin';
@@ -94,7 +94,7 @@ if(defined('IN_BBLOG_ADMIN')) {
 	$bBlog->compile_id = C_TEMPLATE;
 }
 
-/* $bBlog->plugins_dir = array(BBLOGROOT.'plugins', BBLOGROOT.'plugins/smarty',BBLOGROOT.'3rdparty/smarty/libs/plugins');
+/* $bBlog->plugins_dir = array(LOQ_APP_ROOT.'plugins', LOQ_APP_ROOT.'plugins/smarty',LOQ_APP_ROOT.'3rdparty/smarty/libs/plugins');
 $bBlog->use_sub_dirs	= FALSE; // change to true if you have a lot of templates
  */
 define('BBLOG_VERSION',"0.8-alpha2");

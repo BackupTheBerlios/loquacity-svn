@@ -340,7 +340,7 @@ class commentHandler {
     * @return void
     */
     function notify($name, $link, $onhold, $comment){
-        include_once (BBLOGROOT."includes/mail.php");
+        include_once (LOQ_APP_ROOT."includes/mail.php");
         $message = $name." has posted a comment in reply to your blog entry at ".$link."\n\nComment: ".$comment."\n\n";
         if ($onhold == 1)
             $message .= "You have selected comment moderation and this comment will not appear until you approve it, so please visit your blog and log in to approve or reject any comments\n";

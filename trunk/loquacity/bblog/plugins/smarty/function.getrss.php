@@ -33,7 +33,7 @@
 // Modified inc/init.php
 //	Libraries
 
-require_once(BBLOGROOT.'3rdparty/rss/rss.php');
+require_once(LOQ_APP_ROOT.'3rdparty/rss/rss.php');
 
 function identify_function_getrss() {
 $help = '

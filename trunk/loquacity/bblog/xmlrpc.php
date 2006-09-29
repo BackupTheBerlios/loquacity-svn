@@ -37,7 +37,7 @@
  */                                                                         
 
 include 'config.php';
-include BBLOGROOT."libs/rpc.php";
+include LOQ_APP_ROOT."libs/rpc.php";
 $xmlrpc_methods = array();
 
 $xmlrpc_methods['blogger.getUsersBlogs']  	= 'blogger_getUsersBlogs';

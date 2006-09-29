@@ -108,7 +108,7 @@ function gothere(where) {
 
 // local filename
 // we know that compiled_templates will always be writable
-$blogroll_xml_file = BBLOGROOT.'cache/favorites.xml';
+$blogroll_xml_file = LOQ_APP_ROOT.'cache/favorites.xml';
 
 // remote file url
 $blogroll_xml_source = 'http://blo.gs/'.$userid.'/favorites.xml';

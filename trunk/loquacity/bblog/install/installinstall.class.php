@@ -45,6 +45,8 @@ class installinstall extends installbase{
     */
     function install(){
         if($this->db()){
+            define('TBL_PREFIX', $_SESSION['config']['table_prefix']);
+            define('BLOGURL', $_SESSION['config']['blog_url']);
             $this->installplugins();
         }
     }
@@ -61,52 +63,10 @@ class installinstall extends installbase{
             }*/
     }
     function installplugins(){
-        include_once(LOQ_APP_ROOT.'plugins/builtin.plugins.php');
-        scan_for_plugins($this->db);
-        /*echo "<h3>Loading Plugins</h3>";
-		$newplugincount = 0;
-		$newpluginnames = array();
-		$plugin_files=array();
-		$dir="./bBlog_plugins";
-		$dh = opendir( $dir ) or die("couldn't open directory");
-		while ( ! ( ( $file = readdir( $dh ) ) === false ) ) {
-			if(substr($file, -3) == 'php') $plugin_files[]=$file;
-		}
-		closedir( $dh );
-		echo "<table border='0' class='list'>";
-		foreach($plugin_files as $plugin_file) {
-			$far = explode('.',$plugin_file);
-			$type = $far[0];
-			$name = $far[1];
-			if($type != 'builtin') {
-				include_once './bBlog_plugins/'.$plugin_file;
-				$func = 'identify_'.$type.'_'.$name;
-				if(function_exists($func)) {
-					$newplugin = $func();
-					
-					if (!isset($newplugin['template'])) { $newplugin['template'] = ""; }
-					
-					$q = "insert into ".$config['table_prefix']."plugins set
-					`type`='".$newplugin['type']."',
-					`name`='".$newplugin['name']."',
-					nicename='".$newplugin['nicename']."',
-					description='".addslashes($newplugin['description'])."',
-					template='".$newplugin['template']."',
-					help='".addslashes($newplugin['help'])."',
-					authors='".addslashes($newplugin['authors'])."',
-					licence='".$newplugin['licence']."'";
-			 		$db->Execute($q);
-			 		echo '<tr><td>'.$newplugin['nicename'].'</td><td>..........Loaded</td></tr>';
-
-				} // end if function exists
-			} // end if
-		} // end foreach
-		echo "</table>";
-		echo '<p>Done. <input type="submit" name="submit" value="Next &gt;" />';
-		$func = 'upgrade_from_'.$config['upgrade_from'].'_post';
-		if($config['install_type'] == 'upgrade' && function_exists($func)) $step = 6;
-			else $step = 7;
-		break;*/
+        include_once(LOQ_APP_ROOT.'includes/pluginhandler.class.php');
+        define('T_PLUGINS',$_SESSION['config']['table_prefix'].'plugins');
+        $ph = new pluginhandler($this->db);
+        $ph->scan_for_plugins(LOQ_APP_ROOT.'plugins');
     }
     function writeconfig(){
         // Write config!
@@ -170,7 +130,7 @@ class installinstall extends installbase{
         
         // Full path of the directory where you've installed bBlog
         // ( i.e. the bblog folder )
-        define('BBLOGROOT','".$config['path']."');
+        define('LOQ_APP_ROOT','".$config['path']."');
         
         /* URL config */
         
@@ -194,7 +154,7 @@ class installinstall extends installbase{
         
         // ---- end of config ----
         // leave this line alone
-        include BBLOGROOT.'inc/init.php';
+        include LOQ_APP_ROOT.'inc/init.php';
         ?>";
         $fp = fopen('./config.php', 'w');
 		fwrite($fp, $config_file);
@@ -223,6 +183,7 @@ class installinstall extends installbase{
         if(file_exists(LOQ_INSTALLER.'/sql/mysql.sql') && is_readable(LOQ_INSTALLER.'/sql/mysql.sql')){
             $sql = file_get_contents(LOQ_INSTALLER.'/sql/mysql.sql');
             $sql = str_replace('__pfx__', $_SESSION['config']['table_prefix'], $sql);
+            
             if(!is_null($charset)){
                 $sql = str_replace('__charset__', $charset, $sql);
             }

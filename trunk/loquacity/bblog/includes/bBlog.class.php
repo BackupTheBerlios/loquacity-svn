@@ -64,9 +64,9 @@ class bBlog extends Smarty {
         
         Smarty::Smarty();
         //Smarty setup
-        $this->template_dir = BBLOGROOT.'templates/'.C_TEMPLATE;
-        $this->compile_dir = BBLOGROOT.'generated/templates/';
-        $this->plugins_dir = array(BBLOGROOT.'plugins', BBLOGROOT.'plugins/smarty',BBLOGROOT.'3rdparty/smarty/libs/plugins');
+        $this->template_dir = LOQ_APP_ROOT.'templates/'.C_TEMPLATE;
+        $this->compile_dir = LOQ_APP_ROOT.'generated/templates/';
+        $this->plugins_dir = array(LOQ_APP_ROOT.'plugins', LOQ_APP_ROOT.'plugins/smarty',LOQ_APP_ROOT.'3rdparty/smarty/libs/plugins');
         $this->use_sub_dirs	= FALSE; // change to true if you have a lot of templates
         $this->_ph =& new postHandler($this->_adb, $this->plugins_dir);
         // initial time from config table, based on last updated stuff.
@@ -354,7 +354,7 @@ class bBlog extends Smarty {
     }*/
     function standalone_message($message_title=FALSE,$message=FALSE,$meta_redirect=FALSE, $http_header = FALSE) {
         // THIS FUNCTION WILl KILL THE SCRIPT BEFORE ANYTHING GETS TO THE BROWSER.
-        $this->template_dir = BBLOGROOT.'inc/admin_templates';
+        $this->template_dir = LOQ_APP_ROOT.'inc/admin_templates';
         $this->compile_id = 'admin';
         if(!$message) $this->assign('message','No message given!');
 	        else $this->assign('message',$message);

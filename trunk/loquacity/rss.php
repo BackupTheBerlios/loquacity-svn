@@ -66,7 +66,7 @@ if(is_numeric($year)) $p['day'] = $day;
 $posts = $bBlog->get_posts($bBlog->make_post_query($p));
 $bBlog->assign('posts',$posts);
 
-$bBlog->template_dir = BBLOGROOT.'inc/admin_templates';
+$bBlog->template_dir = LOQ_APP_ROOT.'inc/admin_templates';
 $bBlog->compile_id = 'admin';
 
 // Format last modification date for use in the header.

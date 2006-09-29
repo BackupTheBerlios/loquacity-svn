@@ -58,7 +58,7 @@ if((isset($_POST['newpost'])) && ($_POST['newpost'] == 'true')) {    // we have 
     if(is_int($res)) {
         $bBlog->assign('post_message',"Post #$res Added :)");
         if(strlen(C_PING)>0) {
-            include BBLOGROOT.'libs/rpc.php'; // include stuff needed to ping
+            include LOQ_APP_ROOT.'libs/rpc.php'; // include stuff needed to ping
             register_shutdown_function('ping'); // who wants to wait for 4
             // requests before the page loads ?
         }

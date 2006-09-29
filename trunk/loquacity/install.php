@@ -61,6 +61,7 @@ else{
         //$db = new db($config['db_username'], $config['db_password'], $config['db_database'], $config['db_host']);
         include_once(LOQ_INSTALLER.'/installbase.class.php');
         include_once(LOQ_APP_ROOT.'includes/stringhandler.class.php');
+        include_once(LOQ_APP_ROOT.'3rdparty/adodb/adodb-errorhandler.inc.php');
         include_once(LOQ_APP_ROOT.'3rdparty/adodb/adodb.inc.php');
         if(in_array($_GET['install'], array('prescan', 'install', 'postscan'))){
             include_once(LOQ_INSTALLER.'/install'.$_GET['install'].'.class.php');

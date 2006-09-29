@@ -36,6 +36,9 @@
  * in the mean time we'll put them in an array.
  */
  
+include_once(LOQ_APP_ROOT.'includes/pluginhandler.class.php');
+$ph = new pluginhandler($bBlog->_adb);
+
 $show_plugin_menu = TRUE;
 $plugin_ar  = array();
 
@@ -51,41 +54,12 @@ function identify_admin_plugins () {
 }
 // PLUGINS :
 
-function scan_for_plugins () {
-	global $bBlog;
-	$currentPlugins = currentPlugins($bBlog->_adb);
-	$dir=dirname(__FILE__);
-	$scanned = scanPluginDir($dir);
-	$installed = 0;
-	foreach($scanned as $type => $typeList){
-		foreach($typeList as $ind=>$member){
-			if((!isset($currentPlugins[$type])) || (isset($currentPlugins[$type]) && !in_array($member, $currentPlugins[$type]))){
-				if(installPlugin($bBlog->_adb, $type, $member)){
-					$installed++;
-				}
-			}
-		}
-	}
-	return $installed;
-}
-	
-function installPlugin($db, $type, $plugin){
-	$loader = 'identify_'.$type.'_'.$plugin;
-	if(function_exists($loader)){
-		$newplugin = $loader();
-		$sql = 'INSERT INTO `'.T_PLUGINS.'`(type,name,nicename,description,template,help,authors,licence) VALUES("'.$type.'","'.$newplugin['name'].'","'.$newplugin['nicename'].'","'.$newplugin['description'].'",	"'.$newplugin['template'].'","'.$newplugin['help'].'","'.$newplugin['authors'].'", "'.$newplugin['license'].'")';
-		//$db->debug = true;
-		if($db->Execute($sql)){
-			return true;
-		}
-	}
-	return false;
-}	
 
-if(isset($_POST['scan'])) $np = scan_for_plugins();
+
+if(isset($_POST['scan'])) $np = $ph->scan_for_plugins($dir=dirname(__FILE__););
 
 if(isset($_POST['scan_refresh'])) {
-	$np = scan_for_plugins();
+	$np = $ph->scan_for_plugins($dir=dirname(__FILE__););
 	$bBlog->assign('np',"<b style='color: red;'>$np</b><br />");
 }
 
@@ -133,55 +107,4 @@ $bBlog->assign('show_plugin_menu',$show_plugin_menu);
 
 
 $bBlog->display("plugins.html");
-
-function scanPluginDir($dir){
-	$pluginList = array();
-	$dh = opendir($dir);
-	while((($file = readdir( $dh )) !== false )){
-		if($file === 'smarty'){
-			$list1 = scanPluginDir($dir . DIRECTORY_SEPARATOR . $file);
-			foreach($list1 as $type => $plugins){
-				if(is_array($pluginList[$type])){
-					array_merge($pluginList[$type],  $plugins);
-				}
-				else{
-					$pluginList[$type] = $plugins;
-				}
-			}
-		}
-		else if(substr($file, -3) == 'php'){
-			$parts = explode('.',$file);
-			if($parts[0] !== 'builtin'){
-				if(isValidPlugin($dir, $file)){
-					$pluginList[$parts[0]][] = $parts[1];
-				}
-			}
-		}
-	}
-	closedir( $dh );
-	return $pluginList;
-}
-
-function currentPlugins(&$db){
-	$current = array();
-	$rs = $db->Execute("select type, name from ".T_PLUGINS);
-	if($rs !== false && !$rs->EOF){
-        	while($plugin = $rs->FetchRow()){
-            		$current[$plugin['type']][] = $plugin['name'];
-        	}
-    	}
-	return $current;
-}
-
-function isValidPlugin($dir, $file){
-	$parts = explode('.', $file);
-	if(file_exists($dir. DIRECTORY_SEPARATOR . $file)){
-		include_once($dir. DIRECTORY_SEPARATOR . $file);
-		$loader = 'identify_'.$parts[0].'_'.$parts[1];
-		if(function_exists($loader)){
-			return true;
-		}
-	}
-	return false;
-}
 ?>
