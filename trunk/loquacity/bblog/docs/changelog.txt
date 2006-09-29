@@ -62,8 +62,4 @@ Underline:
 * (+) Added function_getsections.php to the /bblog/bBlog_plugins folder. {getsections} is now an official plugin.
 * (u) Updated CVS Smarty Version from 2.5.0 to 2.6.0 RC1 (PHP5 Compliant)
 
-===================
-=== Version 0.6 ===
-===================
-
 Changelog started here, no changelog provided for versions prior to 0.7 

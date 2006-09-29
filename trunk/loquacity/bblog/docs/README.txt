@@ -1,16 +1,14 @@
-Welcome to bBlog!
-www.bBlog.com
-
 =========
 Contents:
 =========
 
 I Introduction
 
-I.I About bBlog
+I.I About Loquacity
 I.II Licence
 I.III Credits
 I.IV Bugs
+
 
 II Instructions
 
@@ -22,32 +20,39 @@ II.III Change URLs
 I. Introduction
 ===============
 
-I About bBlog
+I About Loquacity
 -------------
-bBlog is a PHP blogging application, written using Smarty, and OOP style coding.
-It is in beta stage right now.
+Loquacity is a simplified PHP blogging application, suited for non-technical and technical users alike. Its aim is to remain simple, yet powerful. Loquacity enables you to talk to the world in an easy way, using the method you prefer: text, audio, visual and more. Based on the bBlog blog engine, Loquacity is a furtherance of the project under new leadership and vision.
 
-In this file, README.txt, you will find the most important install and general instructions. For further advice, help yourself with the following resources:
+Here, you will find instructions and guidelines on how to install and use the package. For further advice, help yourself with the following resources:
 
-Documentation, including install instructions, is at www.bblog.com/docs/
-If you get stuck *after reading the documentation* please go to http://www.bblog.com/forum.php for help and first search the forums, using the search function and if you did not found any appropriate help, create a new thread and ask your question(s).
+* Documentation, including install instructions - <not completed>
+* If you are stuck while reading the documentation, visit the Loquacity forums at  http://forum.loquacity.info. Please search through the forum first. Many other users might have gone through the same query you are about to look for or ask. If you still do not find the answer then, feel free to create a new thread and ask your question.
 
 
 II Licence
 ----------
-bBlog is licenced under the General Public Licence - the GPL.
-For a detailed licence - which you need to agree to, by using/installing bBlog - see licence.txt in this folder.
+Loquacity is licenced under the General Public Licence v.2 - the GPL.
+For a detailed licence, see licence.txt.
 
 
 III Credits
 -----------
-See the "about" page in your installed bBlog.
+Visit the "about" page in the admin panel for more information regarding the credits.
 
 
 IV Bugs
 -------
-If you find a bug, you can report it in forum at http://www.bblog.com/forum.php.
-If you find a security issue please report to eaden@webforce.co.nz. As long as it is nothing really harmful, you can report it to the bug tracker, too, but be sure to set its severity and priority to top level.
+If you are unsure whether you have found a bug or not, feel free to enquire about it in the forum.
+
+If you find a bug in Loquacity, you can report it in the bug tracker found at http://bugs.loquacity.info. For those who do not wish to create a profile in the bug tracker, you can use the following login: 
+        username: bugs
+        password: temp123
+Note: This account is locked, only being able to report and view bugs.
+
+If you find a security issue please refrain from filing it in the forum or bug tracker. Instead, report it directly to the project manager, Kenneth, at kenneth.power@gmail.com. Security and privacy is on the top of our priority list, and we would prefer to fix the issues as soon as possible without expanding the risks.
+
+
 
 
 II. Instructions
@@ -125,5 +130,5 @@ A little note for template designers: You may also need to edit the CSS / image 
 Thank you for using bBlog, and good luck :)
 
 --
-The bBlog Team
-http://bblog.com
+The Loquacity Team
+http://loquacity.info
