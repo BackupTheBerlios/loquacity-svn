@@ -12,9 +12,12 @@ I.IV Bugs
 
 II Instructions
 
-II.I Install
-II.II Upgrade
-II.III Change URLs
+II.I Prequisits
+II.II The mySQL database and user.
+II.III. Installing Loq.
+II.IV Upgrade
+II.V Change URLs
+II.VI Problems
 
 
 I. Introduction
@@ -58,66 +61,134 @@ If you find a security issue please refrain from filing it in the forum or bug t
 II. Instructions
 ================
 
-I Install
+I Prequisits
 ---------
-Just before we start: If anything is unclear, detailed documentation about install can be obtained here: www.bblog.com/docs/Installing-bBlog
+Just before we start: If anything is unclear, detailed documentation about install can be obtained in the forum at http://loquacity.info/.............
 
-You will need to do certain things during or before install, so be sure to have all appropriate information and acces rights. You need:
+Be sure to have all appropriate information and acces rights before you begin. You need:
 - to be able to set file/folder permissions on the webserver,
-- to be able to delete some files and folders,
-- to know the MySQL database, username and password, and
-- to know the folder schemes for your blog.
-
-After you downloaded and uploaded the bBlog archive to your server, extract the folder "blog", including all files and subfolders, to the desired folder on your webserver. The folder "blog" will be the root directory of your blog - the place, where you later will read it with your webbrowser. 
-
-Before installing bBlog, you need to adjust some of the filme permissions. These files or folders should be writable by the server (chmod 777 on linux):
-/cache/
-/cache/favorites.xml
-/compiled_templates/
-/config.php
-
-So, everything is extracted and in place now. Open your webbrowser and run the install script, which is called install.php and can be found in the /bblog/ folder.
-The installer will guide you through the install process and tell you what to do.
-
-After you finished the whole install process, you can go to www.yoursever.com/bblog/ and log in, using the username and password you specified during install. If, of course, you installed your blog in some subdirectories, you will have to make the URL fit with those subdirectories :).
-
-You may now write, delete and administrate your blog. Have fun!
+- to be able to delete some files and folders, and
+- to know the MySQL database, username and password (if not, see section II below).
 
 
-II Upgrade
+II. The mySQL database and user.
+---------
+
+To create a database, you can either use a graphical installer such as mySQL-administrator (http://bla.com), phpmyadmin, or the Command Line (CLI) mySQL interface. For a quick reference, here is an example on how to create a mysql user 'loquser' and database 'loqdb' for Loquacity through the CLI interface.
+
+** Login to mysql
+
+localhost# mysql -u root -p
+(enter your password)
+mysql>
+
+** Create a database, in our example, loqdb.
+
+mysql> create database loqdb;
+Query OK, 1 row affected (0.02 sec)
+
+** Create a user, in our example, loquser, with password 'smellyfish', and assign to the database.
+The syntax is 
+grant all on db_name.* to user@host identified by 'password'; flush privileges;
+
+So in our example, it would be as follows,
+
+mysql> grant all on loqdb.* to loquser@localhost identified by 'smellyfish'; flush privileges;
+Query OK, 0 rows affected (0.06 sec)
+Query OK, 0 rows affected (0.03 sec)
+
+That's it! Now all you need is to memorise your settings. In our example,
+Database: loqdb
+User: loquser
+Password: smellyfish
+
+Note: These are just examples. DO NOT use the database, username, or passwords mentioned above.
+
+
+III. Installing Loq.
+---------
+
+Extract the "loquacity/" folder and its contents into your webserver, depending on where you want your blog to be. 
+* If you want the blog to be the main content of your site, then extract the contents of "Loquacity/" directly into your webserver.  The end result would appear as http://yoursite.com/
+
+* Alternatively, if you would like your blog to be in its own section in your website, then stick the Loquacity/ folder wherever need be. Rename the folder if you wish, eg. myblog/. The end result would appear as http://yoursite.com/myblog/
+
+
+
+You now need to adjust file permissions. The following files or folders should be writable by the server (chmod 777 on linux/unix):
+/generated/
+/generated/cache/
+/generated/cache/favorites.xml
+/generated/templates/
+config.php
+
+The quickest way to do so in linux is to
+chmod -R 777 generated/
+
+
+When done, open your webbrowser and run the install script, which is called install.php.
+http://mysite.com/install.php
+or
+http://mysite.com/myblog/install.php
+depending on the steps mentioned above in subsection I.
+
+You should now be greeted with a welcome message, and a choice to either perform a fresh installation, or an upgrade. If upgrading, skip to subsection IV - Upgrade. If installing from scratch, proceed onwards.
+
+If all goes well, you will be presented with a few comfiguration settings to fill in. When done, click next, and if all goes well, you should be greeted with the final page.
+ 
+* Delete install.php
+* Delete the install folder
+* Chmod the config.php so that it is not writable by the webserver
+
+And finally, login to your new blog's admin panel with the username and password you specified during the install.
+http://mysite.com/bblog/
+or
+http://mysite.com/myblog/bblog/
+depending on the steps mentioned above in subsection I.
+
+You may now write, delete and administer your blog. Have fun!
+
+
+IV - Upgrade
 ----------
-Upgrading from version 0.7.2 up to 0.7.6 is easy. Although, before doing anything, we'd recommend reading through the whole guide completely and then do the upgrade. So you know, what's going to happen :).
 
-Just to be on the safe side, do a backup of your blog first. Backup your whole bBlog files and folders, and backup the MySQL tables. 
+Just to be on the safe side, do a backup of your blog first. Backup your whole Loquacity files and folders, and backup the MySQL tables. 
 
-Now, delete your whole bBlog installation files and folders, *EXCEPT* of your config.php (important!). 
+@todo xushi: add an example on mysqldump
 
-Of course, if you customized your templates, or added/customized plugins, you should not delete those files, too. Otherwise they're lost (unless you did a backup, which you should! ;) 
+Now, delete your whole Loquacity installation files and folders, *EXCEPT* of your config.php (important!). A more recomended approach is to rename the whole folder into something else, resulting in a complete backup of your old blog version.
 
-Okay, download the new release from www.bblog.com. Now you should either remove the config.php from the ARCHIVE (!), you just downloaded and unpack it on your server, or you unpack it on your local harddrive, remove the config.php there and then upload the whole thing. The important thing is, that your original config.php on your webserver remains untouched!
+@todo xushi: example ...
 
-If you were using the blog's blogroll and uploaded the favorites.xml to your /cache/ folder, you now need to upload it again, because it got overwritten.
+Of course, if you customized your templates, or added/customized plugins, you should not delete those files, too. Otherwise will be lost (unless you did a backup, which you should! ;) 
 
-Be sure to set the appropriate file permissions again. They need to be writable by the server:
-/cache/
-/cache/favorites.xml
-/compiled_templates/
+Download the new release and unpack it onto your server as mentioned above in the installation section, replacing the empty config.php file with your personal one. 
 
-on Linux this would be: chmod -R 777 cache compiled_templates
+Note: If you were using the blog's blogroll and uploaded the favorites.xml to your /cache/ folder, you now need to upload it again, because it got overwritten.
 
-After all this is done, allyou have to do is start the installer again, and go through the "Upgrade from bBlog 0.7.4" section. It will update the database.
+Be sure to re-set the appropriate file permissions again:
+/generated/
+/generated/cache/
+/generated/cache/favorites.xml
+/generated/templates/
+config.php
 
-After the script is finished, you have succesfully upgraded your bBlog. Using the log in area at /bblog/, you may now log in again and go on using bBlog.
+The quickest way to do so in linux is to
+chmod -R 777 config.php generated/
+
+Finally, re-enter the installation menu through install.php, and choose the 'upgrade from' option in the option list. Follow through, and delete the install.php and install/ folders when done.
+
+You may now log in again and go on using Loquacity.
 
 
-III Change URLs
+V - Change URLs
 ---------------
 NOTE: You only need to read this if you want your URLS to look like: 
 www.example.com/blog/post/1/ instead of www.example.com/blog/index.php?postid=1
 
-This looks better and is much better for search engines (Google, MSN, Yahoo...). Those search engines don't like pages, which are generated through a PHP script (which is the case in bblog), they like clean and clear, www-typical URLs and paths much better.
+This looks better and is much better for search engines (Google, MSN, Yahoo...). Those search engines don't like pages, which are generated through a PHP script (which is the case in Loquacity), they like clean and clear, www-typical URLs and paths much better.
 
-bBlog supports those clean URLs, using a very simple method: htacces. Some servers support it, some don't - you will either need to try, or ask your admin/hosting company, if that works. Don't worry, you won't break anything, by simply trying it.
+Loquacity supports those clean URLs, using a very simple method: htacces. Some servers support it, some don't - you will either need to try, or ask your admin/hosting company, if that works. Don't worry, you won't break anything, by simply trying it.
 
 To enable those clean URLs, you need to rename the file "htaccess-cleanurls" (it's a AllowOverride setting in apache), which is located in the blog root, to ".htaccess" - don't forget the dot!. 
 
@@ -127,7 +198,33 @@ After you finished these two steps, your blog should now mainly use the clean UR
 
 A little note for template designers: You may also need to edit the CSS / image links in the templates to make them absolute. 
 
-Thank you for using bBlog, and good luck :)
+
+
+VI - Problems
+-----------
+
+Here are some problems you may find,
+
+
+ Fatal error: Smarty error: the $compile_dir '' does not exist, or is not a directory. in /var/www/localhost/htdocs/loquacity/bblog/3rdparty/smarty/libs/Smarty.class.php on line 1095
+
+Cause: Your sessions might be disabled. To check, create a test.php file, and add the folowing line into it,, 
+<?php phpinfo(); ?>
+Save, and load it through the web browser. search for the following line,
+session.save_path
+Make sure it has a value (eg, /tmp).
+If not, then you need to edit your php.ini file and uncomment the line.
+When ready, restart your webserver, and try again.
+
+
+
+Fatal error: Call to undefined function mysql_connect() in /var/www/localhost/htdocs/loquacity/bblog/3rdparty/adodb/drivers/adodb-mysql.inc.php on line 354
+
+Cause: Your php can not communicate with mysql.
+Note: If you're on Gentoo, use the mysql USE flag instead of the mysqli USE flag and recompile PHP.
+
+
+Thank you for using Loquacity, and good luck :)
 
 --
 The Loquacity Team

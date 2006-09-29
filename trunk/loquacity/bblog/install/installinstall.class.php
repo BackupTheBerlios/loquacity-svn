@@ -47,7 +47,7 @@ class installinstall extends installbase{
         if($this->db()){
             define('TBL_PREFIX', $_SESSION['config']['table_prefix']);
             define('BLOGURL', $_SESSION['config']['blog_url']);
-            //$this->installplugins();
+            $this->installplugins();
             $this->writeconfig();
         }
     }
@@ -56,7 +56,7 @@ class installinstall extends installbase{
             $db = NewADOConnection($dsn);
             if($db !== false){
                 $this->db =& $db;
-                //$this->createdatabase();
+                $this->createdatabase();
             }
             return true;
     }
@@ -75,7 +75,7 @@ class installinstall extends installbase{
             }
             $config = str_replace('__loq_version__', LOQ_CUR_VERSION, $config);
             $config = str_replace('__loq_app_root__', LOQ_APP_ROOT, $config);
-            //var_dump($config);
+            var_dump($config);
         }
         if(($fp = fopen(LOQ_APP_ROOT.'config.php', 'w+b')) !== false){
             if(fwrite($fp, "<?php\r$config\r?>") === false){
