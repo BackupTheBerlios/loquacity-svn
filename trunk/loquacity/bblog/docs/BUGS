@@ -1,0 +1,29 @@
+
+If you are unsure whether you have found a bug or not, feel free to enquire about it in the forum.
+
+If you find a bug in Loquacity, you can report it in the bug tracker found at http://bugs.loquacity.info. For those who do not wish to create a profile in the bug tracker, you can use the following login: 
+        username: bugs
+        password: temp123
+Note: This account is locked, only being able to report and view bugs.
+
+If you find a security issue please refrain from filing it in the forum or bug tracker. Instead, report it directly to the project manager, Kenneth, at kenneth.power@gmail.com. Security and privacy is on the top of our priority list, and we would prefer to fix the issues as soon as possible without expanding the risks.
+
+
+-----------------------
+-----------------------
+
+BUGS - Reported but not added to the bugtracker:
+
+ TODO: From forum posting: http://bblog.com/forum/viewtopic.php?t=2328
+   bBlog installer does not escape strings
+   
+ FEATURE: forum posting http://bblog.com/forum/viewtopic.php?t=2603
+   addinng comment URL to RSS feeds
+   
+ BUG:
+Investigate ways to make clean urls work without .htaccess files
+
+
+--
+The Loquacity Team
+http://loquacity.info
