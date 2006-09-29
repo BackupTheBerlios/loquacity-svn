@@ -1,11 +1,41 @@
 <?php
 /**
- * Jumbled up by Xushi ... =)
- * 
+ * Loquacity - A web blogging application with simplicity in mind - http://www.loquacity.info/
+ * Copyright (c) 2006 Kenneth Power
+ *
+ * @package Loquacity
+ * @subpackage Installation
+ * @author Samir Greadly <xushi.xushi@gmail.com>
+ * @copyright Copyright &copy; 2006 Loquacity
+ * @license    http://www.gnu.org/licenses/gpl.html GPL
+ * @link http://www.loquacity.info
+ * @since 0.8-alpha1
+ *
+ * LICENSE:
+ *
+ * This file is part of Loquacity.
+ *
+ * Loquacity is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * Loquacity is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Loquacity; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ */
+
+/**
+ * Xushi :
  * Note, the only difference in the database between 0.7.4
  * and 0.7.6 is just the addition of VERSION in {pfx}config.
- * BUT i know some ppl that are going to upgrade from 0.7.4 and
- * below, so i'll keep the 0.7.5 updates here.. with a check to
+ * However, Some might still upgrade from 0.7.4 and
+ * below, so i'll keep the 0.7.5 updates here with a check to
  * see if they're installed or not.
  *
 **/
@@ -89,8 +119,8 @@
 </div>
 
 <div id="footer">
-<a href="http://www.bBlog.com" target="_blank">
-bBlog 0.7.6</a> &copy; 2005 <a href="mailto:eaden@eadz.co.nz">Eaden McKee</a> &amp; <a href="index.php?b=about" target="_blank">Many Others</a>
+<a href="http://www.loquacity.info" target="_blank">
+Loquacity</a> &copy; 2006 <a href="mailto:admin@loquacity.info">Kenneth Power</a> &amp; <a href="index.php?b=about" target="_blank">The Team</a>
 </div>
 
 </body>

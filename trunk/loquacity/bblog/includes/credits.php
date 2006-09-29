@@ -5,7 +5,7 @@
  *
  * @package Loquacity
  * @subpackage Administration
- * @author Eaden McKee <email@eadz.co.nz>
+ * @author Samir Greadly (xushi.xushi@gmail.com) http://xushi.co.uk, Eaden McKee <email@eadz.co.nz>
  * @copyright &copy; 2003  Eaden McKee <email@eadz.co.nz>
  * @license    http://www.gnu.org/licenses/gpl.html GPL
  * @link http://www.loquacity.info
@@ -37,7 +37,32 @@
  */
 // make it an array for more flexable layout
 $credits = array(
+"Telcor - <a href='http://blog.tel-cor.com'>Kenneth Power</a> - Project Manager, Lead Developer",
+"Bazzle - <a href='http://www.loquacity.info'>Mark Whitney</a> -  Project Developer",
+"Gremeth - <a href='http://www.loquacity.info'>Myke Stubbs</a> - Project Developer",
+"Stan - <a href='http://www.loquacity.info'>Stanley Schade</a> - Project Developer",
+"Titanium Geek - <a href='http://www.loquacity.info'>Alison Bain</a> - Project Developer",
+"Xushi - <a href='http://xushi.co.uk'>Samir Greadly</a> - Code Design, Commentary, Documentation.",
+"... To be edited asap.. not sure who is who exacly, yet.",
+" ",
+
+"bBlog Developers",
+"---------------------",
+" ",
 'bBlog core code / project founder  <a href="mailto:email@eadz.co.nz">Eaden McKee</a> - <a href="http://www.eadz.co.nz/blog/" target="_blank">eadz.co.nz/blog</a>',
+"Hijacker - <a href='http://sjuengling.xetronet.de/'>Sascha J?ngling</a> - Organisatorics, documentation",
+"Xushi - <a href='http://xushi.co.uk'>Samir Greadly</a> - Bug fixes, added features, testing, upgrade code enhancement",
+"Telcor - <a href='http://blog.tel-cor.com'>Kenneth Power</a> - Coding, bug fixes, testing",
+"Wormeyman - <a href='http://www.wormeyman.com/'>Eric Johnson</a> - Coding, bug fixing, plugins",
+"Clever - <a href='http://blog.johnnaked.com'>Edbury Raymond Enegren IV</a> - Testing, plugin implementation",
+"DL8 - <a href='http://webbi.cheetux.org.il'>Nir Lavi</a> - Bug fixes, testing.",
+"Woe - <a href='http://www.lwo-lab.net'>Elie Bleton</a> - Code manager, programmer ",
+"Pixelpope - <a href='http://pixelpope.com'>Dominic Frohlof</a> - Multilingual & RTL/LTR support, bug fixing, features, testing.",
+" ",
+
+"-----------------",
+"Previous bBlog Members",
+" ",
 
 "Archives funtions and various other various bits by <a href='http://www.revjim.net/' target='_blank'>Rev Jim</a>, core dev team",
 
@@ -75,8 +100,7 @@ $credits = array(
 
 "Some http header and bookmarklet code from b2/<a href='http://www.wordpress.org/' target='_blank'>wordpress</a>",
 
-
-"bbcode smarty modifier by André Rabold , with make_clickable by Nathan Codding
+"bbcode smarty modifier by Andr? Rabold , with make_clickable by Nathan Codding
 and documentation from <a href='http://www.phpbb.com/' target='_blank'>PHPBB</a>",
 
 "Admin post hidden options thingy and readmore plugin inspired by the one on <a  href='http://www.livejournal.com/' target='_blank'>LiveJournal</a>",
@@ -88,18 +112,6 @@ and documentation from <a href='http://www.phpbb.com/' target='_blank'>PHPBB</a>
 "MT API support, <a href='http://www.bluewire.net.nz/'>Mark Rowe</a>",
 
 "Icons from <a href='http://gtmcknight.com/buttons/index.php' target='_blank'>Steal These Buttons</a>",
-"Thomas Reynolds <thomasr@infograph.com>, atom fixes",
-
-"------------------ ",
-"The 0.7 team",
-"Pixelpope - <a href='http://pixelpope.com'>Dominic Frohlof</a> - Multilingual & RTL/LTR support, bug fixing, features, testing.",
-"Hijacker - <a href='http://sjuengling.xetronet.de/'>Sascha Jüngling</a> - Organisatorics, documentation",
-"Xushi - <a href='http://xushi.co.uk'>Samir Greadly</a> - Bug fixes, added features, testing, upgrade code enhancement",
-"Telcor - <a href='http://blog.tel-cor.com'>Kenneth Power</a> - Coding, bug fixes, testing",
-"Wormeyman - <a href='http://www.wormeyman.com/'>Eric Johnson</a> - Coding, bug fixing, plugins",
-"Clever - <a href='http://blog.johnnaked.com'>Edbury Raymond Enegren IV</a> - Testing, plugin implementation",
-"DL8 - <a href='http://webbi.cheetux.org.il'>Nir Lavi</a> - Bug fixes, testing.",
-"Woe - <a href='http://www.lwo-lab.net'>Elie Bleton</a> - Code manager, programmer "
+"Thomas Reynolds <thomasr@infograph.com>, atom fixes"
 );
 ?>
-
