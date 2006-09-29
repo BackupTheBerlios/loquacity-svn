@@ -125,7 +125,7 @@ class posthandler {
         $npost['id'] = $post['postid'];
         $npost['postid'] = $post['postid'];
         $npost['permalink'] = (defined(CLEANURLS)) ? str_replace('%postid%',$post['postid'],URL_POST) : BLOGURL.'?postid='.$post['postid'];
-        $npost['trackbackurl'] = (defined(CLEANURLS)) ?  BLOGURL.'trackback/tbpost='.$post['postid'] : BBLOGURL.'trackback.php&amp;tbpost='.$post['postid'];
+        $npost['trackbackurl'] = (defined(CLEANURLS)) ?  BLOGURL.'trackback/tbpost='.$post['postid'] : LOQ_APP_URL.'trackback.php&amp;tbpost='.$post['postid'];
         $npost['title'] = htmlspecialchars($post['title']);
         //var_dump($npost['permalink']);
         // do the body text

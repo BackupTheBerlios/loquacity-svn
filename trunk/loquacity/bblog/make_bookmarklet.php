@@ -73,10 +73,10 @@ $wp_macIE_correction['out'] = array(
 	'&euro;'
 );
 $wp_gecko_correction['in'] = array(
-	'/\‘/', '/\’/', '/\“/', '/\�?/',
+	'/\‘/', '/\’/', '/\“/', '/\�?/',
 	'/\•/', '/\–/', '/\—/', '/\Ω/',
 	'/\β/', '/\γ/', '/\θ/', '/\λ/',
-	'/\π/', '/\′/', '/\″/', '/\�/',
+	'/\π/', '/\′/', '/\″/', '/\�/',
 	'/\€/', '/\ /'
 );
 $wp_gecko_correction['out'] = array(
@@ -93,7 +93,7 @@ $wp_gecko_correction['out'] = array(
 
 <?php
 $bookmarklet_height= 460;
-$siteurl = BBLOGURL;
+$siteurl = LOQ_APP_URL;
 $blogname= 'bBlog';
 if ($is_NS4 || $is_gecko) {
 ?>

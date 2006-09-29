@@ -56,10 +56,10 @@ function identify_admin_plugins () {
 
 
 
-if(isset($_POST['scan'])) $np = $ph->scan_for_plugins($dir=dirname(__FILE__););
+if(isset($_POST['scan'])) $np = $ph->scan_for_plugins(dirname(__FILE__));
 
 if(isset($_POST['scan_refresh'])) {
-	$np = $ph->scan_for_plugins($dir=dirname(__FILE__););
+	$np = $ph->scan_for_plugins(dirname(__FILE__));
 	$bBlog->assign('np',"<b style='color: red;'>$np</b><br />");
 }
 

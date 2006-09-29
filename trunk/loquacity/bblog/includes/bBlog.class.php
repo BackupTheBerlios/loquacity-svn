@@ -55,7 +55,7 @@ class bBlog extends Smarty {
         $this->assign('blogname',C_BLOGNAME);
         $this->assign('blogdescription',C_BLOG_DESCRIPTION);
         $this->assign('blogurl',BLOGURL);
-        $this->assign('bblogurl',BBLOGURL);
+        $this->assign('bblogurl',LOQ_APP_URL);
         $this->assign('metakeywords',C_META_KEYWORDS);
         $this->assign('metadescription',C_META_DESCRIPTION);
         $this->assign('charset',C_CHARSET);
@@ -345,12 +345,12 @@ class bBlog extends Smarty {
     }*/
     
     /*function _get_post_trackback_url($postid) {
-		return BBLOGURL.'trackback.php/'.$postid.'/';
+		return LOQ_APP_URL.'trackback.php/'.$postid.'/';
 
     }*/
 
     /*function _get_comment_trackback_url($postid,$commentid) {
-               return BBLOGURL.'trackback.php/'.$postid.'/'.$commentid.'/';
+               return LOQ_APP_URL.'trackback.php/'.$postid.'/'.$commentid.'/';
     }*/
     function standalone_message($message_title=FALSE,$message=FALSE,$meta_redirect=FALSE, $http_header = FALSE) {
         // THIS FUNCTION WILl KILL THE SCRIPT BEFORE ANYTHING GETS TO THE BROWSER.

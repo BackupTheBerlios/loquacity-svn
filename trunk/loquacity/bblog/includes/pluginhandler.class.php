@@ -5,6 +5,14 @@
  * pluginhandler.class.php - author: Kenneth Power <telcor@users.berlios.de>
  * based on code by Eaden McKee <email@eadz.co.nz>
  *
+ * @package Loquacity
+ * @subpackage Core
+ * @author Kenneth Power <telcor@users.berlios.de>, Eaden McKee <email@eadz.co.nz>
+ * @copyright &copy; 2006 Kenneth Power, &copy; 2003 Eaden McKee
+ * @license    http://www.gnu.org/licenses/gpl.html GPL
+ * @link http://www.loquacity.info
+ * @since 0.8-alpha2
+ *
  * Loquacity http://www.loquacity.info/
  * Copyright (C) 2006 Kenneth Power <telcor@users.berlios.de>
  * Copyright (C) 2003  Eaden McKee <email@eadz.co.nz>
@@ -48,7 +56,6 @@ class pluginhandler{
         $loader = 'identify_'.$type.'_'.$plugin;
         if(function_exists($loader)){
             $newplugin = $loader();
-            //$sql = 'INSERT INTO `'.T_PLUGINS.'`(type,name,nicename,description,template,help,authors,licence) VALUES("'.$type.'","'.$newplugin['name'].'","'.$newplugin['nicename'].'","'.$newplugin['description'].'",	"'.$newplugin['template'].'","'.$newplugin['help'].'","'.$newplugin['authors'].'", "'.$newplugin['license'].'")';
             return $this->_db->AutoExecute(T_PLUGINS, $newplugin, 'INSERT', $magicq=get_magic_quotes_gpc());
         }
         return false;

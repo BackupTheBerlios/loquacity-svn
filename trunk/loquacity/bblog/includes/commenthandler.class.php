@@ -428,7 +428,7 @@ class commentHandler {
         $rval['parent'] = ($vars['parentid'] > 0) ? $vars['parentid'] : false;
         $rval['type'] = $vars['type'];
         $rval['deleted'] = ($vars['deleted'] == 1) ? true : false;
-        $rval['link'] = BBLOGURL.'trackback.php/'.$this->_post.'/'.$vars['id'];
+        $rval['link'] = LOQ_APP_URL.'trackback.php/'.$this->_post.'/'.$vars['id'];
 
         return $rval;
     }
