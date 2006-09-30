@@ -94,7 +94,7 @@ $wp_gecko_correction['out'] = array(
 <?php
 $bookmarklet_height= 460;
 $siteurl = LOQ_APP_URL;
-$blogname= 'bBlog';
+$blogname= 'Loquacity';
 if ($is_NS4 || $is_gecko) {
 ?>
     <a href="javascript:Q=document.selection?document.selection.createRange().text:document.getSelection();void(window.open('<?php echo $siteurl; ?>index.php?b=post&popup=true&text='+escape(Q)+'<?php echo $bookmarklet_tbpb ?>&popupurl='+escape(location.href)+'&popuptitle='+escape(document.title),'WordPress bookmarklet','scrollbars=yes,width=600,height=<?php echo $bookmarklet_height ?>,left=100,top=150,status=yes'));">Press It

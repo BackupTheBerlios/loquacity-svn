@@ -53,7 +53,7 @@ $title = 'Admin';
 $bBlog->setmodifytime(time());
 
 $bBlog->assign_by_ref('title',$title);
-// we will store the rss templates in the inc/admin_templates dir, becasue almost noone will need to change them, - reduce clutter in the templates/* directory.
+// we will store the rss templates in the includes/admin_templates dir, becasue almost noone will need to change them, - reduce clutter in the templates/* directory.
 $bBlog->template_dir = LOQ_APP_ROOT.'includes/admin_templates';
 $bBlog->compile_id = 'admin';
 

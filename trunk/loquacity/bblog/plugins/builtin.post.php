@@ -83,7 +83,7 @@ if(C_DEFAULT_STATUS == 'draft') $bBlog->assign('statusdraft','checked="checked"'
 else $bBlog->assign('statuslive','checked="checked"');
 
 if ((isset($_REQUEST['popup']) && ($_REQUEST['popup'] == 'true'))) {
-	include 'inc/bookmarkletstuff.php';
+	include 'includes/bookmarkletstuff.php';
 	$bBlog->display('popuppost.html');
 } else {
 	$bBlog->display('post.html');
