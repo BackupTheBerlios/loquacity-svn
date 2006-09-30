@@ -104,7 +104,7 @@ $options = array(
 
     array(
         "name"  => "PING",
-        "label" => "Notify websites of new posts. seperate with comma, e.g. weblogs.com/RPC2,www.bblog.com/ping.php,blo.gs/",
+        "label" => "Notify websites of new posts. seperate with comma, e.g. weblogs.com/RPC2,www.loquacity.info/ping.php,blo.gs/",
         "value" => C_PING,
         "type"  => "text"
     ),

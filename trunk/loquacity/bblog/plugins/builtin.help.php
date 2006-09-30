@@ -77,7 +77,7 @@ elseif($_GET['modifierhelp']) {
     }
     else {
         $bBlog->assign("title","Help");
-        $bBlog->assign("helptext",'Visit the <a href="http://www.bblog.com/docs/" target="_blank">bBlog online documentation</a> or the <a href="http://www.bBlog.com/forum.php" target="_blank">bBlog forum</a> for help.');
+        $bBlog->assign("helptext",'Visit the <a href="http://loquacity.info/documentation/xref/nav.html?index.php.html" target="_blank">Loquacity online documentation</a> or the <a href="http://forum.loquacity.info/" target="_blank">Loquacity forum</a> for help.');
     }
 }
     $bBlog->display("help.html");

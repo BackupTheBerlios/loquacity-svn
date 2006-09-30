@@ -39,14 +39,14 @@ function identify_admin_help () {
     'name'           =>'about',
     'type'           =>'builtin',
     'nicename'       =>'About',
-    'description'    =>'Displays bBlog information',
+    'description'    =>'Displays Loquacity information',
     'authors'         =>'Eaden McKee <email@eadz.co.nz>',
     'licence'         =>'GPL'
   );
 }
-include_once('lib/credits.php');
+include_once('includes/credits.php');
 $bBlog->assign('credits',$credits);
-$bBlog->assign('title','About bBlog '.BBLOG_VERSION);
+$bBlog->assign('title','About Loquacity '.BBLOG_VERSION);
 
 ob_start();
 include_once('docs/LICENCE.txt');
