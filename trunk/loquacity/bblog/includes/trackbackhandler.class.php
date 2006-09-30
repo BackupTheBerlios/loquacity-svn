@@ -195,7 +195,7 @@ class trackbackhandler extends commentHandler {
             $rs[] = 'Trackbacks are disabled for this post';
         }
         if($this->isFlooding($this->_db, $this->_ip, time())){
-            $rs[] = "Error adding trackback. You tried to make a comment too soon after your last one. Please try again later. This is a bBlog spam prevention measure";
+            $rs[] = "Error adding trackback. You tried to make a comment too soon after your last one. Please try again later. This is a Loquacity spam prevention measure";
         }
         if(count($rs) > 0)
             $rval = $rs;

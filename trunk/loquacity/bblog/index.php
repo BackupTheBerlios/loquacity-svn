@@ -128,18 +128,18 @@ $bindex['plugins']=$i;
 
 $menu[$i+1]['name'] = 'Options';
 $menu[$i+1]['url']  = 'index.php?b=options';
-$menu[$i+1]['title'] = 'Edit imporntant bBlog options';
+$menu[$i+1]['title'] = 'Edit imporntant Loquacity options';
 $bindex['options']=$i+1;
 
 $menu[$i+2]['name'] = 'About';
 $menu[$i+2]['url']  = 'index.php?b=about';
-$menu[$i+2]['title'] = 'About bBlog';
+$menu[$i+2]['title'] = 'About Loquacity';
 $bindex['about']=$i+2;
 $bindex['captcha'] = $i+4;
 
 $menu[$i+3]['name']='Docs';
-$menu[$i+3]['url']='http://www.bblog.com/docs/" target="_blank"'; // NASTY hack!
-$menu[$i+3]['title'] = 'Link to the online documentation at bBlog.com';
+$menu[$i+3]['url']='http://loquacity.info/documentation/xref/nav.html?index.php.html" target="_blank"'; // NASTY hack!
+$menu[$i+3]['title'] = 'Link to the online documentation at Loquacity.info';
 
 $bBlog->assign_by_ref('menu',$menu);
 
@@ -172,7 +172,7 @@ switch ($b) {
             $title = 'Post Entry';
         }
         if($b === 'about'){
-            $title = 'About bBlog';
+            $title = 'About Loquacity';
         }
         include_once('plugins/builtin.'.$b.'.php');
         break;

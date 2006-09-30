@@ -69,7 +69,7 @@ function notify_owner($subject,$message) {
 
 // function to notify the poster that a reply has been posted to their comment. 
 function notify_poster ($to,$subject,$message) {
- // not yet implimented.
+ // not yet implemented.
 
 }
 ?>

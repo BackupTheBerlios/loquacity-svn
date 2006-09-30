@@ -103,8 +103,6 @@
 		
 		
 	
-	// All Done.
-	
    	echo "<h3>Done.</h3>";
 	// All Done
 	echo "<p>The upgrade finished successfully.<br /><br />

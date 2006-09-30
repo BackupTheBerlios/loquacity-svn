@@ -233,7 +233,7 @@ class commentHandler {
         $rval = true;
         if($this->isFlooding( $_SERVER['REMOTE_ADDR'], time())){
             $rval = false;
-            $this->_errors[] = array("Comment Flood Protection" => "Error adding comment. You have tried to make a comment too soon after your last one. Please try again later. This is a bBlog spam prevention measure");
+            $this->_errors[] = array("Comment Flood Protection" => "Error adding comment. You have tried to make a comment too soon after your last one. Please try again later. This is a Loquacity spam prevention measure");
         }
         if($this->isDisabled($post)){
             $rval = false;

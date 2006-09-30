@@ -1,7 +1,7 @@
 {include file='header.html'}
 		<h3>File Permissions</h3>
-			<p>Loquacity need to be able to write to disk to store it's cache of templates, and if you want to use the blo.gs favorites functionality.</p>
-			<p>We will now check the permissions of the <strong>cache</strong> folder, the <strong>compiled_templates</strong> folder, and the <strong>cache/favorites.xml</strong> file. They all need to be writable by the webserver.</p>
-			<p>Additionally, <strong>config.php</strong> should be writable during the install. At the end of the install when the config file is written to disk, you should change the permissions back so it is not writable by the webserver.</p>
+			<p>Loquacity requires the ability to write to disk in order to store its cache of templates or if you want to use the blo.gs favorites functionality.</p>
+			<p>We will now check the permissions of the <strong>generated</strong> folder and its contents to make sure the webserver can write to them.</p>
+			<p>Additionally, <strong>config.php</strong> should also be writable. At the end of the install when the config file is written to disk, you should change the permissions back so it is not writable by the webserver anymore.</p>
 			{$scan_results}
 {include file='footer.php'}

@@ -31,7 +31,7 @@
  */
 
 /**
- * General functions for bBlog that don't fit elsewhere
+ * General functions for Loquacity that don't fit elsewhere
  *
  * @version $Revision$
  */                              

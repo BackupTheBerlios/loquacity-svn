@@ -36,8 +36,8 @@
  * @version $Revision$
  */
 if ( ! is_dir(LOQ_APP_ROOT) ) {
-  // throw meaningful error here ( OK tim ! )
-  echo "There was an error : LOQ_APP_ROOT is not a directory. Please check that you have configured bBlog correctly by checking values in config.php";
+  // throw meaningful error here
+  echo "There was an error : LOQ_APP_ROOT is not a directory. Please check that you have configured Loquacity correctly by checking the values in config.php";
   die();
    
 }    
