@@ -5,7 +5,7 @@
  *
  * @package Loquacity
  * @subpackage Administration
- * @author Samir Greadly (xushi.xushi@gmail.com) http://xushi.co.uk, Eaden McKee <email@eadz.co.nz>
+ * @author Samir Greadly <xushi.xushi@gmail.com>, Eaden McKee <email@eadz.co.nz>
  * @copyright &copy; 2003  Eaden McKee <email@eadz.co.nz>
  * @license    http://www.gnu.org/licenses/gpl.html GPL
  * @link http://www.loquacity.info
@@ -37,6 +37,10 @@
  */
 // make it an array for more flexable layout
 $credits = array(
+"				---------- ----------",
+"				 The Admin / Dev Team",
+"				---------- ----------",
+" ",
 "Telcor - <a href='http://blog.tel-cor.com'>Kenneth Power</a> - Project Manager, Lead Developer",
 "Bazzle - <a href='http://www.loquacity.info'>Mark Whitney</a> -  Project Developer",
 "Gremeth - <a href='http://www.loquacity.info'>Myke Stubbs</a> - Project Developer",
@@ -46,23 +50,29 @@ $credits = array(
 "... To be edited asap.. not sure who is who exacly, yet.",
 " ",
 
-"bBlog Developers",
-"---------------------",
+"				---------- ----------",
+"				    Previous bBlog Developers",
+"				---------- ----------",
 " ",
-'bBlog core code / project founder  <a href="mailto:email@eadz.co.nz">Eaden McKee</a> - <a href="http://www.eadz.co.nz/blog/" target="_blank">eadz.co.nz/blog</a>',
-"Hijacker - <a href='http://sjuengling.xetronet.de/'>Sascha J?ngling</a> - Organisatorics, documentation",
-"Xushi - <a href='http://xushi.co.uk'>Samir Greadly</a> - Bug fixes, added features, testing, upgrade code enhancement",
-"Telcor - <a href='http://blog.tel-cor.com'>Kenneth Power</a> - Coding, bug fixes, testing",
-"Wormeyman - <a href='http://www.wormeyman.com/'>Eric Johnson</a> - Coding, bug fixing, plugins",
-"Clever - <a href='http://blog.johnnaked.com'>Edbury Raymond Enegren IV</a> - Testing, plugin implementation",
-"DL8 - <a href='http://webbi.cheetux.org.il'>Nir Lavi</a> - Bug fixes, testing.",
-"Woe - <a href='http://www.lwo-lab.net'>Elie Bleton</a> - Code manager, programmer ",
-"Pixelpope - <a href='http://pixelpope.com'>Dominic Frohlof</a> - Multilingual & RTL/LTR support, bug fixing, features, testing.",
+'Eadz - <a href="http://www.eadz.co.nz/" target=_blank>Eaden McKee</a>, bBlog core code / project founder.',
+"Hijacker - <a href='http://sjuengling.xetronet.de/' target=_blank>Sascha J?ngling</a> - Project Coordinator, documentation, bug fixing",
+"Xushi - <a href='http://xushi.co.uk' target=_blank>Samir Greadly</a> - Project Admin, Forum maintanance, Bug fixes, added features, testing, code enhancement",
+"Telcor - <a href='http://blog.tel-cor.com' target=_blank>Kenneth Power</a> - Coding, bug fixes, testing",
+"Clever - <a href='http://blog.johnnaked.com' target=_blank>Edbury Raymond Enegren IV</a> - Project Support, Testing, plugin implementation and hacking",
+"Wormeyman - <a href='http://www.wormeyman.com/' target=_blank>Eric Johnson</a> - Wiki Maintenance and spam removal, minor code fixing, bug reporting.",
+"Javaducky - <a href='http://www.javaducky.com' target=_blank>Paul Balogh</a> - Plugins and features.",
+"Kleppa - <a href='http://www.asdf.com' target=_blank>Anders Klepaker</a> - Bug fixing, plugin development",
+"Tobius - <a href='http://www.tobymiller.com/' target=_blank>Toby Miller</a> - Bug fixing, plugin development",
+"Woe - <a href='http://woe-labs.net' target=_blank>Elie Bleton</a> - core programming and plugin hacking.",
 " ",
 
-"-----------------",
-"Previous bBlog Members",
+"				---------- ----------",
+"				    Previous bBlog Members",
+"				---------- ----------",
 " ",
+"Pixelpope - <a href='http://pixelpope.com' target=_blank>Dominic Frohlof</a> - Multilingual & RTL/LTR support, bug fixing, features, testing.",
+
+"DL8 - <a href='http://webbi.cheetux.org.il'>Nir Lavi</a> - Bug fixes, testing.",
 
 "Archives funtions and various other various bits by <a href='http://www.revjim.net/' target='_blank'>Rev Jim</a>, core dev team",
 
