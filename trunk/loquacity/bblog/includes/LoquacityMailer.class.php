@@ -37,8 +37,13 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-//define('LOQ_APP_ROOT','/var/www/localhost/htdocs/l/bblog/');
-require_once("../config.php");
+
+/**
+ * @TODO if i include config.php, i get irritating session errors... So i'm just going to define LOQ_APP_ROOT here for now.
+*/
+define('LOQ_APP_ROOT','/var/www/localhost/htdocs/l/bblog/');
+
+//require_once("../config.php");
 require_once(LOQ_APP_ROOT.'3rdparty/phpmailer/class.phpmailer.php');
 
 
@@ -57,14 +62,17 @@ class LoquacityMailer extends PHPMailer {
     var $Reciever = ".";
 
 
-    /**
-     * Replace the default error_handler
+	/**
+ 	 * Replace the default error_handler
      * @param string $msg
      * @return void
      */
+	/**
+	 * @TODO we could link this handler to a main centralised error handler for Loq.
+	*/	
     function error_handler($msg) {
         print("Loquacity Mailer Error");
-        print("Description: ... err, something wrong happened...");
+        print("There was an error sending the message.<br /><br />");
         printf("%s", $msg);
         exit;
     }

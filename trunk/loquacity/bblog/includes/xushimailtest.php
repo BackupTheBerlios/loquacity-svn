@@ -6,6 +6,8 @@
  * use your localhost's mail system to send an email to the email address.
  * Judge yee not by thee content.. as i said, it's just a small test.
  *
+ * In reality, this is an example of what an email needing part of Loq. will use.
+ *
  * Loquacity - A web blogging application with simplicity in mind - http://www.loquacity.info/
  * Copyright (C) 2006 Kenneth Power <telcor@users.berlios.de>
  *
@@ -38,24 +40,21 @@
 
 require_once("LoquacityMailer.class.php");
 
+
 // Instantiate your new class
 $mail = new LoquacityMailer;
 
 
-	 // Now, set some data
+ // Now, send a test email
         $mail->AddAddress("xushi.xushi@gmail.com");
         $mail->Subject = "test email.";
         $mail->Body = "Dear john";
 
-  	
         // Send email, or display an error.
-        if(!$mail->Send())
-        {
-            echo "There was an error sending the message.";
-            exit;
-        }
+        if(!$mail->Send()) {
+		$mail->error_handler("Description: ... some description.\n");
+	}
 
-	// Success!
-        echo "Message was sent successfully.<br /><br /> You should recieve an email containing your new password shortly.";
+        echo "Email was sent successfully.";
 
 ?>
