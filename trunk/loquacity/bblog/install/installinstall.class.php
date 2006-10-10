@@ -2,8 +2,8 @@
 
 class installinstall extends installbase{
 	function installinstall(){
+        //$this->template = 'complete.html';
         installbase::installbase();
-        $this->template = 'complete.html';
 	}
     function __init(){
         $this->checkPrereq();
@@ -21,21 +21,13 @@ class installinstall extends installbase{
     * @return bool
     */
     function checkConfigSettings(){
-        //only table prefix is not required
-        $rval = true;
-        foreach(array('blog_name', 'blog_description', 'author_name', 'login_name', 'login_password', 'verify_password', 'email_address', 'db_username', 'db_password', 'db_database', 'db_host', 'blog_url', 'fs_path') as $setting){
-            if(isset($_POST[$setting]) && strlen($_POST[$setting]) > 0){
-                $_SESSION['config'][$setting] = $_POST[$setting];
-            }
-            else{
-                $label = str_replace('_', ' ', $setting);
-                $this->errors[] = ucwords($label).' value not set';
-                $rval = false;
-            }
+        $rval = false;
+        include_once(LOQ_APP_ROOT.'includes/validateconfiguration.class.php');
+        $vc = new validateconfiguration();
+        if($vc->isValid()){
         }
-        //Not mandatory, but set if defined
-        if(isset($_POST['table_prefix'])){
-            $_SESSION['config']['table_prefix'] = $_POST['table_prefix'];
+        else{
+            $this->errors = $vc->errors;
         }
         return $rval;
     }

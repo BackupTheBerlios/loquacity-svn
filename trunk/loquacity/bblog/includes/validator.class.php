@@ -4,12 +4,12 @@
  * Copyright (c) 2006 Kenneth Power
  *
  * @package Loquacity
- * @subpackage Administration
+ * @subpackage Installation
  * @author Kenneth Power <telcor@users.berlios.de>
- * @copyright &copy; 2006 Kenneth Power
+ * @copyright Copyright &copy; 2006 Kenneth Power
  * @license    http://www.gnu.org/licenses/gpl.html GPL
  * @link http://www.loquacity.info
- * @since 0.8-alpha1
+ * @since 0.8-alpha2
  *
  * LICENSE:
  *
@@ -30,29 +30,55 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-/**
- * Class for loading the configuration from the database
- */
-
-class configHandler {
-
-    function configHandler(&$db) {
-        $this->_db = $db;
-    }
+class validator {
     /**
-     * Loads the configuration from the DB and creates constants
-     *
-     */
-    function loadConfig(){
-        $rs = $this->_db->Execute('select * from '.T_CONFIG);
-        if($rs !== false && !$rs->EOF){
-            while($config = $rs->FetchRow()){
-                $const_name = 'C_'.$config['name'];
-                if (!defined($const_name)) {   
-                    define($const_name, $config['value']);
-                }
-            }
-        }
+    * Private
+    * @var array stores error messages if not valid
+    */
+    var $errors;
+
+    /**
+    * Constucts a new validator object
+    */
+    function validator(){
+        $this->errors=array();
+        $this->validate();
+    }
+
+    /**
+    * Virtual method
+    *
+    * @return void
+    */
+    /*function validate(){
+        // Superclass method does nothing
+    }*/
+
+    /**
+    * Adds an error message to the array
+    *
+    * @param string $msg the message to add
+    * @return void
+    */
+    function setError($msg){
+        $this->errors[]=$msg;
+    }
+
+    /**
+    * Returns true if string is valid, false if not
+    *
+    * @return boolean
+    */
+    function isValid(){
+        return (count($this->errors) > 0 ) ? false : true;
+    }
+
+    /**
+    * Pops the last error message off the array
+    *
+    * @return string
+    */
+    function getError(){
+        return array_pop($this->errors);
     }
 }
-?>

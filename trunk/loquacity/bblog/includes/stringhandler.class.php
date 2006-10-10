@@ -70,15 +70,15 @@ class stringHandler{
     function transformLinks($str){
         // Prepend a blank to the string, otherwise the regexes will not find
         // a match at the beginning of a string.
-        $str = ' '.$str;
-        $et_pattern = '/\s<a([\s]+[^>]*)href[\s]*=[\s]*["\']([^"]+[.\s]*)(["\'][^>]*[\s]*)>([^<]+[.\s]*)<\/a>/i';
-        $prot_pattern = '/\s([fh]+[t]{0,1}tp[s]*:\/\/([a-zA-Z0-9_~#=&%\/\:;@,\.\?\+-]+))/i';
-        $simple_pattern = '/\s(www|ftp)\.([a-zA-Z0-9_~#=&%\/\:;@,\.\?\+-]+)/i';
+        //$str = ' '.$str;
+        $et_pattern = '/^<a([\s]+[^>]*)href[\s]*=[\s]*["\']([^"]+[.\s]*)(["\'][^>]*[\s]*)>([^<]+[.\s]*)<\/a>/i';
+        $prot_pattern = '/^([fh]+[t]{0,1}tp[s]*:\/\/([a-zA-Z0-9_~#=&%\/\:;@,\.\?\+-]+))/i';
+        $simple_pattern = '/^(www|ftp)\.([a-zA-Z0-9_~#=&%\/\:;@,\.\?\+-]+)/i';
         $patterns = array($et_pattern, $prot_pattern, $simple_pattern);
 
-        $et_replace = ' <a$1href="http://www.google.com/url?sa=D&q=$2$3>$4</a>';
-        $prot_replace = ' <a href="http://www.google.com/url?sa=D&q=$1">$2</a>';
-        $simple_replace = ' <a href="http://www.google.com/url?sa=D&q=http://$0">$2</a>';
+        $et_replace = '<a$1href="http://www.google.com/url?sa=D&q=$2$3>$4</a>';
+        $prot_replace = '<a href="http://www.google.com/url?sa=D&q=$1">$2</a>';
+        $simple_replace = '<a href="http://www.google.com/url?sa=D&q=http://$0">$0</a>';
         $repl = array($et_replace, $prot_replace, $simple_replace);
 
         //Since the regex replace above adds a space within the HREF attribute, we need to remove it
@@ -87,7 +87,7 @@ class stringHandler{
         $str = str_replace('sa=D&q=http:// ', 'sa=D&q=http://', $str);
 
         //Return the result, removing the prepended space
-        return substr($str, 1);
+        return $str; //substr($str, 1);
     }
     /**
     * Remove HTML tags from a string

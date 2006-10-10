@@ -20,11 +20,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * ratehr than duplicating effort, use as much internal stuff as possible
+ * rather than duplicating effort, use as much internal stuff as possible
 **/
 error_reporting(E_ALL);
 
 if(file_exists(dirname(__FILE__).'/bblog')){
+    //Build a suitable working environment to give us access to the application code
     define('LOQ_APP_ROOT', dirname(__FILE__).DIRECTORY_SEPARATOR.'bblog'.DIRECTORY_SEPARATOR);
     define('LOQ_INSTALLER', LOQ_APP_ROOT.'install');
     define('SMARTY_DIR', LOQ_APP_ROOT.'3rdparty/smarty/libs/');
@@ -38,45 +39,50 @@ if(file_exists(dirname(__FILE__).'/bblog')){
 else{
     die("Unsupported configuration. The installer does not support altered configurations, you must configure this application manually. If this is not your intent, perhaps your installation is corrupt. Try unzipping (de-compressing) all the files again.");
 }
-	// using sessions because it makes things easy
-	session_start();
-     //This should be guaranteed writable
-
-	// start install all over, forget everything.
-	if (isset($_GET['reset'])) {
-		unset($config);
-		unset($step);
-		@session_destroy();
-		header("Location: install.php");
-		exit;
-	}
-    if(isset($_GET['install'])){
-        /* can be prescan, install, postscan
-        * If prescan works, we show the configure screen
-        * The configure screen takes us to the install step
-        * After the install the postscan occurs
-        * An upgrade from bBlog skips only the display of the configure screen as we use the
-        * existing config.php
-        */
-        //$db = new db($config['db_username'], $config['db_password'], $config['db_database'], $config['db_host']);
-        include_once(LOQ_INSTALLER.'/installbase.class.php');
-        include_once(LOQ_APP_ROOT.'includes/stringhandler.class.php');
-        include_once(LOQ_APP_ROOT.'3rdparty/adodb/adodb-errorhandler.inc.php');
-        include_once(LOQ_APP_ROOT.'3rdparty/adodb/adodb.inc.php');
-        if(in_array($_GET['install'], array('prescan', 'install', 'postscan'))){
-            include_once(LOQ_INSTALLER.'/install'.$_GET['install'].'.class.php');
-            $class = 'install'.$_GET['install'];
-            $step = new $class();
-            $step->display();
-        }
+session_start();
+//The following block si currently not accessible via the Web interface
+if (isset($_GET['reset'])) {
+    unset($config);
+    unset($step);
+    @session_destroy();
+    header("Location: install.php");
+    exit;
+}
+/*
+* The install variable instructs the installer our current progress through installation
+*/
+if(isset($_GET['install'])){
+    /* install can have the following values: prescan, install, postscan
+    * If prescan works, we show the configure screen
+    * The configure screen takes us to the install step
+    * After the install the postscan occurs
+    * An upgrade from bBlog skips only the display of the configure screen as we use the
+    * existing config.php
+    */
+    include_once(LOQ_INSTALLER.'/installbase.class.php');
+    include_once(LOQ_APP_ROOT.'includes/stringhandler.class.php');
+    include_once(LOQ_APP_ROOT.'3rdparty/adodb/adodb-errorhandler.inc.php');
+    include_once(LOQ_APP_ROOT.'3rdparty/adodb/adodb.inc.php');
+    /*
+    Check for and create an Install object of our current progress
+    */
+    if(in_array($_GET['install'], array('prescan', 'install', 'postscan'))){
+        include_once(LOQ_INSTALLER.'/install'.$_GET['install'].'.class.php');
+        $class = 'install'.$_GET['install'];
+        $step = new $class();
+        $step->display();
     }
-    else{
-        $smarty = new Smarty();
-        $smarty->template_dir = LOQ_INSTALLER.'/templates';
-        $smarty->compile_dir = ini_get("session.save_path");
-        $smarty->assign('step', 0);
-        $smarty->display('welcome.html');
-    }
+}
+else{
+    /*
+    * This is the initial entry point for the installer
+    */
+    $smarty = new Smarty();
+    $smarty->template_dir = LOQ_INSTALLER.'/templates';
+    $smarty->compile_dir = ini_get("session.save_path");
+    $smarty->assign('step', 0);
+    $smarty->display('welcome.html');
+}
     //following is old upgrade code
 	/*if(isset($config['upgrade_from'])) {
 		if(file_exists('./install/upgrade.'.$config['upgrade_from'].'.php')) {
