@@ -82,7 +82,7 @@ CREATE TABLE __pfx__authors (
 	id int(10) NOT NULL auto_increment,
 	nickname varchar(20) NOT NULL default '',
 	email varchar(100) NOT NULL default '',
-	password varchar(20) NOT NULL default '',
+	password varchar(40) NOT NULL default '',
 	fullname varchar(50) NOT NULL default '',
 	url varchar(50) NOT NULL default '',
 	icq int(10) unsigned NOT NULL default '0',
@@ -173,7 +173,7 @@ INSERT INTO __pfx__links VALUES (3,'RSS 2.0 Feed','__blog_url__feed.php',1,40);
 
 
 INSERT INTO `__pfx__authors` (`nickname`,`password`,`email`,`fullname`) VALUES
-('__login_name__','__login_password__','__email_address__','__author_name__');
+('__login_name__',SHA1('__login_password__'),'__email_address__','__author_name__');
 
 
 INSERT INTO `__pfx__posts` (`postid`, `title`, `body`, `posttime`, `modifytime`, `status`, `modifier`, `sections`, `commentcount`,`ownerid`) VALUES (1, 'First Post', '[b]This is the first post of Loquacity.[/b][p]You may delete this post in the admin section. Make sure you have deleted the install file and changed the admin password.[/p] [p]Be sure to visit the [url=http://forum.loquacity.info]Loqucity forum[/url] if you have any questions, comments, bug reports etc.[/p] [p]Happy blogging![/p]', UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 'live', 'bbcode', '', 0, 1);

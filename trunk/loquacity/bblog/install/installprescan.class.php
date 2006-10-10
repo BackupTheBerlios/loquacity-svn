@@ -52,4 +52,15 @@ class installprescan extends installbase{
                 $this->errors[] = "$target is not writable";
         }
     }
+
+	/**
+     * Check if both passwords match or not.
+     *
+	 * @param string $passwd1 the password
+	 * @param string $passwd2 the password entered again
+     * @return bool
+    */
+	function checkPasswordFields($passwd1, $passwd2) {
+		//@todo add check for password fields
+	}
 }

@@ -295,7 +295,26 @@ class stringHandler{
             $clean = array_map(array('stringHandler', 'trimWhitespace'), $str);
         }
         return $clean;
-
     }
+
+	/**
+     * Hash a string, typically a password, using the MD5 hashing algorithm
+     *
+     * @param string $str
+     * @return mixed
+     */
+	function toMD5($str) {
+		return md5($str);
+	}
+
+	/**
+     * Hash a string, typically a password, using the SHA1 hashing algorithm
+     *
+     * @param string $str
+     * @return mixed
+     */
+	function toSHA1($str) {
+		return sha1($str);
+	}
 }
 ?>
