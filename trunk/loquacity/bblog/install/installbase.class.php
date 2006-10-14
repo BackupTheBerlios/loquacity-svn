@@ -36,6 +36,7 @@
 */
 
 class installbase extends Smarty{
+
 	function installbase(){
         stringHandler::removeMagicQuotes($_POST);
         Smarty::Smarty();
@@ -44,12 +45,16 @@ class installbase extends Smarty{
         $this->compile_dir = ini_get("session.save_path");
         $this->__init();
 	}
+
+
     function display(){
         if(isset($this->errors) && count($this->errors) > 0){
             $this->assign('errors', $this->errors);
         }
         parent::display($this->template);
     }
+
+
     function loadconfiguration(){
         if(!isset($_SESSION['config'])){
              // provide some useful defaults, and prevents undefined indexes.
@@ -69,4 +74,5 @@ class installbase extends Smarty{
             }
         }
     }
+
 }

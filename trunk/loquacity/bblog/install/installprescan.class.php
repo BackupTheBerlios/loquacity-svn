@@ -32,11 +32,15 @@
 
 
 class installprescan extends installbase{
+
+
 	function installprescan(){
         $this->form_action = 'install.php?install=install';
         $this->template = 'configuration.html';
         installbase::installbase();
 	}
+
+
     function __init(){
         $this->checkwritable();
         $this->loadconfiguration();
@@ -46,10 +50,18 @@ class installprescan extends installbase{
         }
         $this->assign('form_action', $this->form_action);
     }
-    function checkwritable() {
-        foreach(array('generated', 'generated/cache', 'generated/templates', 'generated/cache/favorites.xml', 'config.php') as $target){
-            if(!is_writable(LOQ_APP_ROOT.$target))
-                $this->errors[] = "$target is not writable";
+
+
+	/**
+     * Check if the needed files and folders are writable.
+	 * 
+	 * @TODO should the file and foldernames be predefined as they are now, or passed as params?
+     *
+    */
+	function checkwritable() {
+		foreach(array('generated', 'generated/cache', 'generated/templates', 'generated/cache/favorites.xml', 'config.php') as $target){
+			if(!is_writable(LOQ_APP_ROOT.$target))
+				$this->errors[] = "$target is not writable";
         }
     }
 
@@ -62,5 +74,8 @@ class installprescan extends installbase{
     */
 	function checkPasswordFields($passwd1, $passwd2) {
 		//@todo add check for password fields
+		 if ($passwd1 !== $passwd2){
+			return false;
+		}
 	}
 }

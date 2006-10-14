@@ -1,10 +1,13 @@
 <?php
 
 class installinstall extends installbase{
+
 	function installinstall(){
         //$this->template = 'complete.html';
         installbase::installbase();
 	}
+
+
     function __init(){
         $this->checkPrereq();
         if($this->checkConfigSettings()){
@@ -15,6 +18,8 @@ class installinstall extends installbase{
             $this->template = 'configuration.html';
         }
     }
+
+
     /**
     * Verify all required settings exist
     *
@@ -29,8 +34,11 @@ class installinstall extends installbase{
         else{
             $this->errors = $vc->errors;
         }
-        return $rval;
+        return $rval; // xushi: comment this line and uncomment the one below it until fixed.
+		//return true;
     }
+
+
     /**
     * Executes the install routines
     *
@@ -43,6 +51,11 @@ class installinstall extends installbase{
             $this->writeconfig();
         }
     }
+
+	/**
+	 * Connect to the database
+	 * 
+	*/
     function db(){
         $dsn = 'mysql://'.$_POST['db_username'].':'.rawurlencode($_POST['db_password']).'@'.$_POST['db_host'].'/'.$_POST['db_database'];
             $db = NewADOConnection($dsn);
@@ -52,12 +65,24 @@ class installinstall extends installbase{
             }
             return true;
     }
+
+
+	/**
+	 * Install the plugins
+	 * 
+	*/
     function installplugins(){
         include_once(LOQ_APP_ROOT.'includes/pluginhandler.class.php');
         define('T_PLUGINS',$_SESSION['config']['table_prefix'].'plugins');
         $ph = new pluginhandler($this->db);
         $ph->scan_for_plugins(LOQ_APP_ROOT.'plugins');
     }
+
+
+	/**
+	 * Write the configs into the config.php file.
+	 * 
+	*/
     function writeconfig(){
         if(file_exists(LOQ_APP_ROOT.'config.tmpl') && is_readable(LOQ_APP_ROOT.'config.tmpl')){
             $config = file_get_contents(LOQ_APP_ROOT.'config.tmpl');
@@ -76,6 +101,8 @@ class installinstall extends installbase{
         }else{
         }
     }
+
+
     /**
     * Retrieves the proper SQL file and replaces the tokens with the user's configuration
     * Uses result to create the database and populate it with the configuration and sample data
@@ -112,6 +139,12 @@ class installinstall extends installbase{
             }
         }
     }
+
+
+	/**
+	 * Pre-scan for any errors before continuing the installation
+	 * 
+	*/
     function checkPrereq(){
         if(isset($_POST['prescan_errors'])){
             include_once(LOQ_INSTALLER.'/installprescan.class.php');
@@ -121,4 +154,5 @@ class installinstall extends installbase{
             }
         }
     }
+
 }

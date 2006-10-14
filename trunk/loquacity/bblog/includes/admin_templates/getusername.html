@@ -1,0 +1,30 @@
+{include file="common/passwd_html_start.html"}
+
+<div id="header">
+	<h1>Loquacity</h1>
+	<h2>{$tagline}</h2>
+</div>
+
+<div id="teaser">
+	{$sidemsg}
+</div>
+
+<div id="content">
+	<h3>{$title}</h3>
+    <form action="lostpuser.php" method="post" name="post">
+
+	<h4>Username: {$message}</h4>
+	<div class="frame">
+		<input class="text" type="text" name="username" value="" />
+		
+	</div>
+
+	<div class="button">
+    	<input class="submit" type="submit" name="submit" value="Submit" />
+  	</div>
+	</form>
+</div>
+
+
+{include file="common/layout_stop.html"}
+{include file="common/html_stop.html"}

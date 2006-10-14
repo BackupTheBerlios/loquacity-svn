@@ -71,7 +71,7 @@ class validateconfiguration{
     * Copies what the user supplied into the session for quick retrieval
     */
     function storeCurrent(){
-        foreach(array('blog_name', 'blog_description', 'author_name', 'login_name', 'login_password', 'verify_password', 'email_address', 'db_username', 'db_password', 'db_database', 'db_host', 'blog_url', 'fs_path') as $setting){
+        foreach(array('blog_name', 'blog_description', 'author_name', 'login_name', 'login_password', 'verify_password', 'secret_question', 'secret_answer', 'email_address', 'db_username', 'db_password', 'db_database', 'db_host', 'blog_url', 'fs_path') as $setting){
             if(isset($_POST[$setting]) && strlen($_POST[$setting]) > 0){
                 $_SESSION['config'][$setting] = $_POST[$setting];
             }

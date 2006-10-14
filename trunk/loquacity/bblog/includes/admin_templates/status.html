@@ -1,0 +1,30 @@
+  {include file="common/passwd_html_start.html"}
+
+<div id="header">
+<h1>Loquacity</h1>
+<h2>{$tagline}</h2>
+</div>
+
+<div id="teaser">
+Welcome to Loquacity
+</div>
+
+<div id="content">
+  <h3>{$title}</h3>
+
+<div style="width: 500px; margin-left: auto; margin-right: auto; margin-top: 80px;">
+    <form action="index.php">
+    <table border="0" class="list" cellpadding="4" cellspacing="0">
+        <tr bgcolor="#ffffff">
+            <td>Connecting to DB to compare answers...</td>
+        </tr>
+        <tr bgcolor="#ffffff">
+            <td>{$result}</td>
+        </tr>
+    </table>
+    <p><input type="submit" name="submit" value="Return" /></p>
+    </form>
+</div>
+
+{include file="common/layout_stop.html"}
+{include file="common/html_stop.html"}
