@@ -297,26 +297,5 @@ class stringHandler{
         return $clean;
     }
 
-	/**
-     * Hash a string, typically a password, using the MD5 hashing algorithm
-     * @WARNING Depreciated. Use the one in passwordManager.class.php
-	 *
-     * @param string $str
-     * @return mixed
-     */
-	function toMD5($str) {
-		return md5($str);
-	}
-
-	/**
-     * Hash a string, typically a password, using the SHA1 hashing algorithm
-     * @WARNING Depreciated. Use the one in passwordManager.class.php
-     *
-     * @param string $str
-     * @return mixed
-     */
-	function toSHA1($str) {
-		return sha1($str);
-	}
 }
 ?>

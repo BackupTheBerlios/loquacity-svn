@@ -40,12 +40,16 @@
 
 $loggedin = FALSE;
 define('IN_BBLOG_ADMIN',TRUE);
+
 // include the config and main code
 include_once("config.php");
-
 include_once('includes/charsets.php');
-
 include_once('includes/taglines.php');
+
+// Rather require this than include it because it's sensitive.
+require_once('includes/validation/passwordManager.class.php');
+
+
 // default title
 $title = 'Admin';
 

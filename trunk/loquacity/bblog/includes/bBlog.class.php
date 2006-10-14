@@ -208,7 +208,7 @@ class bBlog extends Smarty {
      * @param bool   $setcookie If true, set a cookie
 	 */
     function userauth($user, $pass, $setcookie = FALSE) {
-        $query = "SELECT `id` FROM `".T_AUTHORS."` WHERE `nickname`='".stringHandler::removeMagicQuotes($user)."' AND `password`='".stringHandler::removeMagicQuotes(stringHandler::toSHA1($pass))."'";
+        $query = "SELECT `id` FROM `".T_AUTHORS."` WHERE `nickname`='".stringHandler::removeMagicQuotes($user)."' AND `password`='".stringHandler::removeMagicQuotes(passwordManager::toSHA1($pass))."'";
         $rs = $this->_adb->GetRow($query);
         if($rs){
             $_SESSION['user_id'] = $rs[0];
