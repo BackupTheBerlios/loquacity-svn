@@ -32,11 +32,23 @@
 
 
 /**
-* The base class inherited by each installer step
+* The base class extended by each installer step
+*
+* Each step of the Installer is represented by a separate class that extends
+* this class. At minimum, each subclass must have a constructor that calls
+* this one and an __init method.
+*
+* The __init method is called by this constrcutor and in turn calls the appropriate
+* sub-methods to perform whatever tasks are assigned the sub-class.
 */
 
 class installbase extends Smarty{
 
+    /**
+    * Performs basic setup and then calls __init
+    *
+    * Note that all data received via $_POST have magic quotes removed.
+    */
 	function installbase(){
         stringHandler::removeMagicQuotes($_POST);
         Smarty::Smarty();
@@ -47,6 +59,11 @@ class installbase extends Smarty{
 	}
 
 
+    /**
+    * Wrapper for Smarty::Dispaly
+    * This is to allow final preprocessing before handing control back
+    * to the user.
+    */
     function display(){
         if(isset($this->errors) && count($this->errors) > 0){
             $this->assign('errors', $this->errors);
@@ -55,6 +72,10 @@ class installbase extends Smarty{
     }
 
 
+    /**
+    * Makes available user configuration details for the Installer
+    * The first time this is called, suitable defaults are provided
+    */
     function loadconfiguration(){
         if(!isset($_SESSION['config'])){
              // provide some useful defaults, and prevents undefined indexes.

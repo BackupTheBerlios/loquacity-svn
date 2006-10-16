@@ -1,12 +1,43 @@
 <?php
-
+/**
+ * Loquacity - A web blogging application with simplicity in mind - http://www.loquacity.info/
+ * Copyright (c) 2006 Kenneth Power
+ *
+ * @package Loquacity
+ * @subpackage Installation
+ * @author Kenneth Power <telcor@users.berlios.de>
+ * @copyright Copyright &copy; 2006 Kenneth Power
+ * @license    http://www.gnu.org/licenses/gpl.html GPL
+ * @link http://www.loquacity.info
+ * @since 0.8-alpha1
+ *
+ * LICENSE:
+ *
+ * This file is part of Loquacity.
+ *
+ * Loquacity is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * Loquacity is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Loquacity; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ */
+ 
+/**
+* Performs the actual installation
+*/
 class installinstall extends installbase{
 
 	function installinstall(){
-        //$this->template = 'complete.html';
         installbase::installbase();
 	}
-
 
     function __init(){
         $this->checkPrereq();
@@ -54,21 +85,24 @@ class installinstall extends installbase{
 
 	/**
 	 * Connect to the database
-	 * 
+     *
+	 * Uses ADODB to handle this
 	*/
     function db(){
         $dsn = 'mysql://'.$_POST['db_username'].':'.rawurlencode($_POST['db_password']).'@'.$_POST['db_host'].'/'.$_POST['db_database'];
-            $db = NewADOConnection($dsn);
-            if($db !== false){
-                $this->db =& $db;
-                $this->createdatabase();
-            }
-            return true;
+        $db = NewADOConnection($dsn);
+        if($db !== false){
+            $this->db =& $db;
+            $this->createdatabase();
+        }
+        return true;
     }
 
 
 	/**
 	 * Install the plugins
+     *
+     * Uses pluginhandler to perform this task
 	 * 
 	*/
     function installplugins(){
@@ -80,8 +114,8 @@ class installinstall extends installbase{
 
 
 	/**
-	 * Write the configs into the config.php file.
-	 * 
+	 * Store user-supplied configuration settings in config.php.
+	 *
 	*/
     function writeconfig(){
         if(file_exists(LOQ_APP_ROOT.'config.tmpl') && is_readable(LOQ_APP_ROOT.'config.tmpl')){
@@ -143,7 +177,8 @@ class installinstall extends installbase{
 
 	/**
 	 * Pre-scan for any errors before continuing the installation
-	 * 
+	 * This is an ugly hack that manually instantiates the InstallPrescan class
+     * and executes the scan. This needs changed.
 	*/
     function checkPrereq(){
         if(isset($_POST['prescan_errors'])){

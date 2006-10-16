@@ -22,10 +22,12 @@
  *
  * rather than duplicating effort, use as much internal stuff as possible
 **/
+
+//For development, this should be set to E_ALL
 error_reporting(E_ALL);
 
+//Build a suitable working environment to give us access to the application code
 if(file_exists(dirname(__FILE__).'/bblog')){
-    //Build a suitable working environment to give us access to the application code
     define('LOQ_APP_ROOT', dirname(__FILE__).DIRECTORY_SEPARATOR.'bblog'.DIRECTORY_SEPARATOR);
     define('LOQ_INSTALLER', LOQ_APP_ROOT.'install');
     define('SMARTY_DIR', LOQ_APP_ROOT.'3rdparty/smarty/libs/');
@@ -40,7 +42,7 @@ else{
     die("Unsupported configuration. The installer does not support altered configurations, you must configure this application manually. If this is not your intent, perhaps your installation is corrupt. Try unzipping (de-compressing) all the files again.");
 }
 session_start();
-//The following block si currently not accessible via the Web interface
+//The following block is currently not accessible via the Web interface
 if (isset($_GET['reset'])) {
     unset($config);
     unset($step);

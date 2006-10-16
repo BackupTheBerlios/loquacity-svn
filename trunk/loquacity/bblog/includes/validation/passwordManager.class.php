@@ -6,12 +6,12 @@
  * passing of passwords from and to the DB.
  * 
  * Loquacity - A web blogging application with simplicity in mind - http://www.loquacity.info/
- * Copyright (C) 2006 Kenneth Power <telcor@users.berlios.de>
+ * Copyright (C) 2006 Samir Greadly <xushi.xushi@gmail.com>
  *
  * @package Loquacity
  * @subpackage Security
  * @author Samir Greadly <xushi.xushi@gmail.com>
- * @copyright &copy; 2006 Kenneth Power
+ * @copyright &copy; Samir Greadly <xushi.xushi@gmail.com>
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License
  * @since 0.8-alpha2
  *
@@ -75,10 +75,9 @@ class passwordManager {
 	 * @param integer $len Length of new password
 	 * @return var $pass
     */
-	function randomWord($len)
-	{
+	function randomWord($len){
 		$data = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-		$max = strlen( $salt ) - 1 ;
+		$max = strlen( $data ) - 1 ;
 		$pass = '' ;
 		for( $i=0; $i<$len; $i++ ) {
 			$pass .= substr( $data, mt_rand(0, $max), 1 ) ;

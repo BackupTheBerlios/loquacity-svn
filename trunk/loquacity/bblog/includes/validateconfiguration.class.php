@@ -33,6 +33,9 @@
 /**
 * Performs validation on all configuration items
 *
+* Validation is performed by a series of classes based upon the Validator
+* class. Each user-supplied configuration item is validated and sanitized
+* by an appropriate class. One class per configuration item.
 */
 
 include_once(LOQ_APP_ROOT.'includes/validator.class.php');
@@ -43,6 +46,10 @@ class validateconfiguration{
     * Stores the errors that occur
     */
     var $errors = array();
+    
+    /**
+    * Includes and instantiates each Validator class then calls ::valdiate()
+    */
     function validateconfiguration(){
         foreach(array('validatelogin', 'validatepassword') as $class){
             include_once(LOQ_APP_ROOT."includes/validation/$class.class.php");
@@ -64,11 +71,17 @@ class validateconfiguration{
             }
         }
     }
+    /**
+    * Reports whether errors occurred
+    *
+    * @return bool
+    */
     function isValid(){
         return (count($this->errors) > 0) ? false : true;
     }
+    
     /**
-    * Copies what the user supplied into the session for quick retrieval
+    * Makes a copy of the user data for temporary storage
     */
     function storeCurrent(){
         foreach(array('blog_name', 'blog_description', 'author_name', 'login_name', 'login_password', 'verify_password', 'secret_question', 'secret_answer', 'email_address', 'db_username', 'db_password', 'db_database', 'db_host', 'blog_url', 'fs_path') as $setting){

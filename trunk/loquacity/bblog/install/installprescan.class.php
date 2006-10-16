@@ -30,16 +30,37 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-
+/**
+* The first step of Installation and Upgrades.
+* Perform some basic system checks to ensure minimum requirements
+* are satisified.
+*
+* Method __init calls these tests and performs the appropriate error handling.
+*/
 class installprescan extends installbase{
 
 
+    /**
+    * URI contained defines next step in Installer
+    *
+    * @var string
+    * @access private
+    */
+    var $form_action;
+    
+    /**
+    * The template to display
+    *
+    * @var string
+    * @access private
+    */
+    var $template;
+    
 	function installprescan(){
         $this->form_action = 'install.php?install=install';
         $this->template = 'configuration.html';
         installbase::installbase();
 	}
-
 
     function __init(){
         $this->checkwritable();
