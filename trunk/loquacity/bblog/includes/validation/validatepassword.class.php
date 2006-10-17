@@ -28,8 +28,8 @@ class validatepassword extends validator{
     function validatepassword($pword1=null, $pword2=null){
         $this->pword1 = $pword1;
         $this->pword2 = $pword2;
-        $this->min = 6;
-        $this->max = 20;
+        $this->min = 8;
+        $this->max = 40;
         validator::validator();
     }
     function validate(){
