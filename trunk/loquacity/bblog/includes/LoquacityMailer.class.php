@@ -14,7 +14,6 @@
  * @subpackage Mail
  * @author Samir Greadly <xushi.xushi@gmail.com>
  * @copyright &copy; 2006 Kenneth Power
- * @source phpmailer - <http://phpmailer.sourceforge.net/>
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License
  * @since 0.8-alpha2
  *
@@ -38,13 +37,8 @@
  */
 
 
-/**
- * @TODO if i include config.php, i get irritating session errors... So i'm just going to define LOQ_APP_ROOT here for now.
-*/
-define('LOQ_APP_ROOT','/var/www/localhost/htdocs/l/bblog/');
-
-//require_once("../config.php");
-require_once(LOQ_APP_ROOT.'3rdparty/phpmailer/class.phpmailer.php');
+define('LOQ_APP_ROOT', dirname(dirname(__FILE__)));
+require_once(LOQ_APP_ROOT.'/3rdparty/phpmailer/class.phpmailer.php');
 
 
 class LoquacityMailer extends PHPMailer {

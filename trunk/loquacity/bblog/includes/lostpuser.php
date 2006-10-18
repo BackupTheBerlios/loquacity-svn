@@ -1,9 +1,9 @@
 <?php
 session_start();
 /**
- * lostpuser.php - Password retrieval: Stage 1
+ * lostpuser.php - Password retrieval
  *
- * Will ask for the username in which to get the secret question for.
+ * Will check if a username exists, ask it's secret question and reset/email the password.
  *
  * Loquacity - A web blogging application with simplicity in mind - http://www.loquacity.info/
  * Copyright (C) 2006 Kenneth Power <telcor@users.berlios.de>
@@ -12,7 +12,6 @@ session_start();
  * @subpackage Security
  * @author Samir Greadly <xushi.xushi@gmail.com>
  * @copyright &copy; 2006 Kenneth Power
- * @source phpmailer - <http://phpmailer.sourceforge.net/>
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License
  * @since 0.8-alpha2
  *
@@ -53,13 +52,14 @@ $_SESSION['isuser'] = 0;
 // Start with getting the username
 $bBlog->assign('sidemsg', 'Loquacity Password Recovery');
 $bBlog->assign('title', 'Please enter your Loquacity username');
-$bBlog->display("getusername.html");
 
+
+
+$template = 'getusername.html';
 $user = $_POST['username'];
 
 // check if a username is entered. If yes, check if it's in the database.
-if(isset($user)) {
-	$user = $_POST['username'];
+if($user) {
 	
 	//check if the email exists (and - more or less - hence if the user exists)
 	$email = $myPasswdMgr->getEmail($user);
@@ -67,58 +67,55 @@ if(isset($user)) {
 
 	if ($email) {
 		//get the secret question
-		 $secQuestion = $myPasswdMgr->getQuestion($user);
+		$secQuestion = $myPasswdMgr->getQuestion($user);
 		
 		$bBlog->assign('question', $secQuestion);
-		$bBlog->display("askquestion.html");
-	}	
-	else {
-        $bBlog->assign('errormsg', 'Sorry. Please visit the Loquacity forum for more advise.');
-		$bBlog->display('error.html');
-		echo 'errrrrrrrrrrrrrrrror';
-        die();
+		$template = 'askquestion.html';
 	}
+	else {
+		// stick this all in an error function
+        $bBlog->assign('errormsg', 'Sorry. Please visit the Loquacity forum for more advise.');
+		$template = 'error.html';
+		echo 'errrrrrrrrrrrrrrrror';
+	}
+	
+	// Now check if we have an answer or not, and compare them
+	if(checkAnswers($user)) { 
+
+		/** 
+		 * I could have just said passwordManager::setPassword($user, stringHandler::toSHA1(passwordManager::randomWord(5))); 
+		 * but that way I'll have no idea what the unhashed password is, and
+		 * won't be able to send it to the user.
+		*/
+		//generate new password and write it to the db. setPassword(user, password)
+		$passwd = $myPasswdMgr->randomWord(5);
+		$myPasswdMgr->setPassword($user, passwordManager::toSHA1($passwd));
+
+		// create email
+		createEmail($user, $email, $passwd);
+		$bBlog->assign('result', 'The email was sent successfully. You should receive your new password shortly.');
+		$template = 'status.html';
+	}
+	else {
+		$bBlog->assign('errormsg', 'Error, invalid answer. Recovery aborted.');
+		$template = 'error.html';
+	}	
+
 }
 else {
 		$bBlog->assign('errormsg', 'Error: Please enter a valid username');
-		$bBlog->display('error.html');
+		$template = 'error.html';
 		echo 'userrrrrrrrrrrrrrrrrrr';
-		die();
 }
 
 
 
 
-// check answers
-if(checkAnswers()) { 
-
-	/** 
-	 * I could have just said passwordManager::setPassword($user, stringHandler::toSHA1(passwordManager::randomWord(5))); 
-	 * but that way I'll have no idea what the unhashed password is, and
-	 * won't be able to send it to the user.
-	*/
-	//generate new password and write it to the db. setPassword(user, password)
-	$passwd = $myPasswdMgr->randomWord(5);
-	$myPasswdMgr->setPassword($user, stringHandler::toSHA1($passwd));
-
-	// create email
-	createEmail($user, $email, $passwd);
-
-	$bBlog->assign('result', 'The email was sent successfully. You should receive your new password shortly.');
-	$bBlog->display('status.html');
-
-}
-
-else {
-	$bBlog->assign('errormsg', 'Error, invalid answer. Recovery aborted.');
-	$bBlog->display('error.html');
-	die();
-}
 
 		
 
 
-function checkAnswers()
+function checkAnswers($user)
 {
 	global $mail;
 	global $myPasswdMgr;
@@ -179,5 +176,7 @@ The Loquacity Team.";
 	exit;
 	}
 }
+
+$bBlog->display($template);
 
 ?>
