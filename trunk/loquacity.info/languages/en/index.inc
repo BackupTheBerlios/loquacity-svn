@@ -19,7 +19,7 @@
         (<span class="note">Note: Any problems with the display are caused, not by her, but your editor.</span>)
      </p>
      <p class="normal">
-        We welcome two new project members: titanium_geek and stan. titanium_geek comes to us from the <a href="http://www.bblog.com">bBlog</a>
+        We welcome three new project members: titanium_geek, stan, and xushi. titanium_geek comes to us from the <a href="http://www.bblog.com">bBlog</a>
         forums where she was adept at forum moderation, especially during the months when the project was nigh
         abandonded. She has graciously agreed to join us at <a href="http://www.loquacity.info">Loquacity</a> as a
         <a href="http://forum.loquacity.info">forum</a> moderator.
@@ -28,6 +28,9 @@
         Our second new member, stan, joins the project with experience in Pascal and PHP. He is helping put the source tree
         into GPL compliance along with many other important items.
      </p>
+	<p class="normal">
+		Xushi transferred from the bBlog administration/development team into Loquacity's development team. He has prior experience in Java and C++, and has moved to PHP as his current programming language to assist in developing Loquacity.
+	</p>
      <h3 class="sub_title">Becoming Involved</h3>
      <p class="normal">
         Always on the look-out for those willing to help, we currently have need of help in a variety of ways:
@@ -37,14 +40,14 @@
         <li>QA Testers</li>
         <li>Forum Moderators</li>
         <li>People experienced with localisation</li>
-        <li>Developers skilled in Javascript, XML-RPC, xHTML, CSS, feed generation, Video integration</li>
+        <li>Developers skilled in PHP, Javascript, XML-RPC, xHTML, CSS, feed generation, Video integration</li>
         <li>Any willing to help develop templates</li>
         <li>Experienced <a href="http://www.phpbb.org">phpBB</a> module developers</li>
-        <li>Data modelers</li>
+        <li>Data modellers</li>
     </ol>
     <p class="normal">
         Regardless your level of experience or skill, feel free to visit the <a href="http://forum.loquacity.info">forums</a>
-        and volunteer. The project source tree is hosted at <a href="http://developer.berlios.de">Berlios</a>, and account is needed
+        and volunteer. The project source tree is hosted at <a href="http://developer.berlios.de">Berlios</a>, and an account is needed
         there in order to gain write-access to the source tree.
     </p>
     <p class="normal">
