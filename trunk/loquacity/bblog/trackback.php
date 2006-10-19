@@ -64,7 +64,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && $_SERVER['CONTENT_TYPE'] === 'applic
             $comment = stringHandler::removeMagicQuotes($url['cid']);
             }
     }
-    include_once('lib/trackbackhandler.class.php');
+    include_once('includes/trackbackhandler.class.php');
     $th = new trackbackhandler($bBlog->_adb, $post);
     $th->receiveTrackback($_SERVER['REMOTE_ADDR'], $_POST, $comment);
 }
