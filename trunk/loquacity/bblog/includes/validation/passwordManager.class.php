@@ -6,12 +6,12 @@
  * passing of passwords from and to the DB.
  * 
  * Loquacity - A web blogging application with simplicity in mind - http://www.loquacity.info/
- * Copyright (C) 2006 Samir Greadly <xushi.xushi@gmail.com>
+ * Copyright (C) 2006 Kenneth Power <telcor@users.berlios.de>
  *
  * @package Loquacity
  * @subpackage Security
  * @author Samir Greadly <xushi.xushi@gmail.com>
- * @copyright &copy; Samir Greadly <xushi.xushi@gmail.com>
+ * @copyright &copy; 2006 Kenneth Power
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License
  * @since 0.8-alpha2
  *
@@ -75,7 +75,8 @@ class passwordManager {
 	 * @param integer $len Length of new password
 	 * @return var $pass
     */
-	function randomWord($len){
+	function randomWord($len)
+	{
 		$data = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 		$max = strlen( $data ) - 1 ;
 		$pass = '' ;
@@ -115,7 +116,7 @@ class passwordManager {
 	 * @return var $secAnswer The email address
 	*/
 	function getAnswer($user) {
-		$secAnswer = $this->_adb->GetOne("select secret_answer from ".T_AUTHORS." where nickname='$_SESSION[username]'");
+		$secAnswer = $this->_adb->GetOne("select secret_answer from ".T_AUTHORS." where nickname='$user'");
 		return $secAnswer;
 	}
 
@@ -138,5 +139,17 @@ class passwordManager {
 	function toSHA1($str) {
 		return sha1($str);
 	}
+
+/**
+	 * Check both strings and return true if match.
+	 *
+	 * @param var $str1 String 1
+	 * @param var $str2 String 2
+	 * @return bool	true/false.
+	*/
+	function checkAnswers($str1, $str2) {
+		($str1 == $str2)?true:false;
+	}
+
 }
 ?>

@@ -39,49 +39,52 @@ include_once('charsets.php');
 include_once('taglines.php');
 require_once("validation/passwordManager.class.php");
 
-
 $myPasswdMgr =& new passwordManager($bBlog->_adb);
-
-
-
 $bBlog->template_dir = LOQ_APP_ROOT.'includes/admin_templates';
-$_SESSION['isuser'] = 0;
-
-
-
-// Start with getting the username
 $bBlog->assign('sidemsg', 'Loquacity Password Recovery');
-$bBlog->assign('title', 'Please enter your Loquacity username');
 
 
 
-$template = 'getusername.html';
-$user = $_POST['username'];
 
-// check if a username is entered. If yes, check if it's in the database.
-if($user) {
-	
-	//check if the email exists (and - more or less - hence if the user exists)
-	$email = $myPasswdMgr->getEmail($user);
-
-
-	if ($email) {
-		//get the secret question
-		$secQuestion = $myPasswdMgr->getQuestion($user);
+// if username exists in the database, 
+if((isset($_POST['username'])) && ($_POST['username'] == checkUsername($_POST['username']))) {
+	// get the secret question for the user
+	$_SESSION['username'] = $_POST['username'];
+	$secQuestion = $myPasswdMgr->getQuestion($_SESSION['username']);
 		
-		$bBlog->assign('question', $secQuestion);
-		$template = 'askquestion.html';
+	$bBlog->assign('question', $secQuestion);
+	$_SESSION['password'] = $_POST['password'];
+	$template = 'askquestion.html';
+
+// Now check if we have an answer or not, and compare them
+	if(($myPasswdMgr->checkAnswers($myPasswdMgr->getAnswer($_SESSION['username']), $_SESSION['password']))) {
+			// success! reset password and send the email.
+			setPassword($_SESSION['username'], $_SESSION['password']);
+			sendEmail($user, $email, $passwd);
+			$template = 'status.html';
 	}
 	else {
-		// stick this all in an error function
-        $bBlog->assign('errormsg', 'Sorry. Please visit the Loquacity forum for more advise.');
-		$template = 'error.html';
-		echo 'errrrrrrrrrrrrrrrror';
+		$_SESSION['password'] = $_POST['password'];
+		$template = 'askquestion.html';
 	}
-	
-	// Now check if we have an answer or not, and compare them
-	if(checkAnswers($user)) { 
 
+}
+else {
+	$_SESSION['username']  = $_POST['username'];
+	$bBlog->assign('title', 'Error: Please enter your Loquacity username');
+	$template = 'getusername.html';
+}	
+
+	
+	
+	
+	
+
+
+
+
+function setPassword($user, $passwd) {
+		global $myPasswdMgr;
 		/** 
 		 * I could have just said passwordManager::setPassword($user, stringHandler::toSHA1(passwordManager::randomWord(5))); 
 		 * but that way I'll have no idea what the unhashed password is, and
@@ -90,53 +93,24 @@ if($user) {
 		//generate new password and write it to the db. setPassword(user, password)
 		$passwd = $myPasswdMgr->randomWord(5);
 		$myPasswdMgr->setPassword($user, passwordManager::toSHA1($passwd));
+}
 
-		// create email
-		createEmail($user, $email, $passwd);
-		$bBlog->assign('result', 'The email was sent successfully. You should receive your new password shortly.');
-		$template = 'status.html';
+
+function checkUsername($user) {
+	global $myPasswdMgr;
+	//if (validateauthorname::validateauthorname($user)) {
+	if ($myPasswdMgr->getEmail($user)) {
+		return true;
 	}
 	else {
-		$bBlog->assign('errormsg', 'Error, invalid answer. Recovery aborted.');
-		$template = 'error.html';
-	}	
-
-}
-else {
-		$bBlog->assign('errormsg', 'Error: Please enter a valid username');
-		$template = 'error.html';
-		echo 'userrrrrrrrrrrrrrrrrrr';
-}
-
-
-
-
-
-		
-
-
-function checkAnswers($user)
-{
-	global $mail;
-	global $myPasswdMgr;
-
-
-	// get the answer from db
-	$secAnswer = $myPasswdMgr->getAnswer($user);
-	$userAnswer = $_POST['pass'];
-
-	// test if they're the same
-	if($secAnswer == $userAnswer)
-	{
-		return 1;
+		return false;
 	}
-	else
-	{
-		return 0;
-	}
+	
 }
 
-function createEmail($user, $email, $passwd) {
+
+
+function sendEmail($user, $email, $passwd) {
 	require_once('LoquacityMailer.class.php');
 	global $myPasswdMgr;
 	global $bBlog;
@@ -168,14 +142,17 @@ Remember, the Loquacity team will NEVER ask you for your password, so do NOT giv
 Thank you,
 The Loquacity Team.";
 
-
-	// Send email, or display an error.
-	if(!$mail->Send())
-	{
-	$mail->error_handler("Description: ... some description.\n");
-	exit;
-	}
+// Send email, or display an error.
+		if(!$mail->Send()) {
+			$mail->error_handler("Description: ... some description.\n");
+			$template = 'error.html';
+		}
+		else {
+		$bBlog->assign('result', 'The email was sent successfully. You should receive your new password shortly.');
+		$template = 'status.html';
+		}
 }
+
 
 $bBlog->display($template);
 
