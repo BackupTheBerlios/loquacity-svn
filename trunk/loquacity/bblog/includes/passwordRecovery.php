@@ -1,7 +1,7 @@
 <?php
 session_start();
 /**
- * lostpuser.php - Password retrieval
+ * passwordRecovery.php - Password retrieval
  *
  * Will check if a username exists, ask it's secret question and reset/email the password.
  *
@@ -44,34 +44,33 @@ $bBlog->template_dir = LOQ_APP_ROOT.'includes/admin_templates';
 $bBlog->assign('sidemsg', 'Loquacity Password Recovery');
 
 
+$_SESSION['username'] = $_POST['username'];
+$_SESSION['answer'] = $_POST['answer'];
 
-
-// if username exists in the database, 
-if((isset($_POST['username'])) && ($_POST['username'] == checkUsername($_POST['username']))) {
+// if a username in the post is entered, and that username exists in the database, 
+if((isset($_SESSION['username'])) && ($_SESSION['username'] == checkUsername($_SESSION['username']))) {
 	// get the secret question for the user
-	$_SESSION['username'] = $_POST['username'];
 	$secQuestion = $myPasswdMgr->getQuestion($_SESSION['username']);
 		
 	$bBlog->assign('question', $secQuestion);
-	$_SESSION['password'] = $_POST['password'];
+	$_SESSION['answer'] = $_POST['answer'];
 	$template = 'askquestion.html';
-
-// Now check if we have an answer or not, and compare them
-	if(($myPasswdMgr->checkAnswers($myPasswdMgr->getAnswer($_SESSION['username']), $_SESSION['password']))) {
+	
+	// Now check if we have an answer or not, and compare them.
+	// psudo: if (checkAnswers(pw1,pw2)  where pw1 = getAnswer(username)
+	if( $myPasswdMgr->checkAnswers($myPasswdMgr->getAnswer($_SESSION['username']), $_SESSION['answer']) ) {
 			// success! reset password and send the email.
-			setPassword($_SESSION['username'], $_SESSION['password']);
+			setPassword($_SESSION['username'], $_SESSION['answer']);
 			sendEmail($user, $email, $passwd);
 			$template = 'status.html';
 	}
 	else {
-		$_SESSION['password'] = $_POST['password'];
+		$bBlog->assign('title', 'Please answer your question');
 		$template = 'askquestion.html';
 	}
-
 }
 else {
-	$_SESSION['username']  = $_POST['username'];
-	$bBlog->assign('title', 'Error: Please enter your Loquacity username');
+	$bBlog->assign('title', 'Please enter your Loquacity username');
 	$template = 'getusername.html';
 }	
 
@@ -99,6 +98,8 @@ function setPassword($user, $passwd) {
 function checkUsername($user) {
 	global $myPasswdMgr;
 	//if (validateauthorname::validateauthorname($user)) {
+	// I'm just checking if the user has an email address for now.
+	// Will write a check user function too asap.
 	if ($myPasswdMgr->getEmail($user)) {
 		return true;
 	}
