@@ -36,7 +36,7 @@
  * @version $Revision$
  */
 
-class bBlog extends Smarty {
+class Loquacity extends Smarty {
 	var $template;
 	var $num_homepage_entries = 20;
 	var $templatepage = "index.html";
@@ -45,8 +45,8 @@ class bBlog extends Smarty {
 	var $com_order_array = array();
 	var $com_finalar;
     ////
-    // !bBlog constructor function
-	function bBlog() {
+    // !loq constructor function
+	function Loquacity() {
         $this->__init();
         $this->get_sections();
         //Load the config
@@ -83,7 +83,7 @@ class bBlog extends Smarty {
         $mtime = explode(" ",microtime());
         $this->begintime = $mtime[1] + $mtime[0];
         $this->__load_configuration();
-	} // end of function bBlog
+	} // end of function loq
     
     function __init(){
         // connect to database
@@ -372,5 +372,5 @@ class bBlog extends Smarty {
         return new commentHandler($this->_adb, $postid);
     }
 
-} // end of bBlog class
+} // end of Loquacity class
 ?>

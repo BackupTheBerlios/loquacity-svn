@@ -42,7 +42,7 @@ function identify_function_blogroll () {
     <h2>blogroll!</h2>
     <p>Based on phpblogroll by phil ringnalda - http://philringnalda.com/phpblogroll/</p>
     <p>You will need a blogroll account from <a href="http://www.blo.gs">blo.gs</a> to use this.</p>
-    <p>Make sure bblog/compiled_templates/favorites.xml is writable by the webserver.</p>
+    <p>Make sure core/generated/cache/favorites.xml is writable by the webserver.</p>
     <p>Sign up at blo.gs and then add your favorites to your favorites list (you\'ll be happier
      if you use a decent browser, since Opera/Mozilla will show a cute little plus in a
      circle for things you haven\'t added, and an x in a circle for things you\'ve already added,
@@ -57,7 +57,7 @@ function identify_function_blogroll () {
     <p>While you are there, make a note of the number in the url,
     which is your user number - you\'ll need it.</p>
     
-    <p>Once you have uploaded your favorites.xml into bblog/compiled_templates and chmod 777\'d it, you
+    <p>Once you have uploaded your favorites.xml into core/generated/cache/ and chmod 777\'d it, you
     can put {blogroll userid=1234} in your template. Your userid being your blo.gs userid.</p>';
     
     return array (
@@ -72,7 +72,7 @@ function identify_function_blogroll () {
 }
 
 
-function smarty_function_blogroll($params,&$bBlog) {
+function smarty_function_blogroll($params,&$loq) {
     // ( todo: less/no globals! )
     global $blogroll_open_tags, $blogroll_temp, $blogroll_current_tag, $blogroll_weblog_index;
     global $blogroll_close_tags;

@@ -76,7 +76,7 @@ $wp_gecko_correction['in'] = array(
 	'/\‘/', '/\’/', '/\“/', '/\”/',
 	'/\•/', '/\–/', '/\—/', '/\Ω/',
 	'/\β/', '/\γ/', '/\θ/', '/\λ/',
-	'/\π/', '/\′/', '/\″/', '/\�/',
+	'/\π/', '/\′/', '/\″/', '/\�',
 	'/\€/', '/\ /'
 );
 $wp_gecko_correction['out'] = array(
@@ -119,7 +119,7 @@ $wp_gecko_correction['out'] = array(
     } else {
         $content = '<a href="'.$popupurl.'">'.$popuptitle.'</a>'."\n$text";
     }
-    $bBlog->assign('title_text',$post_title);
-    $bBlog->assign('body_text',$content);
+    $loq->assign('title_text',$post_title);
+    $loq->assign('body_text',$content);
    // print_r($_REQUEST);
 ?>

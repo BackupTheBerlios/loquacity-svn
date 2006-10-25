@@ -44,8 +44,8 @@ class passwordManager {
 	 * @param object $connection The connection to the DB
 	 * @return void
 	*/
-	function passwordManager(&$connection) {
-		$this->_adb =& $connection;
+	function passwordManager(&$db) {
+		$this->_adb =& $db;
 	}
 
 	/**

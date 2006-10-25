@@ -30,10 +30,10 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-include_once('bblog/config.php');
+include_once('core/config.php');
 $type = (isset($_GET['ft'])) ? strtoupper($_GET['ft']) : 'RSS2.0';
 include_once('includes/feedhandler.class.php');
 //Until the redesign, we pass both the database and posthandler to the FeedHandler
-$fh = new FeedHandler($bBlog->_adb, $bBlog->_ph);
+$fh = new FeedHandler($loq->_adb, $loq->_ph);
 $fh->generate($type);
 ?>

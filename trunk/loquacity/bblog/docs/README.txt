@@ -141,9 +141,9 @@ If all goes well, you will be presented with a few comfiguration settings to fil
 * Chmod the config.php so that it is not writable by the webserver
 
 And finally, login to your new blog's admin panel with the username and password you specified during the install.
-http://mysite.com/bblog/
+http://mysite.com/core/
 or
-http://mysite.com/myblog/bblog/
+http://mysite.com/myblog/core/
 depending on the steps mentioned above in subsection I.
 
 You may now write, delete and administer your blog. Have fun!
@@ -192,7 +192,7 @@ Loquacity supports those clean URLs, using a very simple method: htacces. Some s
 
 To enable those clean URLs, you need to rename the file "htaccess-cleanurls" (it's a AllowOverride setting in apache), which is located in the blog root, to ".htaccess" - don't forget the dot!. 
 
-After you've done that, go to the /bblog/ directory and edit the config.php. There, at the bottom, you will find some lines speaking about clean URLs. You have to un-comment the lines, which contain PHP commands (not the ones with pure, informational text in them). A comment is indicated by two slashes ( // ) in PHP. If you remove those, the line(s) gets "active", uncommented again.
+After you've done that, go to the /core/ directory and edit the config.php. There, at the bottom, you will find some lines speaking about clean URLs. You have to un-comment the lines, which contain PHP commands (not the ones with pure, informational text in them). A comment is indicated by two slashes ( // ) in PHP. If you remove those, the line(s) gets "active", uncommented again.
 
 After you finished these two steps, your blog should now mainly use the clean URLs and the change is successfully done. But don't worry if some people set up links on your old ?postid=xx URLs - they won't stop working with this change, they still work. So every link outside there will still be usable :).
 
@@ -206,7 +206,7 @@ VI - Problems
 Here are some problems you may find,
 
 
- Fatal error: Smarty error: the $compile_dir '' does not exist, or is not a directory. in /var/www/localhost/htdocs/loquacity/bblog/3rdparty/smarty/libs/Smarty.class.php on line 1095
+ Fatal error: Smarty error: the $compile_dir '' does not exist, or is not a directory. in /var/www/localhost/htdocs/loquacity/core/3rdparty/smarty/libs/Smarty.class.php on line 1095
 
 Cause: Your sessions might be disabled. To check, create a test.php file, and add the folowing line into it,, 
 <?php phpinfo(); ?>
@@ -218,7 +218,7 @@ When ready, restart your webserver, and try again.
 
 
 
-Fatal error: Call to undefined function mysql_connect() in /var/www/localhost/htdocs/loquacity/bblog/3rdparty/adodb/drivers/adodb-mysql.inc.php on line 354
+Fatal error: Call to undefined function mysql_connect() in /var/www/localhost/htdocs/loquacity/core/3rdparty/adodb/drivers/adodb-mysql.inc.php on line 354
 
 Cause: Your php can not communicate with mysql.
 Note: If you're on Gentoo, use the mysql USE flag instead of the mysqli USE flag and recompile PHP.

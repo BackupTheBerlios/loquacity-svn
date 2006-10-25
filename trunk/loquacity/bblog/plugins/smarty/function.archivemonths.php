@@ -66,7 +66,7 @@ function identify_function_archivemonths(){
  *              num        => Show at most `num` list items
  *              aslist     => Switches formating to HTML list mode. This produces a list in unordered list markup (<ul>)
  */
-function smarty_function_archivemonths($params, &$bBlog) {
+function smarty_function_archivemonths($params, &$loq) {
     $sep = (isset($params['sep'])) ? $params['sep'] : "<br />";
     $list = (isset($params['aslist'])) ? true : false;
     $showcount = (isset($params['showcount']) && intval($params['showcount']) == 0) ? false : true;
@@ -77,7 +77,7 @@ function smarty_function_archivemonths($params, &$bBlog) {
     $limit = 'limit 0, ' . $num;
     
     $sql = 'SELECT DISTINCT YEAR(FROM_UNIXTIME(posttime)) AS `year`, DATE_FORMAT(FROM_UNIXTIME(posttime), "%M") AS `month`, COUNT(postid) AS `posts` FROM `'.T_POSTS.'` '.$where.' GROUP BY `year`, `month` ORDER BY posttime DESC '.$limit;
-    $rs = $bBlog->_adb->Execute($sql);
+    $rs = $loq->_adb->Execute($sql);
     if($rs && !$rs->EOF){
         if($list)
             $monthslist = '<ul>';

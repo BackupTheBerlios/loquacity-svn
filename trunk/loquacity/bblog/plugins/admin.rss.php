@@ -56,7 +56,7 @@ return array (
 }
 
 
-function admin_plugin_rss_run(&$bBlog) {
+function admin_plugin_rss_run(&$loq) {
 
 	$pole = "";
 	for($i=1; $i<10; $i++) 
@@ -66,12 +66,12 @@ function admin_plugin_rss_run(&$bBlog) {
 			$id = $_POST[id.$i];
 			$ch = $_POST[ch.$i];
 			$update_query = "UPDATE ".T_RSS." SET `url` = '".$id."',`input_charset` = '".$ch."' WHERE `id` = '".$i."' LIMIT 1 ;";
-			$bBlog->_adb->Execute($update_query);
+			$loq->_adb->Execute($update_query);
 		}
 
         $row = array();
 		$query = "select * from ".T_RSS." where id=".$i.";";
-        $rs = $bBlog->_adb->Execute($query);
+        $rs = $loq->_adb->Execute($query);
         if($rs !== false && !$rs->EOF){
             $row = $rs->FetchRow();
         }
@@ -91,6 +91,6 @@ function admin_plugin_rss_run(&$bBlog) {
 		$pole.='</select></td></tr>';
 	}
 
-	$bBlog->assign('pole',$pole);
+	$loq->assign('pole',$pole);
 }
 ?>

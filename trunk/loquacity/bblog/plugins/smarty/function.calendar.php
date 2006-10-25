@@ -56,7 +56,7 @@ function identify_function_calendar () {
     
 }
 
-function smarty_function_calendar($params, &$bBlog) {
+function smarty_function_calendar($params, &$loq) {
     
     $date = getdate();
     
@@ -79,7 +79,7 @@ function smarty_function_calendar($params, &$bBlog) {
 
     $dayindex = array();
     global $dayindex;
-    $posts = $bBlog->_ph->get_posts(array("where" => " AND month(FROM_UNIXTIME(posttime)) = $show_month and year(FROM_UNIXTIME(posttime)) = $show_year ","num"=>"999"));
+    $posts = $loq->_ph->get_posts(array("where" => " AND month(FROM_UNIXTIME(posttime)) = $show_month and year(FROM_UNIXTIME(posttime)) = $show_year ","num"=>"999"));
     if($posts){
         //var_dump($posts);
         if(!isset($posts['title'])){
@@ -88,7 +88,7 @@ function smarty_function_calendar($params, &$bBlog) {
                 $dayindex[$d][] = array(
                     "id"    => $post['post'],
                     "title" => $post['title'],
-                    "url"   => $bBlog->_get_entry_permalink($post['postid'])
+                    "url"   => $loq->_get_entry_permalink($post['postid'])
                 );
             }
         }
@@ -109,10 +109,10 @@ function smarty_function_calendar($params, &$bBlog) {
     	$right_year++;
     }
     
-    $bBlog->assign("left", $_SERVER["PHP_SELF"] . "?month=$left_month&year=$left_year");
-    $bBlog->assign("right", $_SERVER["PHP_SELF"] . "?month=$right_month&year=$right_year");
+    $loq->assign("left", $_SERVER["PHP_SELF"] . "?month=$left_month&year=$left_year");
+    $loq->assign("right", $_SERVER["PHP_SELF"] . "?month=$right_month&year=$right_year");
     
-    $bBlog->assign("header", strftime("%B %Y", mktime(0, 0, 0, $show_month, 1, $show_year)));
+    $loq->assign("header", strftime("%B %Y", mktime(0, 0, 0, $show_month, 1, $show_year)));
 
     $first_date = mktime(0, 0, 0, $show_month, 1, $show_year);
     $date = getdate($first_date);
@@ -134,7 +134,7 @@ function smarty_function_calendar($params, &$bBlog) {
         $wday[] = strftime('%a', mktime(0,0,0,3,$counter,2004));
     }
 	
-    $bBlog->assign("wday", $wday);
+    $loq->assign("wday", $wday);
     
     $week_array = array();
     $month_array = array();
@@ -175,10 +175,10 @@ function smarty_function_calendar($params, &$bBlog) {
     	$month_array[] = $week_array;
     }
     
-    $bBlog->assign("month", $month_array);
-    $bBlog->assign("values", $values);
+    $loq->assign("month", $month_array);
+    $loq->assign("values", $values);
 
-    $bBlog->display("calendar.html",FALSE);
+    $loq->display("calendar.html",FALSE);
 
 }
 

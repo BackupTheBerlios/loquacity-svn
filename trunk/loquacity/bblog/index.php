@@ -54,38 +54,38 @@ require_once('includes/validation/passwordManager.class.php');
 $title = 'Admin';
 
 // make sure the page is never cached - we should probally set no-cache headers also.
-$bBlog->setmodifytime(time());
+$loq->setmodifytime(time());
 
-$bBlog->assign_by_ref('title',$title);
+$loq->assign_by_ref('title',$title);
 // we will store the rss templates in the includes/admin_templates dir, becasue almost noone will need to change them, - reduce clutter in the templates/* directory.
-$bBlog->template_dir = LOQ_APP_ROOT.'includes/admin_templates';
-$bBlog->compile_id = 'admin';
+$loq->template_dir = LOQ_APP_ROOT.'includes/admin_templates';
+$loq->compile_id = 'admin';
 
 
 // check to see if we're not logged in
-if(!$bBlog->admin_logged_in()) {
+if(!$loq->admin_logged_in()) {
      if(isset($_POST['username']) && isset($_POST['password'])) { // we're trying to log in.
-         $loggedin = $bBlog->userauth($_POST['username'],$_POST['password'],TRUE);
+         $loggedin = $loq->userauth($_POST['username'],$_POST['password'],TRUE);
      }
 }
 else{
     $loggedin = TRUE;
 }
 if((isset($_POST['submit'])) && ($_POST['submit'] == 'Login')){
-    $bBlog->assign('tried2login',TRUE);
+    $loq->assign('tried2login',TRUE);
 }
 if($loggedin === false) { // we are not logged in! Display the login page
    $menu[0]['url']='index.php';
    $menu[0]['name']='Login';
    $menu[0]['active']=TRUE;
-   $bBlog->assign_by_ref('menu',$menu);
+   $loq->assign_by_ref('menu',$menu);
    $title= 'Login';
    if($_SERVER['REQUEST_URI'] != $_SERVER['SCRIPT_NAME']) {
    	// tried to go somewhere but was kicked out as session timed out.
 	// so when they login we'll redirect them.
-   	$bBlog->assign('redirect',base64_encode($_SERVER['REQUEST_URI']));
+   	$loq->assign('redirect',base64_encode($_SERVER['REQUEST_URI']));
    }
-   $bBlog->display("login.html");
+   $loq->display("login.html");
    exit;
 }
 
@@ -109,7 +109,7 @@ $menu[1]['url']='index.php?b=archives';
 $menu[1]['title']='Edit past entries and change properties';
 $bindex['archives']=1;
 
-$rs = $bBlog->_adb->Execute("select * from ".T_PLUGINS." where type='admin' order by ordervalue");
+$rs = $loq->_adb->Execute("select * from ".T_PLUGINS." where type='admin' order by ordervalue");
 if($rs !== false && !$rs->EOF){
     $i = 2;
     while($plugin = $rs->FetchRow()){
@@ -145,7 +145,7 @@ $menu[$i+3]['name']='Docs';
 $menu[$i+3]['url']='http://loquacity.info/documentation/xref/nav.html?index.php.html" target="_blank"'; // NASTY hack!
 $menu[$i+3]['title'] = 'Link to the online documentation at Loquacity.info';
 
-$bBlog->assign_by_ref('menu',$menu);
+$loq->assign_by_ref('menu',$menu);
 
 if(isset($_REQUEST['p'])) {
 	$menu[$pindex[$_REQUEST['p']]]['active']=TRUE; // now that's an array
@@ -188,14 +188,14 @@ switch ($b) {
          include_once('plugins/builtin.plugins.php');
          break;
     case 'logout' :
-         $bBlog->admin_logout();
+         $loq->admin_logout();
          header('Location: index.php');
          break;
 
     default :
-          $bBlog->assign('errormsg','Unknown b value in admin index.php');
+          $loq->assign('errormsg','Unknown b value in admin index.php');
           $title = 'Error';
-          $bBlog->display('error.html');
+          $loq->display('error.html');
           break;
 }
 ?>

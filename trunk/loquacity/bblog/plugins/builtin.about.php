@@ -45,18 +45,18 @@ function identify_admin_help () {
   );
 }
 include_once('includes/credits.php');
-$bBlog->assign('credits',$credits);
-$bBlog->assign('title','About Loquacity '.BBLOG_VERSION);
+$loq->assign('credits',$credits);
+$loq->assign('title','About Loquacity '.BBLOG_VERSION);
 
 ob_start();
 include_once('docs/LICENCE.txt');
-$bBlog->assign('licence',ob_get_contents());
+$loq->assign('licence',ob_get_contents());
 ob_end_clean();
 
 ob_start();
 include_once('make_bookmarklet.php');
-$bBlog->assign('bookmarklet',ob_get_contents());
+$loq->assign('bookmarklet',ob_get_contents());
 ob_end_clean();
 
-$bBlog->display("about.html");
+$loq->display("about.html");
 ?>

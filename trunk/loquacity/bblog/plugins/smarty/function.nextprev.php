@@ -35,7 +35,7 @@ function identify_function_nextprev () {
     $help = '
 	<p>This plugin displays your indexes and archive pages in a list of pages.</p>
 	<p>To call the plugin, simply do a <code>{nextprev}</code>.  Just
-	like most of bBlog, this defaults to pages of 20 entries.  If you
+	like most of Loquacity, this defaults to pages of 20 entries.  If you
 	want to tweak this, use the <var>num</var> parameter.  For example,
 	if you want pages of 5 entries, do <code>{nextprev num=5}</code>.</p>
 	<p>Within your pages, you will need to set the skip parameter to
@@ -141,7 +141,7 @@ function identify_function_nextprev () {
     
 }
 
-function smarty_function_nextprev($params, &$bBlog) {
+function smarty_function_nextprev($params, &$loq) {
     // Initialize default values...
     $skip = 0;
     $num = 20;
@@ -173,7 +173,7 @@ function smarty_function_nextprev($params, &$bBlog) {
     }
     else {
        // This is for the case of Clean URLS
-       $sectionid = $bBlog->get_template_vars("sectionid");
+       $sectionid = $loq->get_template_vars("sectionid");
        if ( $sectionid ) {
           $QuerySection .= " AND sections like '%:$sectionid:%'";
        }
@@ -191,18 +191,18 @@ function smarty_function_nextprev($params, &$bBlog) {
     // Calculate the new offset
     $offset = $skip * $num;
     $nextoffset = $offset + $num;
-    $bBlog->assign( "current_offset", $offset );
+    $loq->assign( "current_offset", $offset );
 
     // Get number of entries...
     if ( $posts ) {
        $entryCount = count( $posts );
        if ( $params[ 'adjust' ] ) {
-          $bBlog->assign( 'posts', array_slice( $posts, $offset, $num ) );
+          $loq->assign( 'posts', array_slice( $posts, $offset, $num ) );
        }
     }
     else {
        // invariant: Need to query the database and count
-       $rs = $bBlog->_adb->Execute( "select count(*) as nElements from ".T_POSTS." where status = 'live' $QuerySection" );
+       $rs = $loq->_adb->Execute( "select count(*) as nElements from ".T_POSTS." where status = 'live' $QuerySection" );
        if($rs !== false && !$rs->EOF){
            if($rs->RecordCount() == 0){
                $entryCount = 0;
@@ -224,14 +224,14 @@ function smarty_function_nextprev($params, &$bBlog) {
           $i = 0;
        }
     }
-    $bBlog->assign( "current_page", $current_page + 1 );
-    $bBlog->assign( "gofirstpage", $i + 1 );
+    $loq->assign( "current_page", $current_page + 1 );
+    $loq->assign( "gofirstpage", $i + 1 );
     while ( $i < $current_page ) {
        $cp = $i + 1;
        $prevpages[] = array( 'page' => $cp, 'url' => $_SERVER["PHP_SELF"] . "?pageskip=$i$ExtraParams" );
        ++ $i;
     }
-    $bBlog->assign( "goprevpages", $prevpages );
+    $loq->assign( "goprevpages", $prevpages );
 
     // Create the next pages
     $i = $current_page + 1;
@@ -247,30 +247,30 @@ function smarty_function_nextprev($params, &$bBlog) {
           $pages = $numberOfPages;
        }
     }
-    $bBlog->assign( "golastpage", $pages );
-    $bBlog->assign( "gonum_pages", $numberOfPages );
+    $loq->assign( "golastpage", $pages );
+    $loq->assign( "gonum_pages", $numberOfPages );
     while ( $i < $pages ) {
        $nextpages[] = array( 'page' => $i+1, 'url' => $_SERVER["PHP_SELF"] . "?pageskip=$i$ExtraParams" );
        ++ $i;
     }
-    $bBlog->assign( "gonextpages", $nextpages );
+    $loq->assign( "gonextpages", $nextpages );
 
     // Get the previous count...
     if ( $offset == 0 ) {
        $previous = 0;
-       $bBlog->assign( "goprev", "" );
+       $loq->assign( "goprev", "" );
     } else {
        $previous = $skip - 1;
-       $bBlog->assign( "goprev", $_SERVER["PHP_SELF"] . "?pageskip=$previous$ExtraParams" );
+       $loq->assign( "goprev", $_SERVER["PHP_SELF"] . "?pageskip=$previous$ExtraParams" );
     }
 
     // Get the next count...
     if ( $nextoffset < $entryCount ) {
        $next = $skip + 1;
-       $bBlog->assign( "gonext", $_SERVER["PHP_SELF"] . "?pageskip=$next$ExtraParams" );
+       $loq->assign( "gonext", $_SERVER["PHP_SELF"] . "?pageskip=$next$ExtraParams" );
     } else {
        $next = 0;
-       $bBlog->assign( "gonext", "" );
+       $loq->assign( "gonext", "" );
     }
 }
 ?>

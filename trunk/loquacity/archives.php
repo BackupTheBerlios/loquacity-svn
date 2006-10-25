@@ -30,17 +30,17 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-include "bblog/config.php";
+include "core/config.php";
 
 // xushi: This fix is so that the archives.html in
 // kubrik and relaxation displays only the required
 // month, and not all posts.
 // stan: Check if the variables exist, before assigning them.
-if (isset($_GET['year'])) $bBlog->assign('year',$_GET['year']);
-if (isset($_GET['year'])) $bBlog->assign('month',$_GET['month']);
-if (isset($_GET['year'])) $bBlog->assign('day',$_GET['day']);
+if (isset($_GET['year'])) $loq->assign('year',$_GET['year']);
+if (isset($_GET['year'])) $loq->assign('month',$_GET['month']);
+if (isset($_GET['year'])) $loq->assign('day',$_GET['day']);
 
 // Move on to the template's archive
-$bBlog->display('archives.html');
+$loq->display('archives.html');
 
 ?>

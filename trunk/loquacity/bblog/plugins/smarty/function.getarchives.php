@@ -55,7 +55,7 @@ count: requests a count of the number of entries in each archive (takes longer t
     'help'   => $help
   );
 }
-function smarty_function_getarchives($params, &$bBlog) {
+function smarty_function_getarchives($params, &$loq) {
   $ar = array();
   $opt = $params;
 
@@ -66,14 +66,14 @@ function smarty_function_getarchives($params, &$bBlog) {
 		$params['assign'] = 'archives';
 	}
 
-	$ar = $bBlog->get_archives($opt);
+	$ar = $loq->get_archives($opt);
 	
 	// No posts.
   if(!is_array($ar)) {
 		return '';
 	}
 
-	$bBlog->assign($params['assign'],$ar);
+	$loq->assign($params['assign'],$ar);
 
   return '';
 	

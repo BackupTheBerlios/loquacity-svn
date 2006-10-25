@@ -1,6 +1,6 @@
 <?php
 /**
- * Loquacity - A web blogging application with simplicity in mind - http://www.loquacity.info/
+ * Loquacity - A web blogging application with simplicity in mind - http://www.loquacity.$loq->/
  * Copyright (c) 2006 Kenneth Power
  *
  * @package Loquacity
@@ -8,7 +8,7 @@
  * @author Eaden McKee, http://www.bblog.com
  * @copyright &copy; 2003  Eaden McKee <email@eadz.co.nz>
  * @license    http://www.gnu.org/licenses/gpl.html GPL
- * @link http://www.loquacity.info
+ * @link http://www.loquacity.$loq->
  * @since 0.8-alpha1
  *
  * LICENSE:
@@ -49,7 +49,7 @@ function identify_admin_sections () {
     );
 }
 
-function admin_plugin_sections_run(&$bBlog) {
+function admin_plugin_sections_run(&$loq) {
     // Again, the plugin API needs work.
     if(isset($_GET['sectdo']))  { $sectdo = $_GET['sectdo']; }
     elseif(isset($_POST['sectdo'])) { $sectdo = $_POST['sectdo']; }
@@ -59,15 +59,15 @@ function admin_plugin_sections_run(&$bBlog) {
         case 'new' :  // sections are being editied
             $nicename = stringHandler::removeMagicQuotes($_POST['nicename']);
             $urlname = stringHandler::removeMagicQuotes($_POST['urlname']);
-            $bBlog->_adb->Execute("insert into ".T_SECTIONS." set nicename=".$bBlog->_adb->quote($nicename).", name=".$bBlog->_adb->quote($urlname));
-            $insid = $bBlog->_adb->insert_id();
+            $loq->_adb->Execute("insert into ".T_SECTIONS." set nicename=".$loq->_adb->quote($nicename).", name=".$loq->_adb->quote($urlname));
+            $insid = $loq->_adb->insert_id();
             break;
         case "Delete" : // delete section
             // have to remove all references to the section in the posts
             $sname = stringHandler::removeMagicQuotes($_POST['sname']);
-            $sect_id = $bBlog->section_ids_by_name[$sname];
+            $sect_id = $loq->section_ids_by_name[$sname];
             if($sect_id > 0) {
-                $ph = $bBlog->_ph;
+                $ph = $loq->_ph;
                 $posts_in_section_q = $ph->make_post_query(array("sectionid"=>$sect_id));
                 $posts_in_section = $ph->get_posts($posts_in_section_q,TRUE);
                 if($posts_in_section) {
@@ -80,22 +80,22 @@ function admin_plugin_sections_run(&$bBlog) {
                         }
                         $newsects = implode(":",$tmpr);
                         // update the posts to remove the section
-                        $bBlog->_adb->Execute("update ".T_POSTS." set sections='$newsects' where postid={$post->postid}");
+                        $loq->_adb->Execute("update ".T_POSTS." set sections='$newsects' where postid={$post->postid}");
                     } // end foreach ($post_in_section as $post)
                 } // end if($posts_in_section)
                 // delete the section
-                $bBlog->_adb->Execute("delete from ".T_SECTIONS." where sectionid=$sect_id");
+                $loq->_adb->Execute("delete from ".T_SECTIONS." where sectionid=$sect_id");
             } // else show error
         case "Save" :
-            $sect_id = $bBlog->sect_by_name[$_POST['sname']];
+            $sect_id = $loq->sect_by_name[$_POST['sname']];
             if($sect_id < 1) break;
             $sql = "update ".T_SECTIONS ." set nicename='".stringHandler::clean($_POST['nicename'])."' where sectionid='$sect_id'";
-            $bBlog->_adb->Execute($sql);
+            $loq->_adb->Execute($sql);
             break;
         default : // show form
             break;
     }
-    $bBlog->get_sections();
-    $bBlog->assign('esections',$bBlog->sections);
+    $loq->get_sections();
+    $loq->assign('esections',$loq->sections);
 }
 ?>

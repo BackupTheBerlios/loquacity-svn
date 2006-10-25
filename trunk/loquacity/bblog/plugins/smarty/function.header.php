@@ -46,7 +46,7 @@ header: the header to send<br />';
     'help'   => $help
   );
 }
-function smarty_function_header($params, &$bBlog) {
+function smarty_function_header($params, &$loq) {
 
 	header($params['header']);
 

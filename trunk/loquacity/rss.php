@@ -38,7 +38,7 @@
  */
 if(!defined('CUSTOMRSS')) {
 // so for example you could use this file but include it instead of calling it directly..
-	include "bblog/config.php";
+	include "core/config.php";
     $ver = @$_GET['ver'];
 	$num = @$_GET['num'];
 	$sectionid = @$_GET['sectionid'];
@@ -54,7 +54,7 @@ if(is_numeric($num)) $p['num'] = $num;
 if(is_numeric($sectionid)) $p['sectionid'] = $sectionid;
 
 if(strlen($sectionname) >0) {
-	$sid = $bBlog->sect_by_name[$sectionname];
+	$sid = $loq->sect_by_name[$sectionname];
 	if(is_numeric($sid) && $sid>0)
 		$p['sectionid'] = $sid;
 }
@@ -63,11 +63,11 @@ if(is_numeric($year)) $p['year'] = $year;
 if(is_numeric($year)) $p['month'] = $month;
 if(is_numeric($year)) $p['day'] = $day;
 
-$posts = $bBlog->get_posts($bBlog->make_post_query($p));
-$bBlog->assign('posts',$posts);
+$posts = $loq->get_posts($loq->make_post_query($p));
+$loq->assign('posts',$posts);
 
-$bBlog->template_dir = LOQ_APP_ROOT.'inc/admin_templates';
-$bBlog->compile_id = 'admin';
+$loq->template_dir = LOQ_APP_ROOT.'inc/admin_templates';
+$loq->compile_id = 'admin';
 
 // Format last modification date for use in the header.
 $last_modified = gmdate ("D, d M Y H:i:s \G\M\T", C_LAST_MODIFIED);
@@ -80,21 +80,21 @@ header("Etag: {$last_modified_hash}",true);
 switch ($ver){
     case '2.0':
         header("Content-Type: application/rss+xml",true);
-        $bBlog->display('rss20.html',false);
+        $loq->display('rss20.html',false);
         break;
 	case '1.0':
 		header("Content-Type: application/rss+xml",true);
-		$bBlog->display('rss10.html',false);
+		$loq->display('rss10.html',false);
 		break;
 		
     case 'atom03':
         header('Content-type: application/atom+xml', true);
-        $bBlog->display('atom.html',false);
+        $loq->display('atom.html',false);
         break;
 
     default:
         header("Content-Type: text/xml",true);
-        $bBlog->display('rss092.html',false);
+        $loq->display('rss092.html',false);
         break;    
 
 }

@@ -74,12 +74,12 @@ if(!isset($xmlrpc_methods[$methodName])){
 ////
 // !blogger.getUsersBlogs  	= blogger_getUsersBlogs
 // gets a list of the users blogs.
-// but at the moment bBlog is a single-blog thing
+// but at the moment Loquacity is a single-blog thing
 // so we just return the config details
 function blogger_getUsersBlogs ($params) {
-	Global $bBlog;
+	global $loq;
 	$blogr=array();
-	if($bBlog->userauth($params[1],$params[2])) {
+	if($loq->userauth($params[1],$params[2])) {
 		$blog['url'] 		= C_BLOGURL;
 		$blog['blogName'] 	= C_BLOGNAME;
 		$blog['blogid'] 	= 1;
@@ -95,10 +95,10 @@ function blogger_getUsersBlogs ($params) {
 // Parameters: String appkey, String postid, String username, String password, boolean publish
 
 function blogger_deletePost ($params) {
-	global $bBlog;
-	if($bBlog->userauth($params[2],$params[3])) {
+	global $loq;
+	if($loq->userauth($params[2],$params[3])) {
 		// password accepted
-			$bBlog->delete_post($params[1]);
+			$loq->delete_post($params[1]);
 			// lets just assume it worked for now.
 			XMLRPC_response(XMLRPC_prepare("1"),WEBLOG_XMLPRPC_USERAGENT);
 			//} else {
@@ -123,16 +123,16 @@ function blogger_deletePost ($params) {
 // Params :
 
 function blogger_getPost ($params) {
-	global  $bBlog;	
+	global $loq;	
 	$postid = $params[4];
 	if(!is_numeric($postid)) {
 		XMLRPC_error("401", "PostID not numeric", WEBLOG_XMLRPC_USERAGENT);
 	}
 	        
 		
-	if($bBlog->userauth($params[2],$params[3],FALSE)) {
+	if($loq->userauth($params[2],$params[3],FALSE)) {
 		// password accepted
-		$entry = $bBlog->get_post($postid,TRUE,TRUE);
+		$entry = $loq->get_post($postid,TRUE,TRUE);
 		$entriesar=array();
 			$entryrt['userid'] = 1;
 			$entryrt['postid'] = $entry->postid;
@@ -151,13 +151,13 @@ function blogger_getPost ($params) {
 
 
 function blogger_getRecentPosts ($params) {
-	global  $bBlog;	
+	global $loq;	
 	$numposts = $params[4];
 	if($numposts < 1 || $numposts > 20) { $numposts = 20 ; }
 	
-	if($bBlog->userauth($params[2],$params[3],FALSE)) {
+	if($loq->userauth($params[2],$params[3],FALSE)) {
 		// password accepted
-		$entries = $bBlog->get_posts($bBlog->make_post_query(array("num"=>$numposts)),TRUE);
+		$entries = $loq->get_posts($loq->make_post_query(array("num"=>$numposts)),TRUE);
 		
 		foreach ($entries as $entry) {
 			$entryrt['userid'] = 1;
@@ -180,21 +180,21 @@ function blogger_getRecentPosts ($params) {
 // !metaweblog.getRecentPosts, get recent posts - not working at the moment
 // Params : blogid, username, password, numposts
 function metaweblog_getRecentPosts ($params) {
-	global $bBlog;
+	global $loq;
 	$numposts = $params[3];
 	if($numposts < 1 || $numposts > 20) { $numposts = 20 ; }
 	
-	if($bBlog->userauth($params[1],$params[2])) {
+	if($loq->userauth($params[1],$params[2])) {
 		// password accepted
-		$q = $bBlog->make_post_query(array("num"=>$numposts));
-		$posts = $bBlog->get_posts($q,TRUE);
+		$q = $loq->make_post_query(array("num"=>$numposts));
+		$posts = $loq->get_posts($q,TRUE);
 		foreach ($posts as $post) {
 			$entryrt['userid'] = 1;
 			$entryrt['postid'] = $post->postid;
 			$entryrt['dateCreated'] = XMLRPC_convert_timestamp_to_iso8601($post->posttime);
 			$entryrt['description']= $post->body;
 			$entryrt['title'] 	= $post->title;
-			$entryrt['link'] 	= $bBlog->_get_entry_permalink($post->postid);
+			$entryrt['link'] 	= $loq->_get_entry_permalink($post->postid);
 			$entriesar[] = $entryrt;
 			
 		}
@@ -257,17 +257,17 @@ function blogger_setTemplate ($params) {
 // Params :
 
 function metaWeblog_newPost ($params) {
-  Global $bBlog;
-  if($bBlog->userauth($params[1],$params[2])) {
+  global $loq;
+  if($loq->userauth($params[1],$params[2])) {
     // password accepted
-    $sectionid = $bBlog->_get_section_id($params[3]['categories'][0]);
+    $sectionid = $loq->_get_section_id($params[3]['categories'][0]);
     
     $newpost->title = addslashes(stripslashes($params[3]['title']));
     $newpost->body = addslashes(stripslashes($params[3]['description']));
     if($sectionid > 0) $newpost->sections = array(0=>$sectionid);
     $newpost->status   = C_DEFAULT_STATUS; // in the future this will be the draft/live thing from the "post" or "post and publish"
     $newpost->modifier = C_DEFAULT_MODIFIER;
-    $postid = $bBlog->new_post($newpost);
+    $postid = $loq->new_post($newpost);
     if($postid > 0) {
 	XMLRPC_response(XMLRPC_prepare($postid),WEBLOG_XMLPRPC_USERAGENT);
 	// Ping weblogs.com
@@ -279,7 +279,7 @@ function metaWeblog_newPost ($params) {
 			}
 		} else {
 			ob_start();
-			print_r($bBlog->debug);
+			print_r($loq->debug);
 			$o = ob_get_contents();
 			ob_end_clean();
 			XMLRPC_error("312", "Something went wrong adding an entry : $o : $entryid", WEBLOG_XMLRPC_USERAGENT);	
@@ -300,9 +300,9 @@ function metaWeblog_newPost ($params) {
 // metaWeblog.editPost (postid, username, password, struct, publish) returns true
 
 function metaWeblog_editPost ($params) {
-	global $bBlog;
+	global $loq;
 	
-	if($bBlog->userauth($params[1],$params[2])) { // password accepted
+	if($loq->userauth($params[1],$params[2])) { // password accepted
 		//ob_start();
 		//print_r($params);
 		//$o = ob_get_contents();
@@ -310,7 +310,7 @@ function metaWeblog_editPost ($params) {
 		$eparams = array('postid'=>$params[0],
 			'body'=>my_addslashes($params[3]['description']),
 			'title'=>my_addslashes($params[3]['title']));
-		$bBlog->edit_post($eparams);
+		$loq->edit_post($eparams);
 		XMLRPC_response(XMLRPC_prepare(1),WEBLOG_XMLPRPC_USERAGENT);
 			
 		
@@ -335,16 +335,16 @@ Return value: on success, struct containing
 	on failure, fault
 */
 function metaWeblog_getPost ($params) {
-	global  $bBlog;	
-	if ($bBlog->userauth($params[1],$params[2])) {
+	global $loq;	
+	if ($loq->userauth($params[1],$params[2])) {
 		$postid = $params[0];
-		$entryrow = $bBlog->get_post($postid,TRUE,TRUE);
+		$entryrow = $loq->get_post($postid,TRUE,TRUE);
 		$entry['userid'] = 1;
 		$entry['dateCreated'] = XMLRPC_convert_timestamp_to_iso8601($entryrow->posttime);
 		$entry['postid'] = $entryrow->postid;
 		$entry['description'] = $entryrow->body;
 		$entry['title']		= $entryrow->title;
-		$entry['link']		= $bBlog->_get_entry_permalink($entryrow->postid);
+		$entry['link']		= $loq->_get_entry_permalink($entryrow->postid);
 		//$entryar =array();
 		//$entryar[]=$entry;
 		//ob_start();
@@ -362,16 +362,16 @@ function metaWeblog_getPost ($params) {
 ////
 // !metaWeblog.getCategories get SECTIONS, we call them SECTIONS!
 function metaWeblog_getCategories ($params) {
-  global  $bBlog;	
-  if($bBlog->userauth($params[1],$params[2])) {
+  global $loq;	
+  if($loq->userauth($params[1],$params[2])) {
     // password accepted
     $blogcats = array();
     $blogname = C_BLOGNAME;
     $defaultblog['description'] = "Default";
     $defaultblog['htmlUrl']	= C_BLOGURL;
-    $defaultblog['rssUrl']	= $bBlog->_get_rss_url();
+    $defaultblog['rssUrl']	= $loq->_get_rss_url();
     $blogcats[] = $defaultblog;
-    foreach($bBlog->sections as $section) {
+    foreach($loq->sections as $section) {
         $catr['description']= $section->name;
 	$catr['htmlUrl']	= $section->url;
 	$catr['rssUrl']		= $section->rss_url;
@@ -386,12 +386,12 @@ function metaWeblog_getCategories ($params) {
 
 
 function mt_getCategoryList($params) {
-    global $bBlog;	
-    if($bBlog->userauth($params[1],$params[2]))
+    global $loq;	
+    if($loq->userauth($params[1],$params[2]))
     {
         // password accepted
         $blogcats = array();
-        foreach($bBlog->sections as $section)
+        foreach($loq->sections as $section)
         {
             $catr['categoryName']= $section->name;
             $catr['categoryId']	= $section->sectionid;
@@ -407,12 +407,12 @@ function mt_getCategoryList($params) {
 }
 
 function mt_getPostCategories($params) {
-    global $bBlog;	
-    if($bBlog->userauth($params[1],$params[2]))
+    global $loq;	
+    if($loq->userauth($params[1],$params[2]))
     {
         // password accepted
         $postid = $params[0];
-	$entryrow = $bBlog->get_post($postid,TRUE,TRUE);
+	$entryrow = $loq->get_post($postid,TRUE,TRUE);
 	$categories = array();
 		
         if($entryrow->sections != '')
@@ -429,7 +429,7 @@ function mt_getPostCategories($params) {
                 {
                     // Populate Sections Array
                     $categories[] = array("categoryId" => $tmp_sec,
-                                          "categoryName" => $bBlog->sect_by_id[$tmp_sec],
+                                          "categoryName" => $loq->sect_by_id[$tmp_sec],
                                           "isPrimary" => $firstCategory);
                     $firstCategory -= 1;
                     if ($firstCategory < 0)
@@ -449,12 +449,12 @@ function mt_getPostCategories($params) {
 }
 
 function mt_setPostCategories($params) {
-    global $bBlog;	
-    if($bBlog->userauth($params[1],$params[2]))
+    global $loq;	
+    if($loq->userauth($params[1],$params[2]))
     {
         // password accepted
         $postid = $params[0];
-        $post = $bBlog->get_post($postid,TRUE,TRUE);
+        $post = $loq->get_post($postid,TRUE,TRUE);
 
         $sections = array();
         foreach ($params[3] as $section)
@@ -463,7 +463,7 @@ function mt_setPostCategories($params) {
         }
         $sections = implode(":", $sections);
 
-        $result = $bBlog->edit_post(array('title'=>my_addslashes($post->title),
+        $result = $loq->edit_post(array('title'=>my_addslashes($post->title),
                                           'body'=>my_addslashes($post->body),
                                           'postid'=>$params[0], 
                                           'sections'=>$sections,
@@ -479,8 +479,8 @@ function mt_setPostCategories($params) {
 
 
 function mt_publishPost($params) {
-    global $bBlog;	
-    if($bBlog->userauth($params[1],$params[2]))
+    global $loq;	
+    if($loq->userauth($params[1],$params[2]))
     {
         // password accepted
         ob_start();

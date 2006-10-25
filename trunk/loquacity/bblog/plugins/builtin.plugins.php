@@ -37,7 +37,7 @@
  */
  
 include_once(LOQ_APP_ROOT.'includes/pluginhandler.class.php');
-$ph = new pluginhandler($bBlog->_adb);
+$ph = new pluginhandler($loq->_adb);
 
 $show_plugin_menu = TRUE;
 $plugin_ar  = array();
@@ -60,12 +60,12 @@ if(isset($_POST['scan'])) $np = $ph->scan_for_plugins(dirname(__FILE__));
 
 if(isset($_POST['scan_refresh'])) {
 	$np = $ph->scan_for_plugins(dirname(__FILE__));
-	$bBlog->assign('np',"<b style='color: red;'>$np</b><br />");
+	$loq->assign('np',"<b style='color: red;'>$np</b><br />");
 }
 
 
 
-$rs = $bBlog->_adb->Execute("select * from ".T_PLUGINS." order by type");
+$rs = $loq->_adb->Execute("select * from ".T_PLUGINS." order by type");
 if($rs !== false && !$rs->EOF){
     while($plugin = $rs->FetchRow()){
         $plugins[$plugin['type']][$plugin['name']]= array(
@@ -94,17 +94,17 @@ if($_POST['p']) $p = $_POST['p'];
 
 if($p && is_array($plugins['admin'][$p])) { // successful call to plugin
 	$show_plugin_menu = FALSE;
-	$bBlog->assign('plugin',$plugins['admin'][$p]);
-	$bBlog->assign('plugin_template','plugins/'.$plugins['admin'][$p]['template']);
-	$bBlog->assign('title',$plugins['admin'][$p]['displayname']);
+	$loq->assign('plugin',$plugins['admin'][$p]);
+	$loq->assign('plugin_template','plugins/'.$plugins['admin'][$p]['template']);
+	$loq->assign('title',$plugins['admin'][$p]['displayname']);
 	include_once('plugins/'.$plugins['admin'][$p]['file']);
 	$func = "admin_plugin_".$p."_run";
-	$func($bBlog);
+	$func($loq);
 }
 
-$bBlog->assign('plugin_ar',$plugin_ar);
-$bBlog->assign('show_plugin_menu',$show_plugin_menu);
+$loq->assign('plugin_ar',$plugin_ar);
+$loq->assign('show_plugin_menu',$show_plugin_menu);
 
 
-$bBlog->display("plugins.html");
+$loq->display("plugins.html");
 ?>

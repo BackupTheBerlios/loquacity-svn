@@ -56,16 +56,16 @@ $help = '
   );
 }
 
-function smarty_function_getrss($params, &$bBlog) { 
+function smarty_function_getrss($params, &$loq) { 
 	$outputcharset='UTF8';
 	if(isset($params['id'])) {
-        $rs = $bBlog->_adb->Execute("select * from ".T_RSS." where url<>'' and id='".$params['id']."'");
+        $rs = $loq->_adb->Execute("select * from ".T_RSS." where url<>'' and id='".$params['id']."'");
         if($rs !== false && !$rs->EOF){
             $rssrow = $rs->FetchRow();
         }
 	}
     else { // get random one
-        $rs = $bBlog->_adb->Execute("select * from ".T_RSS." where url<>'' order by rand(".time().") limit 0,1");
+        $rs = $loq->_adb->Execute("select * from ".T_RSS." where url<>'' order by rand(".time().") limit 0,1");
         if($rs !== false && !$rs->EOF){
             $rssrow = $rs->FetchRow();
         }

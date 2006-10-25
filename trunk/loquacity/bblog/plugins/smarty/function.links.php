@@ -31,7 +31,7 @@
  */
  
 /**
- * A smarty function for displaying bBlog links
+ * A smarty function for displaying Loquacity links
  */
 
 function identify_function_links () {
@@ -75,7 +75,7 @@ $help = '
 
 }
 
-function smarty_function_links($params, &$bBlog) {
+function smarty_function_links($params, &$loq) {
 
     $markedlinks = '';
 
@@ -104,7 +104,7 @@ function smarty_function_links($params, &$bBlog) {
     } else {
        $max = "20";
     }
-    $db = $bBlog->_adb;
+    $db = $loq->_adb;
     if(isset($params['cat'])) {
         $rs = $db->Execute("select categoryid from ".T_CATEGORIES." where name='".$params['cat']."'");
         if($rs !== false && !$rs->EOF){

@@ -46,20 +46,20 @@ Your index.html template should include() the result of this function, or procee
   );
 }
 
-function smarty_function_getcontent($params, &$bBlog) {
+function smarty_function_getcontent($params, &$loq) {
 
   // Retrieving data
-  $bBlog->get_sections();
-  $sections = $bBlog->sections;
+  $loq->get_sections();
+  $sections = $loq->sections;
   foreach ($sections as $object) {
      $new[$object->sectionid] = $object;
   }
   $sections = $new;
   
-  $current_section = $bBlog->get_template_vars("sectionid");
+  $current_section = $loq->get_template_vars("sectionid");
     
   // Return  
-  $bBlog->assign("content",$sections[$current_section]->content);
+  $loq->assign("content",$sections[$current_section]->content);
 }
 
 ?>

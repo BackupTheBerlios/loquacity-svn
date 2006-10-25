@@ -56,5 +56,5 @@ $taglines[] = "As a computer, I find your faith in technology amusing";
 $taglines[] = "Why fork when you can spoon?";
 $taglines[] = "Bootylicious blogging";
 $tl_n = array_rand($taglines);
-$bBlog->assign('tagline',$taglines[$tl_n]);
+$loq->assign('tagline',$taglines[$tl_n]);
 ?>

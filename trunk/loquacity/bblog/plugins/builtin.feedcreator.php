@@ -43,26 +43,26 @@ function identify_admin_feedcreator(){
   );
 }
 
-function admin_plugin_feedcreator_run(&$bBlog){
+function admin_plugin_feedcreator_run(&$loq){
     if(isset($_POST) && count($_POST) > 0){
         var_dump($_POST);
     }
 	if ((isset($_POST['sub'])) && ($_POST['sub'] == 'y')){
 		include_once('lib/feedhandler.class.php');
         
-        $fh = new feedhandler($bBlog->_adb);
+        $fh = new feedhandler($loq->_adb);
         $url = $fh->createurl();
 
-		$bBlog->assign('results',TRUE);
-		$bBlog->assign('feedurl',$url);
+		$loq->assign('results',TRUE);
+		$loq->assign('feedurl',$url);
 	}
 	
-	$sections = $bBlog->sections;
+	$sections = $loq->sections;
 	$sectionlist = '';
 	foreach($sections as $section){
 		$sectionlist .= '<option value="'.$section['sectionid'].'">'.$section['nicename'].'</option>';
 	}
 	
-	$bBlog->assign('sectionlist',$sectionlist);
+	$loq->assign('sectionlist',$sectionlist);
 }
 ?>

@@ -38,7 +38,7 @@ function identify_modifier_simple () {
     'description'   =>'Converts breaks to newlines and URLs into clickable links',
     'authors'        =>'Eaden McKee, phpBB Authors',
     'licence'         =>'GPL',
-    'help'    	=> 'This is a simple modifier that simply converts new lines ( returns ) into html breaks, any urls ( e.g. http://www.bblog.com/ or www.bblog.com into clickable links.'
+    'help'    	=> 'This is a simple modifier that simply converts new lines ( returns ) into html breaks, any urls ( e.g. http://www.loquaity.info/ or www.loquacity.info into clickable links.'
   );
 }
 ////

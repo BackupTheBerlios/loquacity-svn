@@ -4,7 +4,9 @@
 	|                    |
 	*====================*
 
-For further and latest information, see: http://www.bblog.com/wiki/index.php/Change_Log
+This is the old changelog for bBlog before it was forked into Loquacity.
+For further information, see: http://www.bblog.com/wiki/index.php/Change_Log
+For the latest Loquacity changelog instead, visit the forum at http://forum.loquacity.info
 
 Underline:
 ============================================================

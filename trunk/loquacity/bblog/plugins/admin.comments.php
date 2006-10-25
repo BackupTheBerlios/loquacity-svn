@@ -47,7 +47,7 @@ function identify_admin_comments () {
   );
 }
 
-function admin_plugin_comments_run(&$bBlog) {
+function admin_plugin_comments_run(&$loq) {
     // Again, the plugin API needs work.
     $commentAmount = (isset($_POST['commentsQuantity'])) ? intval($_POST['commentsQuantity']) : 50;
     $articles = null;
@@ -60,22 +60,22 @@ function admin_plugin_comments_run(&$bBlog) {
         case "Delete" : // delete comments
             if(is_array($_POST['commentid'])){
                 foreach($_POST['commentid'] as $key=>$val){
-                    deleteComment($bBlog, $val);
+                    deleteComment($loq, $val);
                 }
             }
             break;
         case "Edit" :
             $commentid = intval($_GET['editComment']);
             $postid = intval($_GET['postid']);
-            editComment($bBlog, $commentid, $postid);
+            editComment($loq, $commentid, $postid);
             break;
         case "editsave" :
-          saveEdit($bBlog);
+          saveEdit($loq);
           break;
         case "Approve":
             if(is_array($_POST['commentid'])){
                 foreach($_POST['commentid'] as $key=>$val)
-                    $bBlog->_adb->Execute("UPDATE ".T_COMMENTS." SET onhold='0' WHERE commentid='".intval($val)."'");
+                    $loq->_adb->Execute("UPDATE ".T_COMMENTS." SET onhold='0' WHERE commentid='".intval($val)."'");
             }
             break;
         case "filter":
@@ -83,40 +83,40 @@ function admin_plugin_comments_run(&$bBlog) {
           break;
     }
 
-    retrieveComments($bBlog, $commentAmount, $articles);
-    populateSelectList($bBlog);
+    retrieveComments($loq, $commentAmount, $articles);
+    populateSelectList($loq);
 
 }
 
-function deleteComment(&$bBlog, $id){
+function deleteComment(&$loq, $id){
   $id = intval($id);
-  $postid = $bBlog->_adb->GetOne('select postid from '.T_COMMENTS.' where commentid="'.$id.'"');
-  $childcount = $bBlog->_adb->GetOne('select count(*) as c from '.T_COMMENTS .' where parentid="'.$id.'" group by commentid');
+  $postid = $loq->_adb->GetOne('select postid from '.T_COMMENTS.' where commentid="'.$id.'"');
+  $childcount = $loq->_adb->GetOne('select count(*) as c from '.T_COMMENTS .' where parentid="'.$id.'" group by commentid');
   if($childcount > 0) { // there are replies to the comment so we can't delete it.
-    $bBlog->_adb->Execute('update '.T_COMMENTS.' set deleted="true", postername="", posteremail="", posterwebsite="", pubemail=0, pubwebsite=0, commenttext="Deleted Comment" where commentid="'.$id.'"');
+    $loq->_adb->Execute('update '.T_COMMENTS.' set deleted="true", postername="", posteremail="", posterwebsite="", pubemail=0, pubwebsite=0, commenttext="Deleted Comment" where commentid="'.$id.'"');
   } else { // just delete the comment
-    $bBlog->_adb->Execute('delete from '.T_COMMENTS.' where commentid="'.$id.'"');
+    $loq->_adb->Execute('delete from '.T_COMMENTS.' where commentid="'.$id.'"');
   }
-  $newnumcomments = $bBlog->_adb->GetOne('SELECT count(*) as c FROM '.T_COMMENTS.' WHERE postid="'.$postid.'" and deleted="false" group by postid');
-  $bBlog->_adb->Execute('update '.T_POSTS.' set commentcount="'.$newnumcomments.'" where postid="'.$postid.'"');
-  //$bBlog->modifiednow();
+  $newnumcomments = $loq->_adb->GetOne('SELECT count(*) as c FROM '.T_COMMENTS.' WHERE postid="'.$postid.'" and deleted="false" group by postid');
+  $loq->_adb->Execute('update '.T_POSTS.' set commentcount="'.$newnumcomments.'" where postid="'.$postid.'"');
+  //$loq->modifiednow();
 }
 
-function editComment(&$bBlog, $commentid, $postid){
+function editComment(&$loq, $commentid, $postid){
   $rval = true;
   if(!(is_numeric($commentid) && is_numeric($postid)))
     $rval = false;
-  $comment = $bBlog->get_comment($postid,$commentid);
+  $comment = $loq->get_comment($postid,$commentid);
   if(!$comment)
     $rval = false;
   if($rval === true){
-    $bBlog->assign('showeditform',TRUE);
-    $bBlog->assign('comment',$comment[0]);
+    $loq->assign('showeditform',TRUE);
+    $loq->assign('comment',$comment[0]);
   }
   return $rval;
 }
 
-function saveEdit(&$bBlog){
+function saveEdit(&$loq){
   $rval = true;
   if(!(is_numeric($_POST['commentid'])))
     $rval = false;
@@ -127,8 +127,8 @@ function saveEdit(&$bBlog){
   $body = stringHandler::clean($_POST['body']);
   if($rval === true){
     $q = "update ".T_COMMENTS." set title='$title', postername='$author', posterwebsite='$websiteurl', posteremail='$email', commenttext='$body' where commentid='{$_POST['commentid']}'";
-    if($bBlog->_adb->Execute($q) === true)
-      $bBlog->assign('message', 'Comment <em>'.$title.'</em> saved');
+    if($loq->_adb->Execute($q) === true)
+      $loq->assign('message', 'Comment <em>'.$title.'</em> saved');
   }
   return $rval;
 }
@@ -136,11 +136,11 @@ function saveEdit(&$bBlog){
 /**
  * Retrieve select amount of comments from the system
  *
- * @param object $bBlog      A reference to a bBlog instance
+ * @param object $loq      A reference to a loq instance
  * @param int    $amount     The number of comments to retrieve
  * @param mixed  $posts      Which article to retrieve comments from; Setting to null retrieves from all articles
  */
-function retrieveComments(&$bBlog, $amount, $article){
+function retrieveComments(&$loq, $amount, $article){
     if(is_null($article)){
         $filter = ' LIKE "%"';
     }
@@ -154,15 +154,15 @@ function retrieveComments(&$bBlog, $amount, $article){
     WHERE deleted="false"
     AND '.T_COMMENTS.'.postid '.$filter.'
     ORDER BY '.T_COMMENTS.'.posttime DESC';
-    $rs = $bBlog->_adb->GetAll($sql);
-    $bBlog->assign('comments',$rs);
-    $bBlog->assign('commentAmount', $amount);
-    $bBlog->assign('commentPosts', $article);
+    $rs = $loq->_adb->GetAll($sql);
+    $loq->assign('comments',$rs);
+    $loq->assign('commentAmount', $amount);
+    $loq->assign('commentPosts', $article);
 }
 
-function populateSelectList(&$bBlog){
+function populateSelectList(&$loq){
     $posts_with_comments_q = "SELECT ".T_POSTS.".postid, ".T_POSTS.".title, count(*) c FROM ".T_COMMENTS.",  ".T_POSTS." 	WHERE ".T_POSTS.".postid = ".T_COMMENTS.".postid GROUP BY ".T_POSTS.".postid ORDER BY ".T_POSTS.".posttime DESC ";
-    $rs = $bBlog->_adb->GetAll($posts_with_comments_q);
-    $bBlog->assign('postselect', $rs);
+    $rs = $loq->_adb->GetAll($posts_with_comments_q);
+    $loq->assign('postselect', $rs);
 }
 ?>

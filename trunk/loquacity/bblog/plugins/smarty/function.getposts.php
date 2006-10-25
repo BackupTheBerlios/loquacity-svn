@@ -50,7 +50,7 @@ function identify_function_getposts () {
     <li>minute: minute of posts</li>
     <li>second: second of posts</li>
     </ul>
-    <p>For more detailed help, see the bBlog template manual</p>
+    <p>For more detailed help, see the Loquacity template manual</p>
     ';
     
       return array (
@@ -64,10 +64,10 @@ function identify_function_getposts () {
       );
 }
 
-function smarty_function_getposts($params, &$bBlog) {
+function smarty_function_getposts($params, &$loq) {
     $ar = array();
     $opt = array();
-    $ph = $bBlog->_ph;
+    $ph = $loq->_ph;
     if(is_numeric($params['postid']) && $params['postid'] > 0) {
 	   $postid = $params['postid'];
 	}
@@ -83,7 +83,7 @@ function smarty_function_getposts($params, &$bBlog) {
 	}
 
     if($postid && is_int($postid)){
-        $bBlog->assign($params['assign'], get_single_post($bBlog, $ph, $postid));
+        $loq->assign($params['assign'], get_single_post($loq, $ph, $postid));
         return;
     }
 
@@ -100,16 +100,16 @@ function smarty_function_getposts($params, &$bBlog) {
 		$opt['skip'] = $params['skip'];
 	}
 	if ($params['section'] != '') {
-		  $opt['sectionid'] = $bBlog->sect_by_name[$params['section']];
+		  $opt['sectionid'] = $loq->sect_by_name[$params['section']];
 	}
 	
-	if($bBlog->show_section) {
-		$opt['sectionid'] = $bBlog->show_section;
+	if($loq->show_section) {
+		$opt['sectionid'] = $loq->show_section;
 	}
 
 	if(is_numeric($params['year'])) {
 		if(strlen($params['year']) != 4) {
-			$bBlog->trigger_error('getposts: year parameter requires a 4 digit year');
+			$loq->trigger_error('getposts: year parameter requires a 4 digit year');
 			return;
 		}
 		$opt['year'] = $params['year'];
@@ -118,7 +118,7 @@ function smarty_function_getposts($params, &$bBlog) {
     foreach(array('month', 'day', 'hour', 'minute', 'second') as $type){
         if(is_numeric($params[$type])) {
             if(strlen($params[$type]) != 2) {
-                $bBlog->trigger_error('getposts: '.$type.' parameter requires a 2 digit month');
+                $loq->trigger_error('getposts: '.$type.' parameter requires a 2 digit month');
                 return;
             }
             $opt[$type] = $params[$type];
@@ -129,10 +129,10 @@ function smarty_function_getposts($params, &$bBlog) {
 
     if(($posts = $ph->get_posts($opt)) !== false){
         //var_dump($posts);
-        $bBlog->assign($params['assign'],$posts);
+        $loq->assign($params['assign'],$posts);
     }
     else{
-        $bBlog->assign($params['assign'],array(0 => array('title' => $ph->status)));
+        $loq->assign($params['assign'],array(0 => array('title' => $ph->status)));
     }
 
     /*$lastmonth = 0;
@@ -150,7 +150,7 @@ function smarty_function_getposts($params, &$bBlog) {
     }*/
 }
 
-function get_single_post(&$bBlog, &$ph, $postid){
+function get_single_post(&$loq, &$ph, $postid){
     $post = $ph->get_post($postid);
     if(!is_array($post))
         return false;;

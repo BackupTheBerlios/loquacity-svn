@@ -31,7 +31,7 @@
  */
  
 /**
- * bBlog Plugin : referers.
+ * Loquacity Plugin : referers.
  * function.referers.php - Show ( and log ) recent referers
  * based on code by nathan@ncyoung.com
  * usage:
@@ -84,7 +84,7 @@ define('T_REFERERS',TBL_PREFIX.'referers');
 
 logReferer();
 
-function smarty_function_referers($params, &$bBlog) {
+function smarty_function_referers($params, &$loq) {
     $num = 5;
     $sep = "<br />";
     $mode = "break";
@@ -316,7 +316,7 @@ function topRefererList ($howMany=5,$visitURL=""){
 }
 
 function dbg($string){
-	// global $bBlog;
+	// global $loq;
 	// 	
 }
 

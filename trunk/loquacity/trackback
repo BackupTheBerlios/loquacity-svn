@@ -32,10 +32,10 @@
 /**
  * Redirection - Trackback handling
  *
- * Redirects trackbacks to www.example.com/bblog/trackback.php
+ * Redirects trackbacks to www.example.com/core/trackback.php
  *
  * @version $Revision$
  */
-include_once('bblog/config.php');
-include_once('bblog/trackback.php');
+include_once('core/config.php');
+include_once('core/trackback.php');
 ?>

@@ -42,17 +42,17 @@ function identify_function_getcomments () {
         'help'   => $help
     );
 }
-function smarty_function_getcomments($params, &$bBlog) {
+function smarty_function_getcomments($params, &$loq) {
 	$assign="comments";
-	$postid=$bBlog->show_post;
+	$postid=$loq->show_post;
 	$replyto = $_REQUEST['replyto'];
     if($postid > 0 ){
-        $ch = $bBlog->get_comment_handler($postid);
+        $ch = $loq->get_comment_handler($postid);
     }
     else{
-        $ch = $bBlog->get_comment_handler($_REQUEST['postid']);
+        $ch = $loq->get_comment_handler($_REQUEST['postid']);
     }
-    prep_form($bBlog, $postid, $_REQUEST['replyto']);
+    prep_form($loq, $postid, $_REQUEST['replyto']);
     // are we posting a comment ?
     if($_POST['do'] == 'submitcomment' && is_numeric($_POST['comment_postid'])) { // we are indeed!
         if(is_numeric($_POST['replytos'])){
@@ -61,7 +61,7 @@ function smarty_function_getcomments($params, &$bBlog) {
         else{
             $rt =  false;
         }
-        $ch->new_comment($bBlog->_ph->get_post($_POST['comment_postid'], false, true),$rt, $_POST);
+        $ch->new_comment($loq->_ph->get_post($_POST['comment_postid'], false, true),$rt, $_POST);
     }
                
     // get the comments.
@@ -76,19 +76,19 @@ function smarty_function_getcomments($params, &$bBlog) {
         $cs = $ch->get_comments(true);
     }
     /* assign loop variable */
-    $bBlog->assign($assign, $cs);
+    $loq->assign($assign, $cs);
 }
 
-function prep_form(&$bBlog, $postid, $replyto){
+function prep_form(&$loq, $postid, $replyto){
     //first, assign the hidden fields
     $commentformhiddenfields = '<input type="hidden" name="do" value="submitcomment" />';
     $commentformhiddenfields .='<input type="hidden" name="comment_postid" value="'.$postid.'" />';
     if(is_numeric($replyto)) {
           $commentformhiddenfields .= '<a name="commentform"></a><input type="hidden" name="replytos" value="'.$replyto.'" />';
     }
-    $ph = $bBlog->_ph;
-    $bBlog->assign("commentformhiddenfields",$commentformhiddenfields);
-    $bBlog->assign("commentformaction",$ph->get_post_permalink($postid));
+    $ph = $loq->_ph;
+    $loq->assign("commentformhiddenfields",$commentformhiddenfields);
+    $loq->assign("commentformaction",$ph->get_post_permalink($postid));
     
 }
 

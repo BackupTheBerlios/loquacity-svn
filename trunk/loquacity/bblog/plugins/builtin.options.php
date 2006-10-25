@@ -147,7 +147,7 @@ $options = array(
 return $options;
 }
 
-$bBlog->get_modifiers();
+$loq->get_modifiers();
 
 $optionformrows = array();
 
@@ -280,12 +280,12 @@ if ((isset($_POST['submit'])) && ($_POST['submit'] == 'Save Options')) {
    var_dump($sql);
    //var_dump($update);
    echo "</pre>";*/
-   $bBlog->_adb->Execute($sql);
+   $loq->_adb->Execute($sql);
    } // foreach
-   $bBlog->assign("showmessage",TRUE);
-   $bBlog->assign("showoptions",'no');
-   $bBlog->assign("message_title","Options Updated");
-   $bBlog->assign("message_content","Your changes have been saved.<br><a href='index.php?b=options&r=".rand(20,214142124)."'>Click here to continue</a>");
+   $loq->assign("showmessage",TRUE);
+   $loq->assign("showoptions",'no');
+   $loq->assign("message_title","Options Updated");
+   $loq->assign("message_content","Your changes have been saved.<br><a href='index.php?b=options&r=".rand(20,214142124)."'>Click here to continue</a>");
 
 }
 else{
@@ -367,7 +367,7 @@ else{
 
               case "modifierselect" :
                    $formright = '<select name="'.$option['name'].'" class="bf">';
-                   foreach($bBlog->modifiers as $mod) {
+                   foreach($loq->modifiers as $mod) {
                        $formright .= '<option value="'.$mod['name'].'" ';
                        if(C_DEFAULT_MODIFIER == $mod['name']) $formright .= 'selected';
                        $formright .= '>'.$mod['nicename'].'</option>';
@@ -402,9 +402,9 @@ else{
 
 
 }
-$bBlog->assign("optionrows",$optionrows);
+$loq->assign("optionrows",$optionrows);
 } // end of else
-$bBlog->display("options.html");
+$loq->display("options.html");
 
 
 

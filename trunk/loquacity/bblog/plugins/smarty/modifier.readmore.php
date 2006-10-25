@@ -36,8 +36,8 @@ function smarty_modifier_readmore($text, $postid, $readmoretext="read more",$wor
     $PREG_READMORE_START = '/^read\s*more/';
     $PREG_READMORE_END = '/^\s*\/read\s*more\s*/';    
 
-    global $bBlog;
-    $link = $bBlog->_get_entry_permalink($postid);
+    global $loq;
+    $link = $loq->_get_entry_permalink($postid);
 
     $textar = preg_split($PREG_TAG,$text,-1,PREG_SPLIT_DELIM_CAPTURE|PREG_SPLIT_NO_EMPTY);
     $text = "";

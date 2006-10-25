@@ -36,7 +36,7 @@
 
 // now it may be an idea to do a if(!defined('IN_BBLOG')) die "hacking attempt" type thing but
 // i'm not sure it's needed, as without this file being included it hasn't connected to the
-// database, and all the functions it calls are in the $bBlog object.
+// database, and all the functions it calls are in the $loq object.
 function identify_admin_archives ()
 {
   return array (
@@ -49,21 +49,21 @@ function identify_admin_archives ()
   );
 }
 
-$bBlog->assign('form_type','edit');
-$bBlog->get_modifiers();
+$loq->assign('form_type','edit');
+$loq->get_modifiers();
 
-$ph = $bBlog->_ph;
+$ph = $loq->_ph;
 if (isset($_GET['delete']) or isset($_POST['delete'])){
     if ($_POST['confirm'] == "cd".$_POST['delete'] && is_numeric($_POST['delete'])){
-        $res = $bBlog->delete_post($_POST['delete']);
-        $bBlog->assign('showmessage',TRUE);
-        $bBlog->assign('message_title','Message Deleted');
-        $bBlog->assign('message_content','The message you selected has now been deleted'); // -1 Redundant  ;)
+        $res = $loq->delete_post($_POST['delete']);
+        $loq->assign('showmessage',TRUE);
+        $loq->assign('message_title','Message Deleted');
+        $loq->assign('message_content','The message you selected has now been deleted'); // -1 Redundant  ;)
     }
     else{
-        $bBlog->assign('showmessage',TRUE);
-        $bBlog->assign('message_title','Are you sure you want to delete it?');
-        $bBlog->assign('message_content',"
+        $loq->assign('showmessage',TRUE);
+        $loq->assign('message_title','Are you sure you want to delete it?');
+        $loq->assign('message_content',"
             <form action='index.php' method='POST'>
             <input type='hidden' name='b' value='archives'>
             <input type='hidden' name='confirm' value='cd".$_POST['delete']."'>
@@ -75,29 +75,29 @@ if (isset($_GET['delete']) or isset($_POST['delete'])){
 
 if (isset($_POST['edit']) && is_numeric($_POST['edit'])){
     $epost = $ph->get_post($_POST['edit'], true, true);
-    $bBlog->assign('title_text',htmlspecialchars($epost['title']));
-    $bBlog->assign('body_text',htmlspecialchars($epost['body']));
-    $bBlog->assign('selected_modifier',$epost['modifier']);
-    $bBlog->assign('editpost',TRUE);
-    $bBlog->assign('showarchives','no');
-    $bBlog->assign('postid',$_POST['edit']);
-    $bBlog->assign('timestampform',timestAmpform($epost['posttime']));
+    $loq->assign('title_text',htmlspecialchars($epost['title']));
+    $loq->assign('body_text',htmlspecialchars($epost['body']));
+    $loq->assign('selected_modifier',$epost['modifier']);
+    $loq->assign('editpost',TRUE);
+    $loq->assign('showarchives','no');
+    $loq->assign('postid',$_POST['edit']);
+    $loq->assign('timestampform',timestAmpform($epost['posttime']));
 
     // to hide a post from the homepage
     if($epost['hidefromhome'] == 1){
-        $bBlog->assign('hidefromhomevalue'," checked ");
+        $loq->assign('hidefromhomevalue'," checked ");
     }
 
     // to disable comments either now or in the future
-    if($epost['allowcomments'] == 'timed') $bBlog->assign('commentstimedvalue'," checked ");
-    elseif($epost['allowcomments'] == 'disallow') $bBlog->assign('commentsdisallowvalue'," checked ");
-    else $bBlog->assign('commentsallowvalue'," checked='checked' ");
+    if($epost['allowcomments'] == 'timed') $loq->assign('commentstimedvalue'," checked ");
+    elseif($epost['allowcomments'] == 'disallow') $loq->assign('commentsdisallowvalue'," checked ");
+    else $loq->assign('commentsallowvalue'," checked='checked' ");
 
 
-    if($epost['status'] == 'draft') $bBlog->assign('statusdraft','checked');
-    else $bBlog->assign('statuslive','checked');
+    if($epost['status'] == 'draft') $loq->assign('statusdraft','checked');
+    else $loq->assign('statuslive','checked');
 
-    $sects = $bBlog->sections;
+    $sects = $loq->sections;
     $editpostsections = array();
     $_post_sects = (strlen($epost['sections']) > 1) ? explode(":",$epost['sections']) : array($epost['sections']);
     foreach($sects as $id=>$sect){
@@ -106,8 +106,8 @@ if (isset($_POST['edit']) && is_numeric($_POST['edit'])){
             $sects[$id] = $sect;
         }
     }
-    $bBlog->assign("sections",$sects);
-    //$bBlog->assign_by_ref("sections",$nsects);
+    $loq->assign("sections",$sects);
+    //$loq->assign_by_ref("sections",$nsects);
 }
 
 if ((isset($_POST['postedit'])) && ($_POST['postedit'] == 'true')){
@@ -121,7 +121,7 @@ if ((isset($_POST['postedit'])) && ($_POST['postedit'] == 'true')){
 	if ((isset($_POST['send_trackback'])) && ($_POST['send_trackback'] == "TRUE")){
 		// send a trackback
 		include "includes/trackbackhandler.class.php";
-		$tb = new trackbackhandler($bBlog->_adb);
+		$tb = new trackbackhandler($loq->_adb);
 		if (!isset($_POST['title_text']))   { $_POST['title_text']  = ""; }
 		if (!isset($_POST['excerpt']))      { $_POST['excerpt']     = ""; }
 		if (!isset($_POST['tburl']))        { $_POST['tburl']       = ""; }
@@ -154,27 +154,27 @@ if ((isset($_POST['filter'])) && ($_POST['filter'] == 'true')){
 		$searchopts['year']  = substr($_POST['showmonth'],3,4);
 	}
 	//print_r($searchopts);
-	$q = $bBlog->make_post_query($searchopts);
+	$q = $loq->make_post_query($searchopts);
 	//echo $q;
-	$archives = $bBlog->get_posts($q);
+	$archives = $loq->get_posts($q);
 }
 if (isset($_POST['allowcomments']) && (is_numeric($_POST['allowcomments']) === true)){
     $sql = 'UPDATE '.T_POSTS.' SET allowcomments=IF(allowcomments="allow", "disallow", "allow") WHERE postid='.intval($_POST['allowcomments']);
-    $bBlog->_adb->Execute($sql);
+    $loq->_adb->Execute($sql);
 }
 else{
 	$searchopts['wherestart'] = ' WHERE 1 ';
     $archives = $ph->get_posts($searchopts);
 }
 
-$bBlog->assign('postmonths',get_post_months());
-$bBlog->assign_by_ref('archives',$archives);
-$bBlog->display('archives.html');
+$loq->assign('postmonths',get_post_months());
+$loq->assign_by_ref('archives',$archives);
+$loq->display('archives.html');
 
 function get_post_months()
 {
-	global $bBlog;
-    $rs = $bBlog->_adb->Execute("SELECT FROM_UNIXTIME(posttime,'%Y%m') yyyymm,  posttime from ".T_POSTS." group by yyyymm order by yyyymm");
+	global $loq;
+    $rs = $loq->_adb->Execute("SELECT FROM_UNIXTIME(posttime,'%Y%m') yyyymm,  posttime from ".T_POSTS." group by yyyymm order by yyyymm");
     if($rs !== false && !$rs->EOF){
         $months = array();
         while($month = $rs->FetchRow()){

@@ -1,6 +1,6 @@
 <?php
 /**
- * Loquacity - A web blogging application with simplicity in mind - http://www.loquacity.info/
+ * Loquacity - A web blogging application with simplicity in mind - http://www.loquacity.$loq->/
  * Copyright (c) 2006 Kenneth Power
  *
  * @package Loquacity
@@ -8,7 +8,7 @@
  * @author Eaden McKee, http://www.bblog.com
  * @copyright &copy; 2003  Eaden McKee <email@eadz.co.nz>
  * @license    http://www.gnu.org/licenses/gpl.html GPL
- * @link http://www.loquacity.info
+ * @link http://www.loquacity.$loq->
  * @since 0.8-alpha1
  *
  * LICENSE:
@@ -48,7 +48,7 @@ function identify_admin_rssfeedmaker ()
   );
 }
 
-function admin_plugin_rssfeedmaker_run(&$bBlog) 
+function admin_plugin_rssfeedmaker_run(&$loq) 
 {
 	if ((isset($_POST['sub'])) && ($_POST['sub'] == 'y')) 
 	{
@@ -67,11 +67,11 @@ function admin_plugin_rssfeedmaker_run(&$bBlog)
 		if(is_numeric($_POST['month'])) $url .= '&amp;year='.$_POST['day'];
 		if(is_numeric($_POST['day'])) $url .= '&amp;year='.$_POST['day'];
 
-		$bBlog->assign('results',TRUE);
-		$bBlog->assign('feedurl',$url);
+		$loq->assign('results',TRUE);
+		$loq->assign('feedurl',$url);
 	}
 	
-	$sections = $bBlog->get_sections();
+	$sections = $loq->get_sections();
 	$sectionlist = '';
 	
 	foreach ($sections as $section) 
@@ -79,6 +79,6 @@ function admin_plugin_rssfeedmaker_run(&$bBlog)
 		$sectionlist .= "<option value='{$section->sectionid}'>{$section->nicename}</option>";
 	}
 	
-	$bBlog->assign('sectionlist',$sectionlist);
+	$loq->assign('sectionlist',$sectionlist);
 }
 ?>

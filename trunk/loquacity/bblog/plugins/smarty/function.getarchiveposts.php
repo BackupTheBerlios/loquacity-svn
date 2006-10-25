@@ -54,7 +54,7 @@ second: second of posts';
     'help'   => $help
   );
 }
-function smarty_function_getarchiveposts($params, &$bBlog) {
+function smarty_function_getarchiveposts($params, &$loq) {
   $ar = array();
   $opt = array();
 
@@ -74,7 +74,7 @@ function smarty_function_getarchiveposts($params, &$bBlog) {
 
 	if(is_numeric($params['year'])) {
 		if(strlen($params['year']) != 4) {
-			$bBlog->trigger_error('getarchiveposts: year parameter requires a 4 digit year');
+			$loq->trigger_error('getarchiveposts: year parameter requires a 4 digit year');
 			return '';
 		}
 		$opt['year'] = $params['year'];
@@ -82,7 +82,7 @@ function smarty_function_getarchiveposts($params, &$bBlog) {
 
 	if(is_numeric($params['month'])) {
 		if(strlen($params['month']) != 2) {
-			$bBlog->trigger_error('getarchiveposts: month parameter requires a 2 digit month');
+			$loq->trigger_error('getarchiveposts: month parameter requires a 2 digit month');
 			return '';
 		}
 		$opt['month'] = $params['month'];
@@ -90,7 +90,7 @@ function smarty_function_getarchiveposts($params, &$bBlog) {
 
 	if(is_numeric($params['day'])) {
 		if(strlen($params['day']) != 2) {
-			$bBlog->trigger_error('getarchiveposts: day parameter requires a 2 digit day');
+			$loq->trigger_error('getarchiveposts: day parameter requires a 2 digit day');
 			return '';
 		}
 		$opt['day'] = $params['day'];
@@ -98,7 +98,7 @@ function smarty_function_getarchiveposts($params, &$bBlog) {
 
 	if(is_numeric($params['hour'])) {
 		if(strlen($params['hour']) != 2) {
-			$bBlog->trigger_error('getarchiveposts: hour parameter requires a 2 digit hour');
+			$loq->trigger_error('getarchiveposts: hour parameter requires a 2 digit hour');
 			return '';
 		}
 		$opt['hour'] = $params['hour'];
@@ -106,7 +106,7 @@ function smarty_function_getarchiveposts($params, &$bBlog) {
 
 	if(is_numeric($params['minute'])) {
 		if(strlen($params['minute']) != 2) {
-			$bBlog->trigger_error('getarchiveposts: minute parameter requires a 2 digit minute');
+			$loq->trigger_error('getarchiveposts: minute parameter requires a 2 digit minute');
 			return '';
 		}
 		$opt['minute'] = $params['minute'];
@@ -114,17 +114,17 @@ function smarty_function_getarchiveposts($params, &$bBlog) {
 
 	if(is_numeric($params['second'])) {
 		if(strlen($params['second']) != 2) {
-			$bBlog->trigger_error('getarchiveposts: second parameter requires a 2 digit second');
+			$loq->trigger_error('getarchiveposts: second parameter requires a 2 digit second');
 			return '';
 		}
 		$opt['second'] = $params['second'];
 	}
 
 	if ($params['section'] != '') {
-		$opt['sectionid'] = $bBlog->sect_by_name[$params['section']];
+		$opt['sectionid'] = $loq->sect_by_name[$params['section']];
 	}
 
-  $ar['posts'] = $bBlog->_ph->get_posts($opt);
+  $ar['posts'] = $loq->_ph->get_posts($opt);
         
 	// No posts.
   if(!is_array($ar['posts'])) {
@@ -154,7 +154,7 @@ function smarty_function_getarchiveposts($params, &$bBlog) {
     $lastdate = date('Ymd',$ar['posts'][$key]['posttime']);
 	}
 
-	$bBlog->assign($params['assign'],$ar['posts']);
+	$loq->assign($params['assign'],$ar['posts']);
 
   return '';
 	

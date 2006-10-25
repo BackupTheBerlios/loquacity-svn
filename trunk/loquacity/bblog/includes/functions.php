@@ -69,9 +69,9 @@ function my_addslashes_array_walk($array) {
 }
 
 
-function update_when_compiled($tpl_source, &$bBlog) {
+function update_when_compiled($tpl_source, &$loq) {
     if(!defined('IN_BBLOG_ADMIN')) {
-      //$bBlog->modified_now();
+      //$loq->modified_now();
     }
     return $tpl_source;
 }

@@ -31,7 +31,7 @@
  */
 
 /**
- * Start the bBlog engine, include needed files
+ * Start the Loquacity engine, include needed files
  *
  * @version $Revision$
  */
@@ -69,35 +69,35 @@ include_once(LOQ_APP_ROOT.'includes/confighandler.class.php');
 include_once(LOQ_APP_ROOT.'includes/posthandler.class.php');
 include_once(LOQ_APP_ROOT.'includes/commenthandler.class.php');
 include_once(LOQ_APP_ROOT.'includes/sectionhandler.class.php');
-include_once(LOQ_APP_ROOT.'includes/bBlog.class.php');
+include_once(LOQ_APP_ROOT.'includes/Loquacity.class.php');
 include_once(LOQ_APP_ROOT.'includes/templates.php');
 
 
 // start your engines
-$bBlog = new bBlog();
+$loq = new Loquacity();
 if(defined(C_CAPTCHA_ENABLE) && C_CAPTCHA_ENABLE == 'true'){
     include_once(LOQ_APP_ROOT.'3rdparty/captcha/php-captcha.inc.php');
 }
 /* $mtime = explode(" ",microtime());
-$bBlog->begintime = $mtime[1] + $mtime[0]; */
+$loq->begintime = $mtime[1] + $mtime[0]; */
 
 // this is only here until I work out the best way to do theming.
-//$bBlog->clear_compiled_tpl();
+//$loq->clear_compiled_tpl();
 
 
-/* $bBlog->template_dir = LOQ_APP_ROOT.'templates/'.C_TEMPLATE;
-$bBlog->compile_dir = LOQ_APP_ROOT.'generated/templates/'; */
+/* $loq->template_dir = LOQ_APP_ROOT.'templates/'.C_TEMPLATE;
+$loq->compile_dir = LOQ_APP_ROOT.'generated/templates/'; */
 
 if(defined('IN_BBLOG_ADMIN')) {
-       $bBlog->compile_id = 'admin';
+       $loq->compile_id = 'admin';
 } else 	{
-	$bBlog->compile_id = C_TEMPLATE;
+	$loq->compile_id = C_TEMPLATE;
 }
 
-/* $bBlog->plugins_dir = array(LOQ_APP_ROOT.'plugins', LOQ_APP_ROOT.'plugins/smarty',LOQ_APP_ROOT.'3rdparty/smarty/libs/plugins');
-$bBlog->use_sub_dirs	= FALSE; // change to true if you have a lot of templates
+/* $loq->plugins_dir = array(LOQ_APP_ROOT.'plugins', LOQ_APP_ROOT.'plugins/smarty',LOQ_APP_ROOT.'3rdparty/smarty/libs/plugins');
+$loq->use_sub_dirs	= FALSE; // change to true if you have a lot of templates
  */
 define('BBLOG_VERSION',"0.8-alpha2");
-$bBlog->assign("bBlog_version",BBLOG_VERSION);
+$loq->assign("bBlog_version",BBLOG_VERSION);
 
 ?>

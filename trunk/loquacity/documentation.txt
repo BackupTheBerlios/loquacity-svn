@@ -1,4 +1,4 @@
-All documentation is located in /bblog/docs/. Look there for Readmes, instructions and more.
+All documentation is located in /core/docs/. Look there for Readmes, instructions and more.
 
 --
 The Loquacity Team - http://www.loquacity.info

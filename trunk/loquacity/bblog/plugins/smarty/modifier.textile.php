@@ -42,12 +42,12 @@ POSSIBILITY OF SUCH DAMAGE.
 */
 
 
-// bBlog modifier function :
+// Loquacity modifier function :
 function smarty_modifier_textile ($text) {
 	return textile($text,'');
 }
 
-// bBlog plugin identifier function
+// Loquacity plugin identifier function
 function identify_modifier_textile () {
 $helptext = '
 Block modifier syntax:
@@ -202,7 +202,7 @@ $help = "<pre>".nl2br(htmlspecialchars($helptext))."</pre>";
 
 	function encodeSpecial($text)
 	{
- 	  return str_replace(explode(",","á,é,í,ó,ú,ñ,ä,ö,ü,Ä,Ö,Ü,ß") , explode(",","&aacute;,&eacute;,&iacute;,&oacute;,&uacute;,&ntilde;,&#228;,&#246;,&#252;,&#196;,&#214;,&#220;,&#223;"), $text) ;
+ 	  return str_replace(explode(",","ï¿½ï¿½ï¿½ï¿½,ï¿½ï¿½ï¿½,ï¿½ï¿½ï¿½ï¿½) , explode(",","&aacute;,&eacute;,&iacute;,&oacute;,&uacute;,&ntilde;,&#228;,&#246;,&#252;,&#196;,&#214;,&#220;,&#223;"), $text) ;
 	}
 
 

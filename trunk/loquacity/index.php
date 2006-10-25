@@ -36,24 +36,24 @@
  *
  * @version $Revision$
  */
-include_once("bblog/config.php");
+include_once("core/config.php");
 
 if(isset($_GET['postid']) && is_numeric($_GET['postid'])) {
     if(isset($_COOKIE['bBcomment'])){
         $cdata = unserialize(base64_decode($_COOKIE['bBcomment']));
-        $bBlog->assign('cdata',$cdata);
+        $loq->assign('cdata',$cdata);
     }
-    $bBlog->assign('postid',(int)$_GET['postid']);
-    $bBlog->show_post = (int)$_GET['postid'];
-    $bBlog->display('post.html');
+    $loq->assign('postid',(int)$_GET['postid']);
+    $loq->show_post = (int)$_GET['postid'];
+    $loq->display('post.html');
 }
 else if(isset($_GET['sectionid']) && is_numeric($_GET['sectionid'])) {
-   	$bBlog->assign('sectionid', (int)$_GET['sectionid']);
-   	$bBlog->assign('sectionname',$bBlog->sect_by_name[(int)$_GET['sectionid']]);
-   	$bBlog->show_section = (int)$_GET['sectionid'];
-	$bBlog->display('index.html');
+   	$loq->assign('sectionid', (int)$_GET['sectionid']);
+   	$loq->assign('sectionname',$loq->sect_by_name[(int)$_GET['sectionid']]);
+   	$loq->show_section = (int)$_GET['sectionid'];
+	$loq->display('index.html');
 }
 else {
-	$bBlog->display('index.html');
+	$loq->display('index.html');
 }
 ?>

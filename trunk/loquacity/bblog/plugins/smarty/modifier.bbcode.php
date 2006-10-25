@@ -31,7 +31,7 @@
  */
  
 /**
- * bBlog text formating plugin,
+ * Loquacity text formating plugin,
  * Converts BBCode style tags to HTML
  * and makes URLs clickable
  */

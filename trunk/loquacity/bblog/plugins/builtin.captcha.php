@@ -41,15 +41,15 @@ function identify_admin_captcha(){
 }
 
 include_once('includes/manageCaptcha.class.php');
-$bBlog->assign('form_type','edit');
+$loq->assign('form_type','edit');
 
-$mc = new manageCaptcha($bBlog->_adb);
+$mc = new manageCaptcha($loq->_adb);
 if(isset($_POST['captchado'])){
     save_configuration($mc);
 }
 
-$bBlog->assign('settings', current_configuration($mc));
-$bBlog->display('captcha.html');
+$loq->assign('settings', current_configuration($mc));
+$loq->display('captcha.html');
 
 function current_configuration(&$mc){
     $config = $mc->getCurrentSettings();

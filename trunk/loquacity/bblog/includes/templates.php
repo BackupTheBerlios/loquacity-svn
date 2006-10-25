@@ -39,8 +39,8 @@
 ////
 // !Custom Smarty template handler for use with database templates
 function db_get_template ($tpl_name, &$tpl_source, &$smarty_obj) {
-    Global $bBlog;
-    $rs = $bBlog->_adb->Execute("select template from ".T_TEMPLATES." where templatename='$tpl_id'");
+    Global $loq;
+    $rs = $loq->_adb->Execute("select template from ".T_TEMPLATES." where templatename='$tpl_id'");
     if($rs !== false && !$rs->EOF){
         $tpl_source = $rs->fields[0];
     }
@@ -51,8 +51,8 @@ function db_get_template ($tpl_name, &$tpl_source, &$smarty_obj) {
 // !Get the timestamp of a template from the database
 function db_get_timestamp($tpl_name, &$tpl_timestamp, &$smarty_obj) {
     // do database call here to populate $tpl_timestamp.
-    Global $bBlog;
-    $rs = $bBlog->_adb->Execute("select compiletime from ".T_TEMPLATES." where templatename='$tpl_id'");
+    Global $loq;
+    $rs = $loq->_adb->Execute("select compiletime from ".T_TEMPLATES." where templatename='$tpl_id'");
     if($rs !== flase && !$rs->EOF){
         $tpl_timestamp = $rs->fields[0];
     }
@@ -72,11 +72,11 @@ function db_get_trusted($tpl_name, &$smarty_obj){ }// not used
 // Make footer containing the page generation time
 // and number of database calls and last modified date
 function buildfoot() {
-	global $bBlog;
+	global $loq;
     $mtime = explode(" ",microtime());
 	$endtime = $mtime[1] + $mtime[0];
 	
-	$pagetime = round($endtime - $bBlog->begintime,5);
+	$pagetime = round($endtime - $loq->begintime,5);
 	$foot = "
 <!--//
 This page took $pagetime seconds to make

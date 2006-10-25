@@ -58,7 +58,7 @@ function identify_function_email () {
  *      $name string Optional. The display name, such as Tobias Schlottke
  *      $email string The email address to munge
  */
-function smarty_function_email($params, &$bBlog) {
+function smarty_function_email($params, &$loq) {
     $name = (isset($params['name'])) ? $params['name'] : str_replace("."," dot ",str_replace("@"," at ",$email)); 
     $email = preg_replace("/\"/","\\\"",$params['email']);
     $old = "document.write('<a href=\"mailto:$email\">$name</a>')";

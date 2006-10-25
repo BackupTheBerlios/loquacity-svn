@@ -28,10 +28,10 @@
  * along with Loquacity; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-include_once('bblog/config.php');
+include_once('core/config.php');
 if(defined(C_CAPTCHA_ENABLE) && C_CAPTCHA_ENABLE == 'true'){
-    include_once('bblog/3rdparty/captcha/php-captcha.inc.php');
-    $fonts = 'bblog/3rdparty/captcha/fonts/';
+    include_once('core/3rdparty/captcha/php-captcha.inc.php');
+    $fonts = 'core/3rdparty/captcha/fonts/';
     $aFonts = array($fonts.'VeraBd.ttf', $fonts.'VeraIt.ttf', $fonts.'Vera.ttf');
     
     $captcha = new PhpCaptcha($aFonts, 200, 60);

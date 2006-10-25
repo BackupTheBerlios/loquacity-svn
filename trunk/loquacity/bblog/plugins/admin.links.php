@@ -50,7 +50,7 @@ function identify_admin_links () {
   );
 }
 
-function admin_plugin_links_run(&$bBlog) {
+function admin_plugin_links_run(&$loq) {
 
     if(isset($_GET['linkdo']))  { $linkdo = $_GET['linkdo']; }
     elseif(isset($_POST['linkdo'])) { $linkdo = $_POST['linkdo']; }
@@ -59,9 +59,9 @@ function admin_plugin_links_run(&$bBlog) {
     switch($linkdo) {
     
         case "New" :  // add new link
-            $maxposition = $bBlog->get_var("select position from ".T_LINKS." order by position desc limit 0,1");
+            $maxposition = $loq->get_var("select position from ".T_LINKS." order by position desc limit 0,1");
             $position = $maxposition + 10;
-            $bBlog->_adb->Execute("insert into ".T_LINKS."
+            $loq->_adb->Execute("insert into ".T_LINKS."
                 set nicename='".stringHandler::removeMagicQuotes($_POST['nicename'])."',
                 url='".stringHandler::removeMagicQuotes($_POST['url'])."',
                 category='".stringHandler::removeMagicQuotes($_POST['category'])."',
@@ -69,24 +69,24 @@ function admin_plugin_links_run(&$bBlog) {
             break;
     
         case "Delete" : // delete link
-                $bBlog->_adb->Execute("delete from ".T_LINKS." where linkid=".$_POST['linkid']);
+                $loq->_adb->Execute("delete from ".T_LINKS." where linkid=".$_POST['linkid']);
                 break;
     
         case "Save" : // update an existing link
-                $bBlog->_adb->Execute("update ".T_LINKS."
+                $loq->_adb->Execute("update ".T_LINKS."
                 set nicename='".stringHandler::removeMagicQuotes($_POST['nicename'])."',
                 url='".stringHandler::removeMagicQuotes($_POST['url'])."',
                 category='".stringHandler::removeMagicQuotes($_POST['category'])."'
                 where linkid=".$_POST['linkid']);
                 break;
         case "Up" :
-            $bBlog->_adb->Execute("update ".T_LINKS." set position=position-15 where linkid=".$_POST['linkid']);
+            $loq->_adb->Execute("update ".T_LINKS." set position=position-15 where linkid=".$_POST['linkid']);
             reorder_links();
     
             break;
     
         case "Down" :
-            $bBlog->_adb->Execute("update ".T_LINKS." set position=position+15 where linkid=".$_POST['linkid']);
+            $loq->_adb->Execute("update ".T_LINKS." set position=position+15 where linkid=".$_POST['linkid']);
             reorder_links();
             break;
         default : // show form
@@ -99,20 +99,20 @@ function admin_plugin_links_run(&$bBlog) {
     
     switch($catdo) {
         case "New" :  // add new category
-            $bBlog->_adb->Execute("insert into ".T_CATEGORIES."
+            $loq->_adb->Execute("insert into ".T_CATEGORIES."
                 set name='".stringHandler::removeMagicQuotes($_POST['name'])."'");
             break;
     
         case "Delete" : // delete category
             // have to remove all references to the category in the links
-                $bBlog->_adb->Execute("update ".T_LINKS."
+                $loq->_adb->Execute("update ".T_LINKS."
                 set linkid=0 where linkid=".$_POST['categoryid']);
                 // delete the category
-                $bBlog->_adb->Execute("delete from ".T_CATEGORIES." where categoryid=".$_POST['categoryid']);
+                $loq->_adb->Execute("delete from ".T_CATEGORIES." where categoryid=".$_POST['categoryid']);
                 break;
     
         case "Save" : // update an existing category
-                $bBlog->_adb->Execute("update ".T_CATEGORIES."
+                $loq->_adb->Execute("update ".T_CATEGORIES."
                 set name='".stringHandler::removeMagicQuotes($_POST['name'])."'
                 where categoryid=".$_POST['categoryid']);
                 break;
@@ -121,23 +121,23 @@ function admin_plugin_links_run(&$bBlog) {
                 break;
         }
     
-    $rs = $bBlog->_adb->Execute("select * from ".T_CATEGORIES);
+    $rs = $loq->_adb->Execute("select * from ".T_CATEGORIES);
     if($rs !== false && !$rs->EOF){
-        $bBlog->assign('ecategories',$rs->GetRows(-1));
+        $loq->assign('ecategories',$rs->GetRows(-1));
     }
-    $rs = $bBlog->_adb->GetAll("select * from ".T_LINKS." order by position");
+    $rs = $loq->_adb->GetAll("select * from ".T_LINKS." order by position");
     if(is_array($rs)){
-        $bBlog->assign('elinks',$rs);
+        $loq->assign('elinks',$rs);
     }
 
 }
 function reorder_links () {
-	global $bBlog;
+	global $loq;
 	$i = 20;
-    $rs = $bBlog->_adb->Execute("select * from ".T_LINKS." order by position");
+    $rs = $loq->_adb->Execute("select * from ".T_LINKS." order by position");
     if($rs !== false && !$rs->EOF){
         while($link = $rs->fetchRow()){
-            $bBlog->_adb->Execute("update ".T_LINKS." set position='$i' where linkid='{".$link['linkid']."}'");
+            $loq->_adb->Execute("update ".T_LINKS." set position='$i' where linkid='{".$link['linkid']."}'");
             $i += 10;
         }
     }

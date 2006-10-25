@@ -27,8 +27,8 @@
 error_reporting(E_ALL);
 
 //Build a suitable working environment to give us access to the application code
-if(file_exists(dirname(__FILE__).'/bblog')){
-    define('LOQ_APP_ROOT', dirname(__FILE__).DIRECTORY_SEPARATOR.'bblog'.DIRECTORY_SEPARATOR);
+if(file_exists(dirname(__FILE__).'/core')){
+    define('LOQ_APP_ROOT', dirname(__FILE__).DIRECTORY_SEPARATOR.'core'.DIRECTORY_SEPARATOR);
     define('LOQ_INSTALLER', LOQ_APP_ROOT.'install');
     define('SMARTY_DIR', LOQ_APP_ROOT.'3rdparty/smarty/libs/');
     include_once(SMARTY_DIR.'Smarty.class.php');

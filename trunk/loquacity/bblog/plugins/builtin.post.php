@@ -47,16 +47,16 @@ function identify_admin_post () {
 }
 
 
-$bBlog->assign('form_type','post'); // used in the template post_edit.html
-$bBlog->assign('commentsallowvalue', " checked='checked' ");
+$loq->assign('form_type','post'); // used in the template post_edit.html
+$loq->assign('commentsallowvalue', " checked='checked' ");
 if((isset($_POST['newpost'])) && ($_POST['newpost'] == 'true')) {    // we have a poster
     // make the data sql save
     //$post = prep_new_post();
-    $ph =& $bBlog->_ph;
+    $ph =& $loq->_ph;
     
     $res = $ph->new_post($_POST);
     if(is_int($res)) {
-        $bBlog->assign('post_message',"Post #$res Added :)");
+        $loq->assign('post_message',"Post #$res Added :)");
         if(strlen(C_PING)>0) {
             include LOQ_APP_ROOT.'libs/rpc.php'; // include stuff needed to ping
             register_shutdown_function('ping'); // who wants to wait for 4
@@ -66,27 +66,27 @@ if((isset($_POST['newpost'])) && ($_POST['newpost'] == 'true')) {    // we have 
         if ((isset($_POST['send_trackback'])) && ($_POST['send_trackback'] == "TRUE")) {
             // send a trackback
             include "./trackback.php";
-            send_trackback($bBlog->_get_entry_permalink($res), $_POST['title_text'], $_POST['excerpt'], $_POST['tburl']);
+            send_trackback($loq->_get_entry_permalink($res), $_POST['title_text'], $_POST['excerpt'], $_POST['tburl']);
         }
 
       }
       else{
-          $bBlog->assign('post_message',"Sorry, error adding post: ".$ph->lastError());
+          $loq->assign('post_message',"Sorry, error adding post: ".$ph->lastError());
       }
 }
 
 // get modifiers
-$bBlog->get_modifiers();
-$bBlog->assign('selected_modifier',C_DEFAULT_MODIFIER);
+$loq->get_modifiers();
+$loq->assign('selected_modifier',C_DEFAULT_MODIFIER);
 
-if(C_DEFAULT_STATUS == 'draft') $bBlog->assign('statusdraft','checked="checked"');
-else $bBlog->assign('statuslive','checked="checked"');
+if(C_DEFAULT_STATUS == 'draft') $loq->assign('statusdraft','checked="checked"');
+else $loq->assign('statuslive','checked="checked"');
 
 if ((isset($_REQUEST['popup']) && ($_REQUEST['popup'] == 'true'))) {
 	include 'includes/bookmarkletstuff.php';
-	$bBlog->display('popuppost.html');
+	$loq->display('popuppost.html');
 } else {
-	$bBlog->display('post.html');
+	$loq->display('post.html');
 }
 
 ////
@@ -113,7 +113,7 @@ function prep_new_post () {
     }
     
     $post->sections = array();
-    $post->providing_sections = TRUE; // this is so that bBlog knows to delete sections if there are none.
+    $post->providing_sections = TRUE; // this is so that Loquacity knows to delete sections if there are none.
     
     if (!is_null($_tmp_sections)) foreach ($_tmp_sections as $_tmp_section) if(is_numeric($_tmp_section)) $post->sections[] = $_tmp_section;
 

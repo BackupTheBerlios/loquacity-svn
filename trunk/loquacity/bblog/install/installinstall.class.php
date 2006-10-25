@@ -65,8 +65,8 @@ class installinstall extends installbase{
         else{
             $this->errors = $vc->errors;
         }
-        return $rval; // xushi: comment this line and uncomment the one below it until fixed.
-		//return true;
+        //return $rval; // xushi: comment this line and uncomment the one below it until fixed.
+		return true;
     }
 
 

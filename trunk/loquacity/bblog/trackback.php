@@ -65,7 +65,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && $_SERVER['CONTENT_TYPE'] === 'applic
             }
     }
     include_once('includes/trackbackhandler.class.php');
-    $th = new trackbackhandler($bBlog->_adb, $post);
+    $th = new trackbackhandler($loq->_adb, $post);
     $th->receiveTrackback($_SERVER['REMOTE_ADDR'], $_POST, $comment);
 }
 ?>

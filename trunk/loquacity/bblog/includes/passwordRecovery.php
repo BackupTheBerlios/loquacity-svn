@@ -39,9 +39,9 @@ include_once('charsets.php');
 include_once('taglines.php');
 require_once("validation/passwordManager.class.php");
 
-$myPasswdMgr =& new passwordManager($bBlog->_adb);
-$bBlog->template_dir = LOQ_APP_ROOT.'includes/admin_templates';
-$bBlog->assign('sidemsg', 'Loquacity Password Recovery');
+$myPasswdMgr =& new passwordManager($loq->_adb);
+$loq->template_dir = LOQ_APP_ROOT.'includes/admin_templates';
+$loq->assign('sidemsg', 'Loquacity Password Recovery');
 
 
 $_SESSION['username'] = $_POST['username'];
@@ -52,7 +52,7 @@ if((isset($_SESSION['username'])) && ($_SESSION['username'] == checkUsername($_S
 	// get the secret question for the user
 	$secQuestion = $myPasswdMgr->getQuestion($_SESSION['username']);
 		
-	$bBlog->assign('question', $secQuestion);
+	$loq->assign('question', $secQuestion);
 	$_SESSION['answer'] = $_POST['answer'];
 	$template = 'askquestion.html';
 	
@@ -65,12 +65,12 @@ if((isset($_SESSION['username'])) && ($_SESSION['username'] == checkUsername($_S
 			$template = 'status.html';
 	}
 	else {
-		$bBlog->assign('title', 'Please answer your question');
+		$loq->assign('title', 'Please answer your question');
 		$template = 'askquestion.html';
 	}
 }
 else {
-	$bBlog->assign('title', 'Please enter your Loquacity username');
+	$loq->assign('title', 'Please enter your Loquacity username');
 	$template = 'getusername.html';
 }	
 
@@ -114,14 +114,14 @@ function checkUsername($user) {
 function sendEmail($user, $email, $passwd) {
 	require_once('LoquacityMailer.class.php');
 	global $myPasswdMgr;
-	global $bBlog;
+	global $loq;
 	$mail = new LoquacityMailer;
 	
 	
 	 // Now, send an email to the user with the new (unhashed) password
 	$mail->AddAddress($email, $user);
 	$mail->Subject = "Loquacity password recovery.";
-	$mail->From = $bBlog->_adb->GetOne("SELECT value FROM " . T_CONFIG . " WHERE name='email'");
+	$mail->From = $loq->_adb->GetOne("SELECT value FROM " . T_CONFIG . " WHERE name='email'");
 	$mail->Reciever = $user;
 	$mail->Body = "Dear " . $mail->Reciever.",
 
@@ -149,12 +149,12 @@ The Loquacity Team.";
 			$template = 'error.html';
 		}
 		else {
-		$bBlog->assign('result', 'The email was sent successfully. You should receive your new password shortly.');
+		$loq->assign('result', 'The email was sent successfully. You should receive your new password shortly.');
 		$template = 'status.html';
 		}
 }
 
 
-$bBlog->display($template);
+$loq->display($template);
 
 ?>
