@@ -202,7 +202,7 @@ $help = "<pre>".nl2br(htmlspecialchars($helptext))."</pre>";
 
 	function encodeSpecial($text)
 	{
- 	  return str_replace(explode(",","����,���,����) , explode(",","&aacute;,&eacute;,&iacute;,&oacute;,&uacute;,&ntilde;,&#228;,&#246;,&#252;,&#196;,&#214;,&#220;,&#223;"), $text) ;
+ 	  return str_replace(explode(",","����,���,����") , explode(",","&aacute;,&eacute;,&iacute;,&oacute;,&uacute;,&ntilde;,&#228;,&#246;,&#252;,&#196;,&#214;,&#220;,&#223;"), $text);
 	}
 
 

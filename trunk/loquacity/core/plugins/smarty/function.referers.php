@@ -134,8 +134,6 @@ function tolist($array){
 //}
 
 function logReferer(){
-
-
 	$currentURL = $_SERVER['REQUEST_URI'];
 	$fullCurrentURL = "http://" . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
 
@@ -159,10 +157,9 @@ function logReferer(){
 		'http://radio.xmlstoragesystem.com/rcsPublic/',
 		'http://blogdex.media.mit.edu//',
 		'http://subhonker6.userland.com/rcsPublic/',
-                'http://subhonker7.userland.com/rcsPublic/',		
+        'http://subhonker7.userland.com/rcsPublic/',
 		'mastadonte.com',
 		'+++++++++++++'
-
 	);
 	foreach ($ignore as $site){
 		if (stristr($ref, $site)){

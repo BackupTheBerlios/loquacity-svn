@@ -45,8 +45,10 @@ class installinstall extends installbase{
             $this->install();
         }
         if(isset($this->errors) && count($this->errors) > 0){
-            $this->loadconfiguration();
             $this->template = 'configuration.html';
+        }
+        else{
+            $this->template = 'complete.html';
         }
     }
 
@@ -61,12 +63,12 @@ class installinstall extends installbase{
         include_once(LOQ_APP_ROOT.'includes/validateconfiguration.class.php');
         $vc = new validateconfiguration();
         if($vc->isValid()){
+            $rval = true;
         }
         else{
             $this->errors = $vc->errors;
         }
-        //return $rval; // xushi: comment this line and uncomment the one below it until fixed.
-		return true;
+        return $rval;
     }
 
 
@@ -75,27 +77,38 @@ class installinstall extends installbase{
     *
     */
     function install(){
-        if($this->db()){
-            define('TBL_PREFIX', $_SESSION['config']['table_prefix']);
-            define('BLOGURL', $_SESSION['config']['blog_url']);
+        if($this->dbConnect()){
             $this->installplugins();
             $this->writeconfig();
         }
     }
 
 	/**
-	 * Connect to the database
+	 * Create a connection to the database
      *
-	 * Uses ADODB to handle this
+     * Using the ADODB Library, attempts to create a DB connection. Returns TRUE
+     * on success and FALSE on failure. Error messages are logged manually. Due
+     * to the nature of this, PHP error handling is disabled in this function.
+     *
+	 * @return mixed
 	*/
-    function db(){
+    function dbConnect(){
+        $rval = false;
+        ini_set("display_errors", "1");
+        error_reporting(0);
         $dsn = 'mysql://'.$_POST['db_username'].':'.rawurlencode($_POST['db_password']).'@'.$_POST['db_host'].'/'.$_POST['db_database'];
         $db = NewADOConnection($dsn);
         if($db !== false){
             $this->db =& $db;
             $this->createdatabase();
+            $rval = true;
         }
-        return true;
+        else{
+            $this->errors[] = "Unable to connect to the database. Please check the database settings (username, password, etc) that you provided.";
+        }
+        #@ini_set("display_errors", "1"); #Only for development
+        error_reporting(E_ALL); #Only for development
+        return $rval;
     }
 
 
@@ -126,10 +139,10 @@ class installinstall extends installbase{
             }
             $config = str_replace('__loq_version__', LOQ_CUR_VERSION, $config);
             $config = str_replace('__loq_app_root__', LOQ_APP_ROOT, $config);
-            var_dump($config);
+            //var_dump($config);
         }
         if(($fp = fopen(LOQ_APP_ROOT.'config.php', 'w+b')) !== false){
-            if(fwrite($fp, "<?php\r$config\r?>") === false){
+            if(fwrite($fp, "<?php\n$config\n?>") === false){
             }
             fclose($fp);
         }else{

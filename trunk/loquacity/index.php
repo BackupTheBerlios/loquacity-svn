@@ -36,6 +36,9 @@
  *
  * @version $Revision$
  */
+ 
+testInstall();
+
 include_once("core/config.php");
 
 if(isset($_GET['postid']) && is_numeric($_GET['postid'])) {
@@ -55,5 +58,11 @@ else if(isset($_GET['sectionid']) && is_numeric($_GET['sectionid'])) {
 }
 else {
 	$loq->display('index.html');
+}
+
+function testInstall(){
+    if(!file_exists("core/config.php") || filesize("core/config.php") == 0){
+        header("Location: install.php");
+    }
 }
 ?>

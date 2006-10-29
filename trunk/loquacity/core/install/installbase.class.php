@@ -55,6 +55,7 @@ class installbase extends Smarty{
         $this->assign('version', LOQ_CUR_VERSION);
         $this->template_dir = LOQ_INSTALLER.'/templates';
         $this->compile_dir = ini_get("session.save_path");
+        $this->loadconfiguration();
         $this->__init();
 	}
 
@@ -93,6 +94,9 @@ class installbase extends Smarty{
             foreach($_SESSION['config'] as $name=>$value){
                 $this->assign($name, $value);
             }
+            //The following are needed during install by some plugins
+             define('TBL_PREFIX', $_SESSION['config']['table_prefix']);
+             define('BLOGURL', $_SESSION['config']['blog_url']);
         }
     }
 
