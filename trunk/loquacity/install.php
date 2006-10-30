@@ -1,29 +1,38 @@
 <?php
 /**
- * install.php - bBlog installer
- * install.php - author: Eaden McKee <email@eadz.co.nz>
+ * install.php - Loquacity installer
+ * Copyright (C) 2006  Kenneth Power <kenneth.power@gmail.com>
  *
- * bBlog Weblog http://www.bblog.com/
- * Copyright (C) 2003  Eaden McKee <email@eadz.co.nz>
+ * @package Loquacity
+ * @subpackage Install
+ * @author Eaden McKee <email@eadz.co.nz>
+ * @copyright Copyright &copy; 2003  Eaden McKee <email@eadz.co.nz>
+ * @license    http://www.gnu.org/licenses/gpl.html GPL
+ * @link http://www.loquacity.info
+ * @since 0.8-alpha1
  *
- * This program is free software; you can redistribute it and/or modify
+ * LICENSE:
+ *
+ * This file is part of Loquacity.
+ *
+ * Loquacity is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * Loquacity is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
- * rather than duplicating effort, use as much internal stuff as possible
-**/
+ * along with Loquacity; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ */
+ 
 
 //For development, this should be set to E_ALL
+// @TODO For normal usage, it should be set to ???
 error_reporting(E_ALL);
 
 //Build a suitable working environment to give us access to the application code

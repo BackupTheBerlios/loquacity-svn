@@ -42,7 +42,7 @@ function identify_admin_links () {
     'name'           =>'links',
     'type'           =>'admin',
     'nicename'       =>'Links',
-    'description'    =>'Edit bBlog Links',
+    'description'    =>'Edit Loquacity Links',
     'template' 	     =>'links.html',
     'authors'        =>'Mario Delgado <mario@seraphworks.com>, Eaden McKee <email@eadz.co.nz>',
     'licence'        =>'GPL',

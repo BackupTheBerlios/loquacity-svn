@@ -62,7 +62,7 @@ $xmlrpc_methods['mt.publishPost'] = 'mt_publishPost';
 $xmlrpc_request = XMLRPC_parse($HTTP_RAW_POST_DATA);
 $methodName = XMLRPC_getMethodName($xmlrpc_request);
 $params = XMLRPC_getParams($xmlrpc_request);
-define('WEBLOG_XMLPRPC_USERAGENT','bBlog '.BBLOG_VERSION);
+define('WEBLOG_XMLPRPC_USERAGENT','Loquacity '.BBLOG_VERSION);
 if(!isset($xmlrpc_methods[$methodName])){
     $xmlrpc_methods['method_not_found']($methodName);
 }else{

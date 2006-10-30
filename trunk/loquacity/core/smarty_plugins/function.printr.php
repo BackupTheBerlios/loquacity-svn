@@ -16,7 +16,7 @@
  * @param string
  * @return string
  */
-function smarty_function_printr($params, &$bBlog)
+function smarty_function_printr($params, &$loq)
 {
     ob_start();
     print_r($params['var']);
