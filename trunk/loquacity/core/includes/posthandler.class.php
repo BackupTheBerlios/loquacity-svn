@@ -51,8 +51,8 @@ class posthandler {
     function new_post($post) {
         return $this->modifyPost($post, 'INSERT');
     }
-    function modifyPost($post, $method='INSERT', $where=null){
-	$now = time();
+    function modifyPost($post, $method='INSERT', $where=false){
+        $now = time();
         $sections = ':';
         if(count($post['frm_sections'])>0) {
             $sections = ':'.implode(":", $post['frm_sections']).':';
@@ -68,8 +68,13 @@ class posthandler {
         $rs['hidefromhome'] = ($post['frm_post_hidefromhome'] == 1) ? 1: 0;
         $rs['allowcomments'] = ($post['frm_post_allowcomments'] == ('allow' or 'disallow' or 'timed')) ? $post['frm_post_allowcomments'] : 'disallow';
         $rs['autodisabledate'] = (is_numeric($post['frm_post_autodisabledate'])) ? intval($post['frm_post_autodisabledate']) : '';
-        if($this->_db->AutoExecute(T_POSTS, $rs, $method, $where) !== false){
-            return $this->_db->insert_id;
+        if($this->_db->AutoExecute(T_POSTS, $rs, $method, $where, false, get_magic_quotes_runtime()) !== false){
+            if($method === 'INSERT' ){
+                return intval($this->_db->insert_id());
+            }
+            else{
+                return true;
+            }
         }
         else{
             $this->_last_error = $this->_db->ErrorMsg();
@@ -252,8 +257,9 @@ class posthandler {
     ////
     // !deletes a post
     function delete_post($postid) {
-        if(!is_numeric($postid)) return false;
-        $this->modifiednow();
+        $postid = intval($postid);
+        if(!is_int($postid) && $postid <= 0) return false;
+        //$this->modifiednow();
         // delete comments
         $q1 = "DELETE FROM ".T_COMMENTS." WHERE postid='$postid'";
         $this->_db->Execute($q1);

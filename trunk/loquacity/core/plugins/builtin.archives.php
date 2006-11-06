@@ -5,8 +5,8 @@
  *
  * @package Loquacity
  * @subpackage Plugins
- * @author Eaden McKee, http://www.bblog.com, Tobias Schlottke
- * @copyright &copy; 2003  Eaden McKee <email@eadz.co.nz>, Tobias Schlottke
+ * @author Kenneth Power <telcor@users.berlios.de>, Eaden McKee, http://www.bblog.com, Tobias Schlottke
+ * @copyright @copy; 2006 Kenneth Power <telcor@users.berlios.de>, &copy; 2003  Eaden McKee <email@eadz.co.nz>, Tobias Schlottke
  * @license    http://www.gnu.org/licenses/gpl.html GPL
  * @link http://www.loquacity.info
  * @since 0.8-alpha1
@@ -55,14 +55,15 @@ $loq->get_modifiers();
 $ph = $loq->_ph;
 if (isset($_GET['delete']) or isset($_POST['delete'])){
     if ($_POST['confirm'] == "cd".$_POST['delete'] && is_numeric($_POST['delete'])){
-        $res = $loq->delete_post($_POST['delete']);
+        $res = $ph->delete_post($_POST['delete']);
         $loq->assign('showmessage',TRUE);
         $loq->assign('message_title','Message Deleted');
         $loq->assign('message_content','The message you selected has now been deleted'); // -1 Redundant  ;)
     }
     else{
         $loq->assign('showmessage',TRUE);
-        $loq->assign('message_title','Are you sure you want to delete it?');
+        $p = $ph->get_post($_POST['delete']);
+        $loq->assign('message_title','Are you sure you want to delete the post "'.$p['title'].'"');
         $loq->assign('message_content',"
             <form action='index.php' method='POST'>
             <input type='hidden' name='b' value='archives'>
@@ -162,10 +163,8 @@ if (isset($_POST['allowcomments']) && (is_numeric($_POST['allowcomments']) === t
     $sql = 'UPDATE '.T_POSTS.' SET allowcomments=IF(allowcomments="allow", "disallow", "allow") WHERE postid='.intval($_POST['allowcomments']);
     $loq->_adb->Execute($sql);
 }
-else{
-	$searchopts['wherestart'] = ' WHERE 1 ';
-    $archives = $ph->get_posts($searchopts);
-}
+$searchopts['wherestart'] = ' WHERE 1 ';
+$archives = $ph->get_posts($searchopts);
 
 $loq->assign('postmonths',get_post_months());
 $loq->assign_by_ref('archives',$archives);

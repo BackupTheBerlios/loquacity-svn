@@ -87,7 +87,7 @@ class Loquacity extends Smarty {
     
     function __init(){
         // connect to database
-        $this->_adb = NewADOConnection('mysql://'.DB_USERNAME.':'.DB_PASSWORD.'@'.DB_HOST.'/'.DB_DATABASE.'?persist');
+        $this->_adb = NewADOConnection('mysql://'.DB_USERNAME.':'.rawurlencode(DB_PASSWORD).'@'.DB_HOST.'/'.DB_DATABASE.'?persist');
         
     }
     function __load_configuration(){

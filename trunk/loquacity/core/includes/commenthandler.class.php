@@ -252,9 +252,9 @@ class commentHandler {
     * @param object $post
     * @return bool
     */
-    function isDisabled(&$post){
+    function isDisabled($post){
         $rval = false;
-        if ($post['allowcomments'] == ('disallow') or ($post['allowcomments'] == 'timed' and $post['autodisabledate'] < time()))
+        if ($post['allowcomments'] == 'disallow' or ($post['allowcomments'] == 'timed' and $post['autodisabledate'] < time()))
             $rval = true;
         return $rval;
     }

@@ -9,9 +9,19 @@
 				{/if}
 			<p class="errorMsg">The following errors occured:</p>
 			<ol>
-				{section name=err loop=$errors}
-				<li class="errorMsg">{$errors[err]}</li>
-				{/section}
+				{foreach key=type item=err from=$errors}
+				<li class="errorMsg">
+				{if is_array($err)}
+					{$type}:<ul>
+					{section name=in_err loop=$err}
+						<li>{$err[in_err]}</li>
+					{/section}
+					<ul>
+				{else}
+				{$err}
+				{/if}
+				</li>
+				{/foreach}
 			</ol>
 			{/if}
 			<table border="0" class='list' cellpadding="4" cellspacing="0">
