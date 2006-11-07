@@ -51,7 +51,20 @@ class posthandler {
     function new_post($post) {
         return $this->modifyPost($post, 'INSERT');
     }
+    
+    /**
+     * Adds a new or edits an existing post
+     *
+     * @param array $post
+     * @param string $method Only accepts INSERT and UPDATE
+     * @param string $where Optional unless $method == UPDATE
+     * @return unknown
+     */
     function modifyPost($post, $method='INSERT', $where=false){
+    	if($method !== 'INSERT' && $method !== 'UPDATE'){
+    		$this->_last_error = 'Unknown method stipulated for modifyPost';
+    		return false;
+    	}
         $now = time();
         $sections = ':';
         if(count($post['frm_sections'])>0) {
@@ -59,7 +72,9 @@ class posthandler {
         }
         $rs['title'] = stringHandler::removeMagicQuotes($post['frm_post_title']);
         $rs['body'] = stringHandler::removeMagicQuotes($post['frm_post_body']);
-        $rs['posttime'] = (isset($post['posttime'])) ? $post['posttime'] : $now;
+        if($method !== 'UPDATE'){
+	        $rs['posttime'] = (isset($post['posttime'])) ? $post['posttime'] : $now;
+        }
         $rs['modifytime'] = (isset($post['modifytime'])) ? $post['modifytime'] : $now;
         $rs['status'] = $post['frm_post_status'];
         $rs['modifier'] = $post['frm_modifier'];
@@ -68,6 +83,7 @@ class posthandler {
         $rs['hidefromhome'] = ($post['frm_post_hidefromhome'] == 1) ? 1: 0;
         $rs['allowcomments'] = ($post['frm_post_allowcomments'] == ('allow' or 'disallow' or 'timed')) ? $post['frm_post_allowcomments'] : 'disallow';
         $rs['autodisabledate'] = (is_numeric($post['frm_post_autodisabledate'])) ? intval($post['frm_post_autodisabledate']) : '';
+        
         if($this->_db->AutoExecute(T_POSTS, $rs, $method, $where, false, get_magic_quotes_runtime()) !== false){
             if($method === 'INSERT' ){
                 return intval($this->_db->insert_id());
@@ -81,14 +97,7 @@ class posthandler {
             return false;
         }
     }
-    /**********************************************************************
-    ** get_entries
-    ** Gets blog entries from the db
-    ** array, $limit ex. " LIMIT 0,20 ", $order ex. " ORDER BY tstamp desc "
-    ** $sectionid ex = 1
-    ** Return
-    **********************************************************************/
-
+    
     /**
      * Retrieve one or most posts based upon criteria
      *
@@ -118,16 +127,13 @@ class posthandler {
     }
 
     /**
-    * !formats a single post into a useful array suitable for smarty
-    * i.e. an associatve array not an object
-    * this function is pretty basic at the moment, but all
-    * sorts of things will happen in the future.
-    * it assumes that the required plugin modifiers have been loaded
-    */
-    function prep_post(&$post) {
-        //first do the basics
-
-        $npost['id'] = $post['postid'];
+     * Prepares a post for HTML display
+     * 
+     * @param array $post
+     * @return array
+     */
+    function prep_post($post) {
+    	$npost['id'] = $post['postid'];
         $npost['postid'] = $post['postid'];
         $npost['permalink'] = (defined(CLEANURLS)) ? str_replace('%postid%',$post['postid'],URL_POST) : BLOGURL.'?postid='.$post['postid'];
         $npost['trackbackurl'] = (defined(CLEANURLS)) ?  BLOGURL.'trackback/tbpost='.$post['postid'] : LOQ_APP_URL.'trackback.php&amp;tbpost='.$post['postid'];
@@ -190,6 +196,12 @@ class posthandler {
         return $npost;
     }
 
+    /**
+     * Build a SQL statement from specified criteria
+     *
+     * @param array $params Criteria used to build SQL statement
+     * @return string
+     */
     function make_post_query($params) {
         $skip           = 0;
         $num            = 20;
@@ -199,6 +211,7 @@ class posthandler {
         $where          = "";
         $order          = " ORDER BY posts.posttime desc ";
         $what           = "*";
+        $home           = 0;
 
         // overwrite the above defaults with options from the $params array
         extract($params);
@@ -256,34 +269,48 @@ class posthandler {
 
     ////
     // !deletes a post
+    /**
+     * Removes a post and all associated comments
+     * 
+     * @param int $postid
+     * @return void
+     */
     function delete_post($postid) {
         $postid = intval($postid);
         if(!is_int($postid) && $postid <= 0) return false;
-        //$this->modifiednow();
-        // delete comments
         $q1 = "DELETE FROM ".T_COMMENTS." WHERE postid='$postid'";
         $this->_db->Execute($q1);
-        // delete post
         $q2 = "DELETE FROM ".T_POSTS." WHERE postid='$postid'";
         $this->_db->Execute($q2);
     }
 
-    /**
-    * TODO Make a way to keep the prior timestamp
-    */
+	/**
+	 *  Wrapper for modifyPost that sets parameters for post updating
+	 * 
+	 * @see posthandler::modifyPost
+	 * @param array $params Post data
+	 * @return mixed
+	 */
     function edit_post($params) {
-	if ((isset($params['edit_timestamp'])) && ($params['edit_timestamp'] == 'TRUE')){
-		// the timestamp will be changed.
-		$params['ts_day'] =  (isset($params['ts_day'])) ? $params['ts_day'] : 0;
-		$params['ts_month'] =  (isset($params['ts_month'])) ? $params['ts_day'] : 0;
-		$params['ts_year']  = (isset($params['ts_year'])) ? $params['ts_year'] : 0;
-		$params['ts_hour']  = (isset($params['ts_hour'])) ? $params['ts_year'] : 0;
-		$params['ts_minute']  = (isset($params['ts_minute'])) ? $params['ts_minute'] : 0;
-		$timestamp = maketimestamp($params['ts_day'],$params['ts_month'],$params['ts_year'],$params['ts_hour'],$params['ts_minute']);
-		$params['posttime'] = $timestamp;
-	}
-	return $this->modifyPost($params, 'UPDATE', 'postid='.intval($params['postid']));
+		if ((isset($params['edit_timestamp'])) && ($params['edit_timestamp'] == 'TRUE')){
+			// the timestamp will be changed.
+			$params['ts_day'] =  (isset($params['ts_day'])) ? $params['ts_day'] : 0;
+			$params['ts_month'] =  (isset($params['ts_month'])) ? $params['ts_day'] : 0;
+			$params['ts_year']  = (isset($params['ts_year'])) ? $params['ts_year'] : 0;
+			$params['ts_hour']  = (isset($params['ts_hour'])) ? $params['ts_year'] : 0;
+			$params['ts_minute']  = (isset($params['ts_minute'])) ? $params['ts_minute'] : 0;
+			$timestamp = maketimestamp($params['ts_day'],$params['ts_month'],$params['ts_year'],$params['ts_hour'],$params['ts_minute']);
+			$params['posttime'] = $timestamp;
+		}
+		return $this->modifyPost($params, 'UPDATE', 'postid='.intval($params['postid']));
     }
+    
+    /**
+     * Returns the direct link to a post
+     * 
+     * @param int $postid
+     * @return string
+     */
     function get_post_permalink($postid){
         if(defined('CLEANURLS')){
             return str_replace('%postid%',$postid,URL_POST);
