@@ -100,8 +100,9 @@ class installinstall extends installbase{
         $db = NewADOConnection($dsn);
         if($db !== false){
             $this->db =& $db;
-            $this->createdatabase();
-            $rval = true;
+            if($this->createdatabase()){
+                $rval = true;
+            }
         }
         else{
             $this->errors[] = "Unable to connect to the database. Please check the database settings (username, password, etc) that you provided.";
@@ -139,7 +140,6 @@ class installinstall extends installbase{
             }
             $config = str_replace('__loq_version__', LOQ_CUR_VERSION, $config);
             $config = str_replace('__loq_app_root__', LOQ_APP_ROOT, $config);
-            //var_dump($config);
         }
         if(($fp = fopen(LOQ_APP_ROOT.'config.php', 'w+b')) !== false){
             if(fwrite($fp, "<?php\n$config\n?>") === false){
@@ -163,28 +163,38 @@ class installinstall extends installbase{
          */
         $info = $this->db->ServerInfo();
         $charset = null;
+        $rval = false;
         if((strstr($info['version'], '4.1') !== false) || (strstr($info['version'], '5.0') !== false)){
-            //We have a database that supports chartsets properly!
+            //We have a database that supports charsets properly!
             $charset = ' CHARACTER SET utf8 COLLATE utf8_bin';
         }
         if(file_exists(LOQ_INSTALLER.'/sql/mysql.sql') && is_readable(LOQ_INSTALLER.'/sql/mysql.sql')){
             $sql = file_get_contents(LOQ_INSTALLER.'/sql/mysql.sql');
             $sql = str_replace('__pfx__', $_SESSION['config']['table_prefix'], $sql);
-            
-            if(!is_null($charset)){
-                $sql = str_replace('__charset__', $charset, $sql);
-            }
-            foreach($_SESSION['config'] as $setting=>$value){
-                $sql = str_replace('__'.$setting.'__', $value, $sql);
-            }
-            $sql = str_replace('__loq_version__', LOQ_CUR_VERSION, $sql);
-            $statements = explode(';', $sql);
-            foreach($statements as $line){
-                if(trim($line) !== ''){
-                    $this->db->Execute($line);
+            if($this->tablesDontExist($sql)){
+                if(!is_null($charset)){
+                    $sql = str_replace('__charset__', $charset, $sql);
                 }
+                foreach($_SESSION['config'] as $setting=>$value){
+                    $sql = str_replace('__'.$setting.'__', $value, $sql);
+                }
+                $sql = str_replace('__loq_version__', LOQ_CUR_VERSION, $sql);
+                $statements = explode(';', $sql);
+                foreach($statements as $line){
+                    if(trim($line) !== ''){
+                        $this->db->Execute($line);
+                    }
+                }
+                $rval = true;
+            }
+            else{
+                $this->errors[] = 'The database "'.htmlentities($_POST['db_database']).'" already contains tables with the same names as used by Loquacity. Perhaps you meant to select "upgrade" rather than "Fresh Install"';
             }
         }
+        else{
+            $this->errors[] = 'Unable to find the SQL file to create the database.';
+        }
+        return $rval;
     }
 
 
@@ -202,5 +212,21 @@ class installinstall extends installbase{
             }
         }
     }
-
+    
+    function tablesDontExist($sql){
+        $rval = true;
+        $tables = '/CREATE\s+TABLE\s+IF\s+NOT\s+EXISTS\s+`(.*?)`/';
+        $matches = array();
+        preg_match_all($tables, $sql, $matches);
+        if(count($matches) > 0){
+            $db_tables = $this->db->GetAll('SHOW TABLES');
+            foreach($db_tables as $dt){
+                    echo "<pre>$dt[0]</pre>";
+                    if(in_array($dt[0], $matches[1])){
+                        $rval = false;
+                    }
+            }
+        }
+        return $rval;
+    }
 }

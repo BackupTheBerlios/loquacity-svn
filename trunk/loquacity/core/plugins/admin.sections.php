@@ -65,8 +65,9 @@ function admin_plugin_sections_run(&$loq) {
         case "Delete" : // delete section
             // have to remove all references to the section in the posts
             $sname = stringHandler::removeMagicQuotes($_POST['sname']);
-            $sect_id = $loq->section_ids_by_name[$sname];
-            if($sect_id > 0) {
+            $sql = 'SELECT `sectionid` FROM `'.T_SECTIONS.'` WHERE `name`='.$loq->_adb->quote($sname);
+            $sect_id = $loq->_adb->GetOne($sql);
+            if($sect_id !== false) {
                 $ph = $loq->_ph;
                 $posts_in_section_q = $ph->make_post_query(array("sectionid"=>$sect_id));
                 $posts_in_section = $ph->get_posts($posts_in_section_q,TRUE);
@@ -84,7 +85,7 @@ function admin_plugin_sections_run(&$loq) {
                     } // end foreach ($post_in_section as $post)
                 } // end if($posts_in_section)
                 // delete the section
-                $loq->_adb->Execute("delete from ".T_SECTIONS." where sectionid=$sect_id");
+                $loq->_adb->Execute("delete from `".T_SECTIONS."` where sectionid=$sect_id");
             } // else show error
         case "Save" :
             $sect_id = $loq->sect_by_name[$_POST['sname']];

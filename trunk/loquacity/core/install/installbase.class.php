@@ -95,8 +95,8 @@ class installbase extends Smarty{
                 $this->assign($name, $value);
             }
             //The following are needed during install by some plugins
-             define('TBL_PREFIX', $_SESSION['config']['table_prefix']);
-             define('BLOGURL', $_SESSION['config']['blog_url']);
+             #define('TBL_PREFIX', $_SESSION['config']['table_prefix']);
+             #define('BLOGURL', $_SESSION['config']['blog_url']);
         }
     }
 

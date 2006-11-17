@@ -1,4 +1,4 @@
-CREATE TABLE `__pfx__comments`(
+CREATE TABLE IF NOT EXISTS `__pfx__comments`(
 	`commentid` int(10) unsigned NOT NULL auto_increment,
 	`parentid` int(10) unsigned NOT NULL default '0',
 	`postid` int(10) unsigned NOT NULL default '0',
@@ -19,7 +19,7 @@ CREATE TABLE `__pfx__comments`(
 	FULLTEXT KEY `commenttext` (`commenttext`)
 ) TYPE=MyISAM__charset__;
 
-CREATE TABLE `__pfx__config` (
+CREATE TABLE IF NOT EXISTS `__pfx__config` (
 	`id` int(11) NOT NULL auto_increment,
 	`name` varchar(50) NOT NULL default '',
 	`value` varchar(255) NOT NULL default '',
@@ -27,7 +27,7 @@ CREATE TABLE `__pfx__config` (
 ) TYPE=MyISAM__charset__;
 
 
-CREATE TABLE `__pfx__plugins` (
+CREATE TABLE IF NOT EXISTS `__pfx__plugins` (
 	`id` int(11) NOT NULL auto_increment,
 	`type` varchar(50) NOT NULL default 'admin',
 	`name` varchar(60) NOT NULL default '',
@@ -41,7 +41,7 @@ CREATE TABLE `__pfx__plugins` (
 	PRIMARY KEY  (`id`)
 ) TYPE=MyISAM__charset__;
 
-CREATE TABLE `__pfx__posts` (
+CREATE TABLE IF NOT EXISTS `__pfx__posts` (
 	`postid` int(10) unsigned NOT NULL auto_increment,
 	`title` varchar(255) NOT NULL default '',
 	`body` mediumtext NOT NULL,
@@ -60,7 +60,7 @@ CREATE TABLE `__pfx__posts` (
 ) TYPE=MyISAM__charset__;
 
 
-CREATE TABLE `__pfx__sections` (
+CREATE TABLE IF NOT EXISTS `__pfx__sections` (
 	`sectionid` int(11) NOT NULL auto_increment,
 	`nicename` varchar(255) NOT NULL default '',
 	`name` varchar(60) NOT NULL default '',
@@ -69,7 +69,7 @@ CREATE TABLE `__pfx__sections` (
 
 
 
-CREATE TABLE `__pfx__referers` (
+CREATE TABLE IF NOT EXISTS `__pfx__referers` (
 	`visitID` int(11) NOT NULL auto_increment,
 	`visitTime` timestamp(14) NOT NULL,
 	`visitURL` char(250) default NULL,
@@ -78,7 +78,7 @@ CREATE TABLE `__pfx__referers` (
 	PRIMARY KEY  (`visitID`)
 ) TYPE=MyISAM__charset__;
 
-CREATE TABLE __pfx__authors (
+CREATE TABLE IF NOT EXISTS `__pfx__authors` (
 	id int(10) NOT NULL auto_increment,
 	nickname varchar(20) NOT NULL default '',
 	email varchar(100) NOT NULL default '',
@@ -98,7 +98,7 @@ CREATE TABLE __pfx__authors (
 
 
 
-CREATE TABLE `__pfx__rss` (
+CREATE TABLE IF NOT EXISTS `__pfx__rss` (
 	`id` int(11) NOT NULL auto_increment,
 	`url` text NOT NULL,
 	`input_charset` text NOT NULL,
@@ -106,7 +106,7 @@ CREATE TABLE `__pfx__rss` (
 ) TYPE=MyISAM__charset__;
 
 
-CREATE TABLE __pfx__links (
+CREATE TABLE IF NOT EXISTS `__pfx__links` (
 	linkid int(11) NOT NULL auto_increment,
 	nicename varchar(255) NOT NULL,
 	url varchar(255) NOT NULL default '',
@@ -116,7 +116,7 @@ CREATE TABLE __pfx__links (
 ) TYPE=MyISAM__charset__;
 
 
-CREATE TABLE __pfx__categories (
+CREATE TABLE IF NOT EXISTS `__pfx__categories` (
 	categoryid int(11) NOT NULL auto_increment,
 	name varchar(60) NOT NULL,
 	PRIMARY KEY  (categoryid)
@@ -166,12 +166,12 @@ INSERT INTO `__pfx__config` (`name`, `value`) VALUES
 	('CAPTCHA_USE_COLOR','false'),
 	('CAPTCHA_GRAPHIC_TYPE','jpg');
 	
-INSERT INTO __pfx__categories VALUES (1,'Navigation');
-INSERT INTO __pfx__categories VALUES (2,'Blogs I read');
+INSERT INTO `__pfx__categories` VALUES (1,'Navigation');
+INSERT INTO `__pfx__categories` VALUES (2,'Blogs I read');
 
-INSERT INTO __pfx__links VALUES (1,'Home','__blog_url__',1,20);
-INSERT INTO __pfx__links VALUES (2,'Archives','__blog_url__archives.php',1,30);
-INSERT INTO __pfx__links VALUES (3,'RSS 2.0 Feed','__blog_url__feed.php',1,40);
+INSERT INTO `__pfx__links` VALUES (1,'Home','__blog_url__',1,20);
+INSERT INTO `__pfx__links` VALUES (2,'Archives','__blog_url__archives.php',1,30);
+INSERT INTO `__pfx__links` VALUES (3,'RSS 2.0 Feed','__blog_url__feed.php',1,40);
 
 
 INSERT INTO `__pfx__authors` (`nickname`,`password`,`secret_question`,`secret_answer`,`email`,`fullname`) VALUES

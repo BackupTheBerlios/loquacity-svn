@@ -32,7 +32,7 @@
  
 
 //For development, this should be set to E_ALL
-// @TODO For normal usage, it should be set to ???
+// @TODO For normal usage, it should be set to 0
 error_reporting(E_ALL);
 
 //Build a suitable working environment to give us access to the application code
@@ -50,15 +50,7 @@ if(file_exists(dirname(__FILE__).'/core')){
 else{
     die("Unsupported configuration. The installer does not support altered configurations, you must configure this application manually. If this is not your intent, perhaps your installation is corrupt. Try unzipping (de-compressing) all the files again.");
 }
-session_start();
-//The following block is currently not accessible via the Web interface
-if (isset($_GET['reset'])) {
-    unset($config);
-    unset($step);
-    @session_destroy();
-    header("Location: install.php");
-    exit;
-}
+
 /*
 * The install variable instructs the installer our current progress through installation
 */
@@ -70,6 +62,7 @@ if(isset($_GET['install'])){
     * An upgrade from bBlog skips only the display of the configure screen as we use the
     * existing config.php
     */
+    startSession();
     include_once(LOQ_INSTALLER.'/installbase.class.php');
     include_once(LOQ_APP_ROOT.'includes/stringhandler.class.php');
     include_once(LOQ_APP_ROOT.'3rdparty/adodb/adodb-errorhandler.inc.php');
@@ -77,7 +70,12 @@ if(isset($_GET['install'])){
     /*
     Check for and create an Install object of our current progress
     */
-    if(in_array($_GET['install'], array('prescan', 'install', 'postscan'))){
+    if(isset($_GET['reset']) && $_GET['reset'] === 'reset'){
+        @session_destroy();
+        header("Location: install.php");
+        exit;
+    }
+    else if(in_array($_GET['install'], array('prescan', 'install', 'postscan'))){
         include_once(LOQ_INSTALLER.'/install'.$_GET['install'].'.class.php');
         $class = 'install'.$_GET['install'];
         $step = new $class();
@@ -87,7 +85,17 @@ if(isset($_GET['install'])){
 else{
     /*
     * This is the initial entry point for the installer
+    *
+    * Although it looks odd, the following code resets the session
+    * guaranteeing a fresh start upon each visit
     */
+    startSession();
+    $_SESSION = array();
+    if (isset($_COOKIE[session_name('LoquacityInstaller')])) {
+       setcookie(session_name('LoquacityInstaller'), '', time()-42000, '/');
+    }
+    session_destroy();
+    startSession();
     $smarty = new Smarty();
     $smarty->template_dir = LOQ_INSTALLER.'/templates';
     $smarty->compile_dir = ini_get("session.save_path");
@@ -127,3 +135,8 @@ else{
         $func = 'upgrade_from_'.$config['upgrade_from'].'_post';
 		$func();
     */
+    
+function startSession(){
+    session_name('LoquacityInstaller');
+    session_start();
+}

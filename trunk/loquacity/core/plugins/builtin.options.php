@@ -308,8 +308,7 @@ else{
                    $formright = '<select name="'.$option['name'].'" class="bf">';
                    $d = dir("templates");
                    while (false !== ($entry = $d->read())) {
-                       //if(ereg("^[a-z]{3,20}$",$entry)){
-                       if($entry !== '.' && $entry !== '..'){
+                       if($entry !== '.' && $entry !== '..' && (strpos($entry, '.') !== 0) && is_dir($d->path.'/'.$entry)){
                            $formright .= "<option value=\"$entry\"";
                            if($option['value'] == $entry) $formright .=" selected";
                            $formright .= ">$entry</option>";
