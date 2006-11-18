@@ -33,7 +33,7 @@
 function identify_modifier_htmlspecialchars () {
     return array (
     'name'           =>'htmlspecialchars',
-    'type'             =>'smarty_modifier',
+    'type'             =>'modifier',
     'nicename'     =>'HTML Special Chars',
     'description'   =>'Converts HTML Special Chars to form-friendly entities',
     'authors'        =>'',

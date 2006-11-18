@@ -37,7 +37,7 @@
 function identify_modifier_kses () {
     return array (
     'name'           =>'kses',
-    'type'             =>'smarty_modifier',
+    'type'             =>'modifier',
     'nicename'     =>'KSES XHTML Filter',
     'description'   =>'HTML/XHTML filter that only allows some elements and attributes',
     'authors'        =>'Ulf Harnhammar',

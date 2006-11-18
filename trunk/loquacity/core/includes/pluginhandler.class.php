@@ -42,6 +42,7 @@ class pluginhandler{
         $installed = 0;
         foreach($scanned as $type => $typeList){
             foreach($typeList as $ind=>$member){
+                
                 if((!isset($currentPlugins[$type])) || (isset($currentPlugins[$type]) && !in_array($member, $currentPlugins[$type]))){
                     if($this->installPlugin($type, $member)){
                         $installed++;

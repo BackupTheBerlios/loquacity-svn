@@ -112,7 +112,7 @@ function smarty_modifier_date_format($date, $format="%F %j, %Y, %g:%i %a") {
 function identify_modifier_date_format () {
   return array (
     'name'           =>'date_format',
-    'type'           =>'smarty_modifier',
+    'type'           =>'modifier',
     'nicename'       =>'Date Format',
     'description'    =>'Date format takes a timestamp, and turns it into a nice looking date',
     'authors'         =>'Dean Allen, Eaden McKee, Tobias Schlottke',

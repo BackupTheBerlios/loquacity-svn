@@ -88,7 +88,7 @@ function smarty_modifier_readmore($text, $postid, $readmoretext="read more",$wor
 function identify_modifier_readmore () {
   return array (
     'name'           =>'readmore',
-    'type'           =>'smarty_modifier',
+    'type'           =>'modifier',
     'nicename'       =>'Read More',
     'description'    =>'Chops a post short with a readmore link',
     'authors'        =>'Tim Lucas <t.lucas-toolmantim.com>',

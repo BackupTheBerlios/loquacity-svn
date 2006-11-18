@@ -51,15 +51,12 @@ function identify_admin_links () {
 }
 
 function admin_plugin_links_run(&$loq) {
-
     if(isset($_GET['linkdo']))  { $linkdo = $_GET['linkdo']; }
     elseif(isset($_POST['linkdo'])) { $linkdo = $_POST['linkdo']; }
     else { $linkdo = ''; }
-
     switch($linkdo) {
-    
         case "New" :  // add new link
-            $maxposition = $loq->get_var("select position from ".T_LINKS." order by position desc limit 0,1");
+            $maxposition = $loq->_adb->GetOne("select position from `".T_LINKS."` order by position desc limit 0,1");
             $position = $maxposition + 10;
             $loq->_adb->Execute("insert into ".T_LINKS."
                 set nicename='".stringHandler::removeMagicQuotes($_POST['nicename'])."',
@@ -92,11 +89,9 @@ function admin_plugin_links_run(&$loq) {
         default : // show form
                 break;
         }
-    
-        if(isset($_GET['catdo']))  { $catdo = $_GET['catdo']; }
-        elseif (isset($_POST['catdo'])) { $catdo = $_POST['catdo']; }
-        else { $catdo = ''; }
-    
+    if(isset($_GET['catdo']))  { $catdo = $_GET['catdo']; }
+    elseif (isset($_POST['catdo'])) { $catdo = $_POST['catdo']; }
+    else { $catdo = ''; }
     switch($catdo) {
         case "New" :  // add new category
             $loq->_adb->Execute("insert into ".T_CATEGORIES."

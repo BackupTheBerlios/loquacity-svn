@@ -44,7 +44,7 @@ function smarty_modifier_locale($stream, $locale) {
 function identify_modifier_locale () {
   return array (
     'name'           =>'locale',
-    'type'           =>'smarty_modifier',
+    'type'           =>'modifier',
     'nicename'       =>'Set Locale',
     'description'    =>'Set locale and return unmodified input data',
     'authors'         =>'Sebastian Werner',

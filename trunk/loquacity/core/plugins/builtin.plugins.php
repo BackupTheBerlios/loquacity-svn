@@ -60,7 +60,7 @@ if(isset($_POST['scan'])) $np = $ph->scan_for_plugins(dirname(__FILE__));
 
 if(isset($_POST['scan_refresh'])) {
 	$np = $ph->scan_for_plugins(dirname(__FILE__));
-	$loq->assign('np',"<b style='color: red;'>$np</b><br />");
+	$loq->assign('np',"<b style='color: red;'>$np new plugins found and installed.</b><br />");
 }
 
 
