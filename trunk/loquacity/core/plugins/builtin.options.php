@@ -88,20 +88,19 @@ $options = array(
         "value" => C_DEFAULT_STATUS,
         "type" => "statusselect"
     ),
-		array(
-				"name"  => "CHARSET",
-				"label" => "Character Set",
-				"value" => C_CHARSET,
-				"type"  => "charsetselect"
-		),
+    array(
+        "name"  => "CHARSET",
+        "label" => "Character Set",
+        "value" => C_CHARSET,
+        "type"  => "charsetselect"
+    ),
 
-	  array(
-				"name"  => "DIRECTION",
-				"label" => "Writing/reading direction",
-				"value" => C_DIRECTION,
-				"type"  => "directionselect"
-		),
-
+    array(
+        "name"  => "DIRECTION",
+        "label" => "Writing/reading direction",
+        "value" => C_DIRECTION,
+        "type"  => "directionselect"
+    ),
     array(
         "name"  => "PING",
         "label" => "Notify websites of new posts. seperate with comma, e.g. weblogs.com/RPC2,www.loquacity.info/ping.php,blo.gs/",
@@ -139,9 +138,13 @@ $options = array(
         "label" => "Comment Flood Protection ( minutes ) Set to 0 to disable.",
         "value" => C_COMMENT_TIME_LIMIT,
         "type"  => "text"
-    )
-
-
+    ),
+     array(
+         "name"  => 'TIMEZONE',
+         "label" => 'Your Time Zone',
+         "value" => C_TIMEZONE,
+         'type'  => 'tzoneselect'
+    ),
 );
 
 return $options;
@@ -156,38 +159,34 @@ $options = get_options();
 if ((isset($_POST['submit'])) && ($_POST['submit'] == 'Save Options')) { // saving options..
     $updatevars = array();
     foreach($options as $option) {
-
-     if(!isset($_POST[$option['name']])) break;
-
-     switch ($option['type']) {
-              case "text"  :
-              case "email" :
-              case "url"   :
-                   $updatevars[] = array(
-                                 "name" =>$option['name'],
-                                 "value" => stringHandler::clean($_POST[$option['name']])
-                                 );
+        if(!isset($_POST[$option['name']]))
+            break;
+        switch ($option['type']) {
+            case "text"  :
+            case "email" :
+            case "url"   :
+                $updatevars[] = array(
+                    "name" =>$option['name'],
+                    "value" => stringHandler::clean($_POST[$option['name']])
+                    );
+                break;
+            case "password" :
+                if($_POST[$option['name']] != '')
+                    $updatevars[] = array(
+                        "name" => $option['name'],
+                        "value" => md5($_POST[$option['name']])
+                        );
                     break;
-              case "password" :
-                   if($_POST[$option['name']] != '')
 
-                   $updatevars[] = array(
-                                 "name" => $option['name'],
-                                 "value" => md5($_POST[$option['name']])
-                                 );
-                   break;
-
-              case "templateselect" :
-                   // make sure we're not being poked.
-                   if(ereg('^[[:alnum:]]+$',$_POST[$option['name']])) {
-                      $updatevars[] = array(
-                                    "name" => $option['name'],
-                                    "value" => strtolower($_POST[$option['name']])
-                                    );
-
-                   }
-                   break;
-
+            case "templateselect" :
+                // make sure we're not being poked.
+                if(ereg('^[[:alnum:]]+$',$_POST[$option['name']])) {
+                    $updatevars[] = array(
+                        "name" => $option['name'],
+                        "value" => strtolower($_POST[$option['name']])
+                        );
+                }
+                break;
               case "statusselect" :
                    if($_POST[$option['name']] == 'live')
                          $updatevars[]= array(
@@ -202,36 +201,32 @@ if ((isset($_POST['submit'])) && ($_POST['submit'] == 'Save Options')) { // savi
                                         );
                    break;
 
-							case "charsetselect" :
-									 //check all charsets
-									 foreach ($charsets as $charset){
-									 		//if submitted is one of our valid charsets
-									 		if ( $_POST[$option['name']] == $charset['value'] ){
-
-									 				$updatevars[] = array(
-									 												"name" => $option['name'],
-									 												"value" => $charset['value']
-									 												);
-
-									 		}//if
-									 }//foreach
-                   break;
-
-							case "directionselect":
-									 if($_POST[$option['name']] == 'LTR')
-                         $updatevars[]= array(
-                                        "name" => $option['name'],
-                                        "value" => 'LTR'
-                                        );
-									 if($_POST[$option['name']] == 'RTL')
-                         $updatevars[]= array(
-                                        "name" => $option['name'],
-                                        "value" => 'RTL'
-                                        );
-
-									 break;
-
-
+            case "charsetselect" :
+                //check all charsets
+                foreach ($charsets as $charset){
+                    //if submitted is one of our valid charsets
+                    if ( $_POST[$option['name']] == $charset['value'] ){
+                        $updatevars[] = array(
+                            "name" => $option['name'],
+                            "value" => $charset['value']
+                        );
+                    }//if
+                }//foreach
+                break;
+            case "directionselect":
+                if($_POST[$option['name']] == 'LTR'){
+                    $updatevars[]= array(
+                        "name" => $option['name'],
+                        "value" => 'LTR'
+                    );
+                }
+				if($_POST[$option['name']] == 'RTL'){
+                    $updatevars[]= array(
+                        "name" => $option['name'],
+                        "value" => 'RTL'
+                    );
+                }
+				break;
 	      			case "commentmoderation" :
                    if($_POST[$option['name']] == 'none')
                          $updatevars[]= array(
@@ -265,28 +260,32 @@ if ((isset($_POST['submit'])) && ($_POST['submit'] == 'Save Options')) { // savi
 				"value"=>$_POST[$option['name']]
 				);
 			break;
-              default: break;
-
-
-  } // switch
- } // foreach
-
-
+        case 'tzoneselect':
+            $zone = intval($_POST[$option['name']]);
+            $updatevars[] = array(
+                'name' => $option['name'],
+                'value' => $zone,
+            );
+			break;
+        default:
+            break;
+        } // switch
+    } // foreach
 } // if
 if ((isset($_POST['submit'])) && ($_POST['submit'] == 'Save Options')) {
-  foreach($updatevars as $update) {
-   $sql = "UPDATE ".T_CONFIG." SET VALUE='".$update['value']."' WHERE `name`='".$update['name']."'";
-   /*echo "<pre>";
-   var_dump($sql);
-   //var_dump($update);
-   echo "</pre>";*/
-   $loq->_adb->Execute($sql);
-   } // foreach
-   $loq->assign("showmessage",TRUE);
-   $loq->assign("showoptions",'no');
-   $loq->assign("message_title","Options Updated");
-   $loq->assign("message_content","Your changes have been saved.<br><a href='index.php?b=options&r=".rand(20,214142124)."'>Click here to continue</a>");
-
+    foreach($updatevars as $update) {
+        $rs = array();
+        $rs['name'] = $update['name'];
+        $rs['value'] = $update['value'];
+        //$loq->_adb->debug = true;
+        $loq->_adb->Replace(T_CONFIG, $rs, 'id', true);
+        /*$sql = "UPDATE ".T_CONFIG." SET VALUE='".$update['value']."' WHERE `name`='".$update['name']."'";
+        $loq->_adb->Execute($sql);*/
+    }
+    $loq->assign("showmessage",TRUE);
+    $loq->assign("showoptions",'no');
+    $loq->assign("message_title","Options Updated");
+    $loq->assign("message_content","Your changes have been saved.<br><a href='index.php?b=options&r=".rand(20,214142124)."'>Click here to continue</a>");
 }
 else{
     foreach($options as $option) {
@@ -375,25 +374,30 @@ else{
                    break;
 
 	      case "commentmoderation" :
-                   $formright = '<select name="'.$option['name'].'" class="bf">';
-
-                   $formright .= '<option value="none" ';
-                   if(C_COMMENT_MODERATION == 'none') $formright .= 'selected';
-                   $formright .= '>No Moderation (not recommended!)</option>';
-
-		   $formright .= '<option value="urlonly" ';
-                   if(C_COMMENT_MODERATION == 'urlonly') $formright .= 'selected';
-                   $formright .= '>Only for comments with links (recommended)</option>';
-
-		   $formright .= '<option value="all" ';
-                   if(C_COMMENT_MODERATION == 'all') $formright .= 'selected';
-                   $formright .= '>Moderate All Comments</option>';
-
-
+				$formright = '<select name="'.$option['name'].'" class="bf">';
+                $formright .= '<option value="none" ';
+                if(C_COMMENT_MODERATION == 'none') $formright .= 'selected';
+                $formright .= '>No Moderation (not recommended!)</option>';
+		   		$formright .= '<option value="urlonly" ';
+                if(C_COMMENT_MODERATION == 'urlonly') $formright .= 'selected';
+                $formright .= '>Only for comments with links (recommended)</option>';
+		   		$formright .= '<option value="all" ';
+                if(C_COMMENT_MODERATION == 'all') $formright .= 'selected';
+                $formright .= '>Moderate All Comments</option>';
                    $formright .= '</select>';
                    break;
-
-              default: $formright = ''; break;
+			case "tzoneselect":
+				$formright = 'GMT <select name="'.$option['name'].'" class="bf">';
+				for($i = -12; $i < 12; $i++){
+					$formright .= '<option value="'.$i.'"';
+					if($i == C_TIMEZONE || $i === 0){
+						$formright .=' selected';
+					}
+					$formright .='>'.$i.'</option>';
+				}
+				$formright .= '</select>';
+				break;
+			default: $formright = ''; break;
 
         }
         $optionrows[] = array("left" => $formleft,"right" => $formright);
@@ -404,12 +408,4 @@ else{
 $loq->assign("optionrows",$optionrows);
 } // end of else
 $loq->display("options.html");
-
-
-
-
-
-
-
-
 ?>

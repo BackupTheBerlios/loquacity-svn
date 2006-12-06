@@ -65,7 +65,7 @@ class posthandler {
     		$this->_last_error = 'Unknown method stipulated for modifyPost';
     		return false;
     	}
-        $now = time();
+        $now = strtotime(gmdate("M d Y H:i:s"));
         $sections = ':';
         if(count($post['frm_sections'])>0) {
             $sections = ':'.implode(":", $post['frm_sections']).':';
@@ -154,8 +154,8 @@ class posthandler {
         // what we need here is that the date format
         // is available in the control panel as an option
         // this is only here as a convience, the date_format modifier should be used.
-        $npost['posttime_f'] = date("D M j G:i:s T Y",$post['posttime']);
-        $npost['modifytime_f'] = date("D M j G:i:s T Y",$post['modifytime']);
+        //$npost['posttime_f'] = date("D M j G:i:s T Y",$post['posttime']);
+        //$npost['modifytime_f'] = date("D M j G:i:s T Y",$post['modifytime']);
         $npost['sections']   = array();
         switch(intval($post['NUMCOMMENTS'])) {
              case 1 : $npost['commenttext'] = "One comment"; break;
@@ -262,13 +262,10 @@ class posthandler {
         if($raw)
             return $post;
         else{
-            #require_once $this->_get_plugin_filepath('modifier', $post->modifier);
             return $this->prep_post($post);
         }
     }
 
-    ////
-    // !deletes a post
     /**
      * Removes a post and all associated comments
      * 
@@ -293,13 +290,14 @@ class posthandler {
 	 */
     function edit_post($params) {
 		if ((isset($params['edit_timestamp'])) && ($params['edit_timestamp'] == 'TRUE')){
-			// the timestamp will be changed.
-			$params['ts_day'] =  (isset($params['ts_day'])) ? $params['ts_day'] : 0;
-			$params['ts_month'] =  (isset($params['ts_month'])) ? $params['ts_day'] : 0;
-			$params['ts_year']  = (isset($params['ts_year'])) ? $params['ts_year'] : 0;
-			$params['ts_hour']  = (isset($params['ts_hour'])) ? $params['ts_year'] : 0;
-			$params['ts_minute']  = (isset($params['ts_minute'])) ? $params['ts_minute'] : 0;
-			$timestamp = maketimestamp($params['ts_day'],$params['ts_month'],$params['ts_year'],$params['ts_hour'],$params['ts_minute']);
+			$now = getdate(strtotime(gmdate("M d Y H:i:s")));
+			//If user forgot to modify timestamp, we set it to NOW
+			$params['ts_day'] =  (isset($params['ts_day'])) ? $params['ts_day'] : $now['mday'];
+			$params['ts_month'] =  (isset($params['ts_month'])) ? $params['ts_day'] : $now['mon'];
+			$params['ts_year']  = (isset($params['ts_year'])) ? $params['ts_year'] : $now['year'];
+			$params['ts_hour']  = (isset($params['ts_hour'])) ? $params['ts_year'] : $now['hours'];
+			$params['ts_minute']  = (isset($params['ts_minute'])) ? $params['ts_minute'] : $now['minutes'];
+			$timestamp = mktime($params['ts_day'],$params['ts_month'],$params['ts_year'],$params['ts_hour'],$params['ts_minute']);
 			$params['posttime'] = $timestamp;
 		}
 		return $this->modifyPost($params, 'UPDATE', 'postid='.intval($params['postid']));

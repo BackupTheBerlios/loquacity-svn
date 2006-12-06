@@ -157,7 +157,7 @@ class commentHandler {
         $rval['pubemail'] = ($vars["public_email"] == 1) ? 1 : 0;
         $rval['pubwebsite'] = ($vars["public_website"] == 1) ? 1 : 0;
         $rval['posternotify'] = ($vars["notify"] == 1) ? 1 : 0;
-        $rval['posttime'] = time();
+        $rval['posttime'] = strtotime(gmdate("M d Y H:i:s"));
         $rval['ip'] = $_SERVER['REMOTE_ADDR'];
         $rval['onhold'] = ($this->needsModeration($rval['commenttext'])) ? 1 : 0;
         $rval['postid'] = $id;

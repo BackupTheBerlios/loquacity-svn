@@ -117,7 +117,7 @@ class trackbackhandler extends commentHandler {
         $vars['title'] = (isset($this->_tbdata['title'])) ? (stringHandler::clean($this->_tbdata['title'])) : '';
         $vars['commenttext'] = (isset($this->_tbdata['excerpt'])) ? (stringHandler::clean($this->_tbdata['excerpt'])) : '';
         $vars['postername'] = (isset($this->_tbdata['blog_name'])) ? (stringHandler::clean($this->_tbdata['blog_name'])) : '';
-        $vars['posttime'] = time();
+        $vars['posttime'] = strtotime(gmdate("M d Y H:i:s"));
         $vars['ip'] = $this->_ip;
         $vars['postid'] = $this->_post;
         if($replyto > 0)

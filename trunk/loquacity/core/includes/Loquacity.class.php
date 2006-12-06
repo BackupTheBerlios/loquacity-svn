@@ -296,6 +296,16 @@ class Loquacity extends Smarty {
             $this->setmodifytime($now);
           }
     }
+    /**
+    * Provides a unified method of returning a GMT timestamp
+    *
+    * There is probably a better way to do this, for those with better knowledge of date/time handling
+    *
+    * @return int
+    */
+    function currentTimestamp(){
+        return strtotime(gmdate("M d Y H:i:s"));
+    }
 
 	/*
       All links are generated here.
