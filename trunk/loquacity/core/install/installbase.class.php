@@ -66,9 +66,9 @@ class installbase extends Smarty{
     * to the user.
     */
     function display(){
-        if(isset($this->errors) && count($this->errors) > 0){
+        /*if(isset($this->errors) && count($this->errors) > 0){
             $this->assign('errors', $this->errors);
-        }
+        }*/
         parent::display($this->template);
     }
 

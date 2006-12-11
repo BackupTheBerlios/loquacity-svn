@@ -1,0 +1,16 @@
+{include file='header.html'}
+	<div id="content">
+		{if isset($notice_message) && is_array($notice_message)}
+			{foreach key=heading item=body from=$notice_message}
+			<h2>{$heading}</h2>
+			{if is_array($body)}
+			{section name=message loop=$body}
+				<p>{$body[message]}</p>
+			{/section}
+			{/if}
+			{/foreach}
+		{/if}
+		{if isset($action)}
+		<p><a href='{$action}'>Try Again</a>
+		{/if}
+{include file='footer.html'}

@@ -67,6 +67,9 @@ class installprescan extends installbase{
         if(isset($this->errors) && count($this->errors) > 0){
             $this->assign("errors", $this->errors);
             $this->assign("prescan_errors", true);
+            $this->template = 'notice.html';
+            $this->assign('notice_message', $this->noticeMessage());
+            $this->assign('action', 'install.php?install=prescan');
         }
         $this->assign('form_action', $this->form_action);
     }
@@ -79,9 +82,9 @@ class installprescan extends installbase{
      *
     */
 	function checkwritable() {
-		foreach(array('generated', 'generated/cache', 'generated/templates', 'generated/cache/favorites.xml', 'config.php') as $target){
+		foreach(array('generated', 'generated/cache', 'generated/templates', 'generated/cache/favorites.xml', 'config.php', 'generated/backup') as $target){
 			if(!is_writable(LOQ_APP_ROOT.$target))
-				$this->errors[] = "$target is not writable";
+				$this->errors[] = LOQ_APP_ROOT."$target is not writable";
         }
     }
 
@@ -98,4 +101,11 @@ class installprescan extends installbase{
 			return false;
 		}
 	}
+    function noticeMessage(){
+        return array('Permissions' => array_merge(array(
+            'Locacity requires certain files and folders to be writable in order to use all functionality. The following need their permissions altered to permit write access. Note that if <strong>config.php</strong> is listed, it only requires write permissions during installation.',
+            ),
+            $this->errors)
+            );
+    }
 }

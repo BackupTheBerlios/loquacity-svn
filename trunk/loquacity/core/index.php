@@ -57,8 +57,7 @@ $title = 'Admin';
 $loq->setmodifytime(time());
 
 $loq->assign_by_ref('title',$title);
-// we will store the rss templates in the includes/admin_templates dir, becasue almost noone will need to change them, - reduce clutter in the templates/* directory.
-$loq->template_dir = LOQ_APP_ROOT.'includes/admin_templates';
+
 $loq->compile_id = 'admin';
 
 

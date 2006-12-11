@@ -65,7 +65,7 @@ class Loquacity extends Smarty {
         Smarty::Smarty();
         //Smarty setup
         $this->template_dir = LOQ_APP_ROOT.'templates/'.C_TEMPLATE;
-        $this->compile_dir = LOQ_APP_ROOT.'generated/templates/';
+        $this->compile_dir = ini_get("session.save_path");
         $this->plugins_dir = array(LOQ_APP_ROOT.'plugins', LOQ_APP_ROOT.'plugins/smarty',LOQ_APP_ROOT.'3rdparty/smarty/libs/plugins');
         $this->use_sub_dirs	= FALSE; // change to true if you have a lot of templates
         $this->_ph =& new postHandler($this->_adb, $this->plugins_dir);
