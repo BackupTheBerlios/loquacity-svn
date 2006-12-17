@@ -49,9 +49,7 @@ function identify_admin_post () {
 
 $loq->assign('form_type','post'); // used in the template post_edit.html
 $loq->assign('commentsallowvalue', " checked='checked' ");
-if((isset($_POST['newpost'])) && ($_POST['newpost'] == 'true')) {    // we have a poster
-    // make the data sql save
-    //$post = prep_new_post();
+if((isset($_POST['newpost'])) && ($_POST['newpost'] == 'true')) {
     $ph =& $loq->_ph;
     
     $res = $ph->new_post($_POST);

@@ -2,33 +2,36 @@
 {assign var=title value=$blogname}
 {assign var=pagetitle value="$blogname}
 {include file="header.html"}
-        <div id="contentBox">
-	    <div id="headerAds">
-	    </div>
-            {getposts num=10 assign=posts home=true}
-            <h2>Contents</h2>
-            <div id="toc" class="box">
-                <p>On this page:</p>
-                <ol class="toc">
-                {foreach from=$posts item=post}
-                    <li><a href="#{$post.title|escape:'url'}">{$post.title}</a> &nbsp; (Posted: {$post.posttime|date_format:s1})</li>
-                {/foreach}
-                </ol>
-            </div>
-            {foreach from=$posts item=post}
-            {if $post.newday}
-            <h3 class="date">{$post.posttime|date_format:s2}</h3>
-            {/if}
-            <div class="article">
-                <h4 id="{$post.title|escape}"><a href="{$post.permalink|escape}">{$post.title}</a></h4>
-                <div class="box nobb">
-                {$post.body}
-                </div>
-                <div class="articleMeta">
-                    Category: {sectionlinks sep=" &middot; " sections=$post.sections} &#8226; 
-                    Author: {$post.author.fullname} &#8226;
-                    <a href="{$post.permalink}">{$post.commenttext}</a>
-                </div>
-            </div>
-            {/foreach}
+			{include file="side.html"}
+			<div id="articles"><div id="articles-content">
+				<div id="headerAds">&nbsp;
+				</div>
+				{getposts num=10 assign=posts home=true}
+				<h2>Contents</h2>
+				<div id="toc" class="box">
+					<p>On this page:</p>
+					<ol class="toc">
+					{foreach from=$posts item=post}
+						<li><a href="#{$post.title|escape:'url'}">{$post.title}</a> &nbsp; (Posted: {$post.posttime|date_format:s1})</li>
+					{/foreach}
+					</ol>
+				</div>
+				{foreach from=$posts item=post}
+				{if $post.newday}
+				<h3 class="date">{$post.posttime|date_format:s2}</h3>
+				{/if}
+				<div class="article">
+					<h4 id="{$post.title|escape}"><a href="{$post.permalink|escape}">{$post.title}</a></h4>
+					<div class="box nobb">
+					{$post.body}
+					</div>
+					<div class="articleMeta">
+						Category: {sectionlinks sep=" &middot; " sections=$post.sections} &#8226; 
+						Author: {$post.author.fullname} &#8226;
+						<a href="{$post.permalink}">{$post.commenttext}</a>
+					</div>
+				</div>
+				{/foreach}
+			</div></div>
+			<hr class="cleaner" />
 {include file="footer.html"}

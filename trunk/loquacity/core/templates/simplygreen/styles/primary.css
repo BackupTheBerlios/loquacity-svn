@@ -1,11 +1,10 @@
 body{
-  font-family: Tahoma, Verdana, Arial, Helvetica, sans-serif;
-  font-size: 0.8em;
-  /*font-size: 1.0em;*/
-  background-color: #fff;
-  color: #000;
-  padding: 0px;
-  margin: 0px;
+	font-family: Tahoma, Verdana, Arial, Helvetica, sans-serif;
+	font-size: 0.8em;
+	background-color: #fff;
+	color: #000;
+	padding: 0px;
+	margin: 0px;
 }
 a{
     text-decoration: none;
@@ -18,40 +17,54 @@ a{
     border-bottom: none;
 }
 #siteMenu{
-  position: absolute;
-  width: 600px;
-  left: 50%;
-  top: 132px;
-  margin-left: -316px;
-  z-index: 15;
-  /*border-bottom: 12px solid #4FAA39;*/
+	position: relative;
+	left: 15%;
+	width: 75%;
+	top: 7%;
 }
 #siteMenu a, #siteMenu a:link, #siteMenu a:active{
-  color: #28551C;
-  padding-right: 3px;
+	color: #28551C;
+	padding-right: 3px;
 }
 #siteMenu a:hover{
-  background-color: #28551C;
-  color: #B3DFA7;
+	background-color: #28551C;
+	color: #B3DFA7;
 }
-#contentBox{
-  position: absolute;
-  width: 600px;
-  left: 50%;
-  top: 150px;
-  margin-left: -316px;
-  z-index: 10;
+
+#content{
+	width: 90%;
+	margin: 1em auto;
+}
+#articles{
+	margin: 0 0 0 30%; padding: 0;
+}
+#articles-content{
+	margin: 0; padding: 0.5em 1em;
+	font-size: 100%;
 }
 #headerAds{
-    /*display: inline;*/
     position: relative;
     left: 0;
     height: 65px;
     width: 468px;
 }
-#contentBox #toc{
+#leftBar{
+	float: left;
+	width: 30%;
+	margin: 0; padding: 0;
 }
-#contentBox h2{
+#leftBar-content{
+	margin: 0; padding: 0.5em 1em;
+	font-size: 70%;
+}
+hr.cleaner{
+	clear:both;
+	height:1px;
+	margin: -1px 0 0 0; padding:0;
+	border:none;
+	visibility: hidden;
+}
+#articles h2{
     background-color: #387728;
     color: #BBFFAA;
     padding-bottom: 0;
@@ -79,11 +92,9 @@ ol.toc li{
     background-color: #387728;
     color: #BBFFAA;
 }
-#contentBox h3.date{
+#articles-content h3.date{
     color: black;
     text-align: right;
-}
-#contentBox div.article{
 }
 div.article h4{
     color: #387728;
@@ -120,66 +131,28 @@ div.article p{
 p{
   z-index: 30;
 }
-#leftBar{
-    position: absolute;
-    top: 215px;
-    left: 50%;
-    width: 200px;
-    margin-left: -525px;
-}
-#leftBar h2{
+
+#leftBar-content h2{
     background-color: #387728;
     color: #BBFFAA;
     text-align: center;
     margin-bottom: 0;
     padding-bottom: 0;
 }
-#leftBar .box{
+#leftBar-content .box{
     /*background-color: #BBFFAA;*/
     background-color: #DDFFD5;
     border: 2px solid #387728;
     color: #000;
 }
-#leftBar .box a{
+#leftBar-content .box a{
     font-weight: 200%;
     color: #387728;
 }
-.leftMenu{
-  float: left;
-  margin-right: 25px;
-  height: 100%;
-  clear: right;
-  width: 200px;
-}
-.leftMenu a,
-.leftMenu a:link,
-.leftMenu a:active{
-  position: relative;
-  display: block;
-  padding: 5px 5px 5px 10px;
-  margin: 0px;
-  idth: 120px;
-  height: 20px;
-  z-index: 45;
-  color: #4FAA39;
-}
-.leftMenu a:hover{
-  border-left: 1px solid #33FF00;
-  color: #28551C;
-}
-.leftMenu a:hover:after{
-  position: relative;
-  content: attr(title);
-  z-index: 50;
-  background-color: #CCFFBF;
-  margin: 0px 0px 0px 5px;
-  width: 100px;
-  white-space: nowrap;
-}
 .txt{
-  margin-left: 210px;
-  padding-left: 1em;
-  padding-right: 1em;
+	margin-left: 210px;
+	padding-left: 1em;
+	padding-right: 1em;
 }
 .comment{
     border: solid 1px #387728;

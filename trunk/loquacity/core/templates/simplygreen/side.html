@@ -1,4 +1,4 @@
-        <div id="leftBar">
+        <div id="leftBar"><div id="leftBar-content">
             <h2>Earlier Posts</h2>
             <div class="box">
                 {getposts num=10 skip=10 assign=recent mode="list"}
@@ -8,14 +8,12 @@
                 {/foreach}
                 </ol>
             </div>
-	    <h2>Older Posts</h2>
-	    <div class="box">
-	        {archivemonths aslist="yes" showcount="0"}
-	    </div>
-	    <h2>Sections</h2>
-	    <div class="box">
-	        {sectionlinks mode="list"}
-	    </div>
-        </div>
-        <div id="rightBar">
-        </div>
+			<h2>Older Posts</h2>
+			<div class="box">
+				{archivemonths aslist="yes" showcount="0"}
+			</div>
+			<h2>Sections</h2>
+			<div class="box">
+				{sectionlinks mode="list"}
+			</div>
+		</div></div>

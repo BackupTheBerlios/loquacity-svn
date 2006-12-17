@@ -128,26 +128,23 @@ function smarty_function_getposts($params, &$loq) {
 	$opt['home'] = $params['home'];
 
     if(($posts = $ph->get_posts($opt)) !== false){
-        //var_dump($posts);
+        $lastmonth = 0;
+        $lastdate = 0;
+        foreach($posts as $key => $value) {
+            if(date('Ymd',intval($posts[$key]['posttime'])) != $lastdate) {
+              $posts[$key]['newday'] = TRUE;
+            }
+            $lastdate = intval(date('Ymd',$posts[$key]['posttime']));
+            if(intval(date('Fy',$posts[$key]['posttime'])) != $lastmonth) {
+              $posts[$key]['newmonth'] = TRUE;
+            }
+            $lastmonth = strftime('%B%Y', intval($osts[$key]['posttime'])); //date('Fy',$ar['posts'][$key]['posttime']);
+        }
         $loq->assign($params['assign'],$posts);
     }
     else{
         $loq->assign($params['assign'],array(0 => array('title' => $ph->status)));
     }
-
-    /*$lastmonth = 0;
-    $lastdate = 0;
-
-    foreach($ar['posts'] as $key => $value) {
-        if(date('Ymd',intval($ar['posts'][$key]['posttime'])) != $lastdate) {
-          $ar['posts'][$key]['newday'] = TRUE;
-        }
-        $lastdate = intval(date('Ymd',$ar['posts'][$key]['posttime']));
-        if(intval(date('Fy',$ar['posts'][$key]['posttime'])) != $lastmonth) {
-          $ar['posts'][$key]['newmonth'] = TRUE;
-        }
-        $lastmonth = strftime('%B%Y', intval($ar['posts'][$key]['posttime'])); //date('Fy',$ar['posts'][$key]['posttime']);
-    }*/
 }
 
 function get_single_post(&$loq, &$ph, $postid){
