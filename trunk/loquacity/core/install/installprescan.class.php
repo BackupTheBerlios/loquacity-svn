@@ -57,8 +57,22 @@ class installprescan extends installbase{
     var $template;
     
 	function installprescan(){
-        $this->form_action = 'install.php?install=install';
-        $this->template = 'configuration.html';
+		if(isset($_POST['install_type'])){
+			if($_POST['install_type'] === 'fresh_install'){
+		        $this->form_action = 'install.php?install=install';
+		        $this->template = 'configuration.html';
+			}
+			else{
+				$upgrade_from = $this->selectUpgrade($_POST['upgrade_from']);
+				if($upgrade_from === false){
+					$this->errors[] = 'Unknown upgrade option.';
+				}
+				include_once(LOQ_INSTALLER.'/installupgrade.class.php');
+				$up = new installupgrade();
+				//$this->form_action = 'install.php?install=upgrade&from='.$upgrade_from;
+				$this->template = 'complete.html';
+			}
+		}
         installbase::installbase();
 	}
 
@@ -107,5 +121,20 @@ class installprescan extends installbase{
             ),
             $this->errors)
             );
+    }
+    /**
+     * Performs basic checking/sanitizing on the upgrade from selection
+     *
+     * @param string $chosen
+     * @return mixed
+     */
+    function selectUpgrade($chosen){
+    	$from = false;
+    	switch($chosen){
+    		case 'bblog07':
+    			$from = $chosen;
+    			break;
+    	}
+    	return $from;
     }
 }

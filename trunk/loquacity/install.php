@@ -102,39 +102,6 @@ else{
     $smarty->assign('step', 0);
     $smarty->display('welcome.html');
 }
-    //following is old upgrade code
-	/*if(isset($config['upgrade_from'])) {
-		if(file_exists('./install/upgrade.'.$config['upgrade_from'].'.php')) {
-			include './install/upgrade.'.$config['upgrade_from'].'.php';
-		} else {
-			echo "<h3>Error</h3>";
-			echo "<p>You have chosen an upgrade option, but the upgrade file (  install/upgrade.".$config['upgrade_from'].".php ) is missing";
-			include 'install/footer.php';
-			exit;
-		}
-	}
-    if ((isset($config['install_type'])) && ($config['install_type'] == 'upgrade')) {
-				echo "<h3>Upgrading</h3>";
-				$intro_func = 'upgrade_from_'.$config['upgrade_from'].'_intro';
-				if(function_exists($intro_func)) $intro_func();
-			}
-			$test = check_writable();
-			if($test) echo "<p>Great, all working. <input type='submit' name='continue' value='Click here to continue' /></p>";
-			else echo "<p>Please fix above errors, then <input type='submit' name='continue' value='Click here to try again' /></p>";
-        $func = 'upgrade_from_'.$config['upgrade_from'].'_pre';
-		if(function_exists($func)) {
-			$func();
-		} else {
-			// this is really an error
-			$step=5;
-			echo "<p>Nothing to see here, <input type='submit' name='submit' value='Next &gt;' /></p>";
-		}
-		// upgrade.
-		// if tables need to be created, such as MT or wordpress converstion, after this step go to step 4.
-		// otherwise, in the case of a bBlog upgrade where tables _dont_ need to be created, go to step 5.
-        $func = 'upgrade_from_'.$config['upgrade_from'].'_post';
-		$func();
-    */
     
 function startSession(){
     session_name('LoquacityInstaller');
