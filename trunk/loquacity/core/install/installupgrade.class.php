@@ -84,6 +84,11 @@ class installupgrade extends installbase{
 			if(($fp = fopen(LOQ_APP_ROOT.'config.php', 'w+b')) !== false){
 	            if(fwrite($fp, "$old_config") !== false){
 		            fclose($fp);
+		            $dsn = 'mysql://'.DB_USERNAME.':'.rawurlencode(DB_PASSWORD).'@'.DB_HOST.'/'.DB_DATABASE;
+			        $this->db = NewADOConnection($dsn);
+					include_once(LOQ_APP_ROOT.'includes/BackupManager.class.php');
+					$bm = new BackupManager($this->db);
+					$bm->backup('upgrade');
 					include_once(LOQ_APP_ROOT.'config.php');
 					if(file_exists(LOQ_APP_ROOT.'config.tmpl') && is_readable(LOQ_APP_ROOT.'config.tmpl')){
 			            $config = file_get_contents(LOQ_APP_ROOT.'config.tmpl');
@@ -121,10 +126,8 @@ class installupgrade extends installbase{
 	function __dbFromBblog(){
 		$rval = false;
 		error_reporting(0);
-        $dsn = 'mysql://'.DB_USERNAME.':'.rawurlencode(DB_PASSWORD).'@'.DB_HOST.'/'.DB_DATABASE;
-        $db = NewADOConnection($dsn);
-        if($db !== false){
-        	$info = $db->ServerInfo();
+        if($this->db !== false){
+        	$info = $this->db->ServerInfo();
 	        $charset = null;
 	        $rval = false;
 	        if((strstr($info['version'], '4.1') !== false) || (strstr($info['version'], '5.0') !== false)){
@@ -141,7 +144,7 @@ class installupgrade extends installbase{
                 $statements = explode(';', $sql);
                 foreach($statements as $line){
                     if(trim($line) !== ''){
-                        $db->Execute($line);
+                        $this->db->Execute($line);
                     }
                 }
                 $rval = true;
