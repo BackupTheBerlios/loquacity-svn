@@ -44,9 +44,7 @@ function identify_admin_options () {
 
 
 function get_options () {
-$options = array();
-
-$options = array(
+	return $options = array(
     array(
         "name"  => "EMAIL",
         "label" => "Email Address",
@@ -146,8 +144,6 @@ $options = array(
          'type'  => 'tzoneselect'
     ),
 );
-
-return $options;
 }
 
 $loq->get_modifiers();
@@ -227,33 +223,33 @@ if ((isset($_POST['submit'])) && ($_POST['submit'] == 'Save Options')) { // savi
                     );
                 }
 				break;
-	      			case "commentmoderation" :
-                   if($_POST[$option['name']] == 'none')
-                         $updatevars[]= array(
-                                        "name" => $option['name'],
-                                        "value" => 'none'
-                                        );
-
-                    if($_POST[$option['name']] == 'all')
+   			case "commentmoderation" :
+				if($_POST[$option['name']] == 'none'){
+                	$updatevars[]= array(
+	                    "name" => $option['name'],
+	                    "value" => 'none'
+                    );
+				}
+                if($_POST[$option['name']] == 'all')
                          $updatevars[]= array(
                                         "name" => $option['name'],
                                         "value" => 'all'
                                         );
-		     if($_POST[$option['name']] == 'urlonly')
+		     	if($_POST[$option['name']] == 'urlonly')
                          $updatevars[]= array(
                                         "name" => $option['name'],
                                         "value" => 'urlonly'
                                         );
-                   break;
+                break;
 
-              case "modifierselect" :
+			case "modifierselect" :
                    if(ereg('^[[:alnum:]]+$',$_POST[$option['name']]))
                          $updatevars[] = array(
                                        "name"=>$option['name'],
                                        "value"=>$_POST[$option['name']]
                                        );
 
-                   break;
+            	break;
 	      case "truefalse" :
 			$updatevars[] = array(
 				"name"=>$option['name'],
@@ -273,14 +269,12 @@ if ((isset($_POST['submit'])) && ($_POST['submit'] == 'Save Options')) { // savi
     } // foreach
 } // if
 if ((isset($_POST['submit'])) && ($_POST['submit'] == 'Save Options')) {
+	$sql = "UPDATE `".T_CONFIG."` SET VALUE=? WHERE `name`=?";
+	$stmt = $loq->_adb->Prepare($sql);
     foreach($updatevars as $update) {
-        $rs = array();
-        $rs['name'] = $update['name'];
-        $rs['value'] = $update['value'];
-        //$loq->_adb->debug = true;
-        $loq->_adb->Replace(T_CONFIG, $rs, 'id', true);
-        /*$sql = "UPDATE ".T_CONFIG." SET VALUE='".$update['value']."' WHERE `name`='".$update['name']."'";
-        $loq->_adb->Execute($sql);*/
+        $name = $update['name'];
+        $value = $update['value'];
+        $loq->_adb->Execute($stmt, array($value, $name));
     }
     $loq->assign("showmessage",TRUE);
     $loq->assign("showoptions",'no');

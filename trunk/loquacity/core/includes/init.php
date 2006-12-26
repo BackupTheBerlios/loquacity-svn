@@ -89,7 +89,8 @@ $loq->begintime = $mtime[1] + $mtime[0]; */
 $loq->compile_dir = LOQ_APP_ROOT.'generated/templates/'; */
 
 if(defined('IN_BBLOG_ADMIN')) {
-       $loq->compile_id = 'admin';
+	$loq->compile_id = 'admin';
+	$loq->template_dir = LOQ_APP_ROOT.'includes/admin_templates';
 } else 	{
 	$loq->compile_id = C_TEMPLATE;
 }

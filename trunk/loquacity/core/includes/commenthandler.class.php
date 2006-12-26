@@ -113,9 +113,10 @@ class commentHandler {
     * @param array  $post_vars $_POST
     */
     function new_comment($post, $replyto, $post_vars) {
-	$result = false;
+		$result = false;
         if($this->canProceed($post, $post_vars['imagecode'], $post_vars['comment'])){
             $vars = $this->prepFieldsForDB($post_vars, $post['postid'], $replyto);
+            
             if ($post_vars['set_cookie']) {
                 $this->setCommentCookie($vars['postername'], $vars['posteremail'], $vars['posterwebsite']);
             }
@@ -322,6 +323,8 @@ class commentHandler {
     */
     function failsCaptcha($code){
         $rval = true;
+        var_dump($code);
+        return false;
         if(C_IMAGE_VERIFICATION == 'true' && !empty($code)) { //Some templates may not have the iamge verification enabled
             if (!PhpCaptcha::Validate($code)){
                 $rval = false;

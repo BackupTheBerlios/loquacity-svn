@@ -19,6 +19,11 @@
 
 <div class="sidetitle">Earlier Posts</div>
 <div class="side">
-{getposts skip=10}
+	{getposts skip=10 num=5 mode=list assign=recent}
+	{foreach from=$recent item=post}
+	<ul>
+		<li><a href="{$post.permalink}">{$post.title}</a></li>
+	</ul>
+	{/foreach}
 </div>
 {include file="footer.html"}

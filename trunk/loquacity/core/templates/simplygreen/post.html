@@ -60,18 +60,18 @@
                 <div class="clear">&nbsp;</div>
                     <div class="formleft"><label for="website">Website:</label></div>
                     <div class="formright"><input name="website" type="text" id="url" /> <label for="public_website">Make Public?</label> <input class="checkbox" name="public_website" type="checkbox" id="public_website" value="1" checked="checked" /></div>
-{if $C_CAPTCHA_ENABLE === 'true'}
-		<div class="clear">&nbsp;</div>
-		<div class="formleft"><label for="imagecode">Captcha:</label></div>
-		<div class="formright">
-			<div class="formfieldcontainer">
-				<div>
-					<img src="{$blogurl}visualcaptcha.php" alt="Visual CAPTCHA" />
+				{if $C_CAPTCHA_ENABLE === 'true'}
+				<div class="clear">&nbsp;</div>
+				<div class="formleft"><label for="imagecode">Captcha:</label></div>
+				<div class="formright">
+					<div class="formfieldcontainer">
+						<div>
+							<img src="{$blogurl}visualcaptcha.php" alt="Visual CAPTCHA" />
+						</div>
+						Text: <input name="imagecode" id="imagecode" type="text" class="formfield" />
+					</div>
 				</div>
-				Text: <input name="imagecode" id="imagecode" type="text" class="formfield" />
-			</div>
-		</div>
-        {/if}
+		        {/if}
                 <div class="clear">&nbsp;</div>
                     <div class="formleft"><label for="comment">Comment:</label></div>
                     <div class="formright"><textarea name="comment" cols="30" rows="6" wrap="VIRTUAL" id="text"></textarea></div>

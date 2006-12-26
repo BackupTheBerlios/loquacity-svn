@@ -18,19 +18,17 @@
 	<div class="box1">
 		<div class="posted">{$post.posttime|date_format:jim}<br />The trackback url for this post is {$post.trackbackurl}</div>
 	</div>
-
-<!--	put as comment for xhtml validity
-<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-         xmlns:dc="http://purl.org/dc/elements/1.1/"
-         xmlns:trackback="http://madskills.com/public/xml/rss/module/trackback/">
-<rdf:Description
-    rdf:about="{$post.permalink}"
-    dc:identifer="{$post.permalink}"
-    dc:title="{$post.title}"
-    trackback:ping="{$post.trackbackurl}" />
-</rdf:RDF>
--->
-
+	<!--	put as comment for xhtml validity
+	<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+	         xmlns:dc="http://purl.org/dc/elements/1.1/"
+	         xmlns:trackback="http://madskills.com/public/xml/rss/module/trackback/">
+	<rdf:Description
+	    rdf:about="{$post.permalink}"
+	    dc:identifer="{$post.permalink}"
+	    dc:title="{$post.title}"
+	    trackback:ping="{$post.trackbackurl}" />
+	</rdf:RDF>
+	-->
 </div><!-- .blogbody-->
 
 <div class="box1">
@@ -116,11 +114,11 @@
         </div>
         {if $C_CAPTCHA_ENABLE === 'true'}
 		<div class="clear">&nbsp;</div>
-		<div class="formleft">Captcha: </div>
+		<div class="formleft"><label for="imagecode">Captcha:</label></div>
 		<div class="formright">
 			<div class="formfieldcontainer">
 				<div>
-					<img src="/~kpower/blog/visualcaptcha.php" alt="Visual CAPTCHA" />
+					<img src="{$blogurl}visualcaptcha.php" alt="Visual CAPTCHA" />
 				</div>
 				Text: <input name="imagecode" id="imagecode" type="text" class="formfield" />
 			</div>

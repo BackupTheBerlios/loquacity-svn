@@ -17,7 +17,12 @@
     </div><!-- .box1-->
     <div class="box2">
         <div class="side">
-            {recentposts skip='10' mode='list' sep=''}
+            {getposts skip=5 num=5 mode=list assign=recent}
+            {foreach from=$recent item=post}
+            <ul>
+				<li><a href="{$post.permalink}">{$post.title}</a></li>
+			</ul>
+			{/foreach}
     </div><!-- .side -->
     </div><!-- .box2 -->
     <div class="box1">
