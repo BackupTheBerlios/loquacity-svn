@@ -65,12 +65,10 @@ function identify_function_sectionlinks () {
 }
 
 function smarty_function_sectionlinks($params, &$loq) {
-
     $linkcode = '';
 
     $mode = (isset($params['mode'])) ? $params['mode'] : 'break';
-    $sections = (isset($params['sections'])) ? $params['sections'] : $loq->sections;
-     
+    $sections = (isset($params['sections']) && count($params['sections']) > 0) ? $params['sections'] : $loq->sections;
 
     if($mode=='list')
         $sep = "";

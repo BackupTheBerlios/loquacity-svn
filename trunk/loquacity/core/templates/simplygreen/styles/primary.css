@@ -146,7 +146,7 @@ p{
     color: #000;
 }
 #leftBar-content .box a{
-    font-weight: 200%;
+    font-weight: bold;
     color: #387728;
 }
 .txt{
@@ -202,14 +202,9 @@ p{
 .clear{
     clear: both;
 }
-.formleft{
-    width: 8em;
-    float: left;
+.form > label{
+	display: block;
 }
-.formright{
-    width: 8em;
-    float: right;
-}
-label{
-    font-weight: bold;
+.form > img{
+	display: block;
 }

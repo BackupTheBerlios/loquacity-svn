@@ -85,11 +85,6 @@ class trackbackhandler extends commentHandler {
                 //Save the trackback
                 $id = $this->saveComment($trackback);
                 if($id > 0) {
-                    // notify owner
-                    /*if(C_NOTIFY == true){
-                        $this->notify($trackback['postername'], 'permalink', $trackback['onhold'], $trackback['commenttext']);
-                    }*/
-                    //$this->updateCommentCount($this->_db, $this->_post->postid);
                     $this->userResponse(0, '');
                 } else {
                     $this->userResponse(1,"Error adding trackback : ".mysql_error());
@@ -201,10 +196,18 @@ class trackbackhandler extends commentHandler {
             $rval = $rs;
         return $rval;
     }
-	// Send a trackback-ping.
-	function send_trackback($url, $title="", $excerpt="",$t) {
+	/**
+	 * Ping the remote site with a trackback
+	 *
+	 * @param string $url
+	 * @param string $title
+	 * @param string $excerpt
+	 * @param string $target
+	 * @return boolean
+	 */
+	function send_trackback($url, $title="", $excerpt="",$target) {
 		//parse the target-url
-		$target = parse_url($t);
+		$target = parse_url($target);
 		
 		if ($target["query"] != "") $target["query"] = "?".$target["query"];
 		

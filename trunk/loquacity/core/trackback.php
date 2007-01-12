@@ -62,7 +62,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && $_SERVER['CONTENT_TYPE'] === 'applic
         $post = stringHandler::removeMagicQuotes($url['tbpost']);
         if(isset($url['cid'])){
             $comment = stringHandler::removeMagicQuotes($url['cid']);
-            }
+		}
     }
     include_once('includes/trackbackhandler.class.php');
     $th = new trackbackhandler($loq->_adb, $post);

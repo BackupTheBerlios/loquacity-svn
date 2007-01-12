@@ -275,6 +275,9 @@ if ((isset($_POST['submit'])) && ($_POST['submit'] == 'Save Options')) {
         $name = $update['name'];
         $value = $update['value'];
         $loq->_adb->Execute($stmt, array($value, $name));
+        /*echo '<pre>';
+        var_dump('NAME: '.$name. ' -- VALUE: '.$value);
+        echo '</pre>';*/
     }
     $loq->assign("showmessage",TRUE);
     $loq->assign("showoptions",'no');
@@ -312,7 +315,7 @@ else{
                    break;
 
                 case "charsetselect":
-                         $formright = '<select name="'.$option['name'].'" class="bf">';
+                         $formright = '<select name="'.$option['name'].'" class="bf" style="width: 20em;">';
                          foreach ($charsets as $charset){
                                 $formright .='<option value="'.$charset['value'].'" ';
                                 if ($charset['value'] == C_CHARSET) $formright .='selected';
@@ -384,7 +387,7 @@ else{
 				$formright = 'GMT <select name="'.$option['name'].'" class="bf">';
 				for($i = -12; $i < 12; $i++){
 					$formright .= '<option value="'.$i.'"';
-					if($i == C_TIMEZONE || $i === 0){
+					if($i == C_TIMEZONE){
 						$formright .=' selected';
 					}
 					$formright .='>'.$i.'</option>';

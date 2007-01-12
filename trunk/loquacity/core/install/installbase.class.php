@@ -52,6 +52,7 @@ class installbase extends Smarty{
 	function installbase(){
         stringHandler::removeMagicQuotes($_POST);
         Smarty::Smarty();
+        $this->_steps = array('prescan', 'install', 'postscan', 'upgrade');
         $this->assign('version', LOQ_CUR_VERSION);
         $this->template_dir = LOQ_INSTALLER.'/templates';
         $this->compile_dir = ini_get("session.save_path");
@@ -94,10 +95,22 @@ class installbase extends Smarty{
             foreach($_SESSION['config'] as $name=>$value){
                 $this->assign($name, $value);
             }
-            //The following are needed during install by some plugins
-             #define('TBL_PREFIX', $_SESSION['config']['table_prefix']);
-             #define('BLOGURL', $_SESSION['config']['blog_url']);
         }
     }
-
+    /**
+     * Go to a specific step in the installer
+     * 
+     * Allows the installation process to move a step without user intervention. Useful for
+     * automated installs but primarily used for upgrades and revisiting a step.
+     *
+     * @param string $step
+     */
+    function forceStep($step){
+    	if(in_array($step, $this->_steps)){
+    		include_once(LOQ_INSTALLER.'/install'.$_GET['install'].'.class.php');
+	        $class = 'install'.$step;
+	        $step = new $class();
+	        $step->display();
+    	}
+    }
 }

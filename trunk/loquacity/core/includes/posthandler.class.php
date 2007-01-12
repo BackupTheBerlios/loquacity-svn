@@ -65,6 +65,7 @@ class posthandler {
     		$this->_last_error = 'Unknown method stipulated for modifyPost';
     		return false;
     	}
+    	$rval = false;
         $now = strtotime(gmdate("M d Y H:i:s"));
         $sections = ':';
         if(count($post['frm_sections'])>0) {
@@ -86,16 +87,21 @@ class posthandler {
         
         if($this->_db->AutoExecute(T_POSTS, $rs, $method, $where, false, get_magic_quotes_runtime()) !== false){
             if($method === 'INSERT' ){
-                return intval($this->_db->insert_id());
+                $rval = intval($this->_db->insert_id());
             }
             else{
-                return true;
+                $rval = true;
+            }
+            if(isset($post['send_trackback']) && $post['send_trackback'] == true){
+            	include_once(LOQ_APP_ROOT.'includes/trackbackhandler.class.php');
+            	$tb = new trackbackhandler($this->_db);
+            	$tb->send_trackback('', $post['title'], $post['excerpt'], $post['tburl']);
             }
         }
         else{
             $this->_last_error = $this->_db->ErrorMsg();
-            return false;
         }
+        return $rval;
     }
     
     /**
@@ -136,7 +142,7 @@ class posthandler {
     	$npost['id'] = $post['postid'];
         $npost['postid'] = $post['postid'];
         $npost['permalink'] = (defined(CLEANURLS)) ? str_replace('%postid%',$post['postid'],URL_POST) : BLOGURL.'?postid='.$post['postid'];
-        $npost['trackbackurl'] = (defined(CLEANURLS)) ?  BLOGURL.'trackback/tbpost='.$post['postid'] : LOQ_APP_URL.'trackback.php&amp;tbpost='.$post['postid'];
+        $npost['trackbackurl'] = (defined(CLEANURLS)) ?  BLOGURL.'trackback/tbpost='.$post['postid'] : BLOGURL.'trackback.php&amp;tbpost='.$post['postid'];
         $npost['title'] = htmlspecialchars($post['title']);
         //var_dump($npost['permalink']);
         // do the body text

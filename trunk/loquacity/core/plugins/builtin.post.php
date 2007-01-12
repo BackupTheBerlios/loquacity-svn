@@ -61,11 +61,11 @@ if((isset($_POST['newpost'])) && ($_POST['newpost'] == 'true')) {
             // requests before the page loads ?
         }
         
-        if ((isset($_POST['send_trackback'])) && ($_POST['send_trackback'] == "TRUE")) {
+        /*if ((isset($_POST['send_trackback'])) && ($_POST['send_trackback'] == "TRUE")) {
             // send a trackback
             include "./trackback.php";
             send_trackback($loq->_get_entry_permalink($res), $_POST['title_text'], $_POST['excerpt'], $_POST['tburl']);
-        }
+        }*/
 
       }
       else{

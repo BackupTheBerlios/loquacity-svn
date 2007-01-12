@@ -1,89 +1,90 @@
-{assign var=title value=$blogname}
 {getposts assign=post postid=$postid}
-{assign var=pagetitle value="`$blogname` :: `$post.title`"}
+{assign var=title value=$blogname}
+{assign var=pagetitle value="$blogname :: "|cat:$post.title}
 {include file="header.html"}
-    <div id="contentBox">
-      <h2>{$post.title}</h2>
-      <div class="article">
-          <div class="box nobb">
-            {$post.body}
-          </div>
-          <div class="articleMeta">
-            {$post.posttime|date_format:jim}
-            The trackback url for this post is {$post.trackbackurl}
-          </div>
-          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:trackback="http://madskills.com/public/xml/rss/module/trackback/">
-            <rdf:Description rdf:about="{$post.permalink}" dc:identifer="{$post.permalink}" dc:title="{$post.title}" trackback:ping="{$post.trackbackurl}" />
-          </rdf:RDF>
-          <h2>Comments</h2>
-          {getcomments assign=comments}
-          {if count($comments) gt 0}
-          {foreach from=$comments item=comment}
-          <div class="comment{if $comment.deleted eq 'true'} deleted{elseif $comment.onhold} onhold{/if}" style="margin-left: {$comment.level25}px;{if $comment.level25 gt 1}border-top: none;{/if}">
-            {if $comment.deleted eq "true"}
-            <div class="comment-body"><strong>Deleted</strong></div>
-            {elseif $comment.onhold}
-              <div class="comment-body">Comment pending moderation</div>
-            {else}
-              <div class="comment-head">{$comment.title|nohtml}</div>
-              <div class="comment-body">
-                {$comment.commenttext|nl2br|kses}
-                <div class="comment-meta">
-                  {if $comment.type eq 'trackback'}
-                  <p>Trackback from <a href="{$comment.posterwebsite}">{$comment.postername}</a> {$comment.posttime|date_format:since} &#8226; <a href="replyto={$comment.id}#commentform">Reply</a></p>
-                  {else}
-                  <p>Comment #{$comment.id} &nbsp; {$comment.posttime|date_format:since} by {$comment.postername} &#8226; {$comment.emaillink} &#8226; {$comment.posterwebsite} &#8226; <a href="replyto={$comment.id}#commentform">Reply</a></p>
-                  {/if}
-                  <div class="comment-trackback">Comment Trackback URL : {$comment.trackbackurl}</div>
-                </div>
-              </div>
-              {/if}
-            </div>
-          {/foreach}
-          {/if}
-          {if $post.allowcomments}
-          <form method="post" action="{$commentformaction}">
-            {$commentformhiddenfields}
-            <h3 class="title">Add Comment</h3>
-            <p><em>( to reply to a comment, click the reply link next to the comment )</em></p>
-            <div class="clear"><p><i>Allowed XHTML tags : a, b, i, strong, code, acrynom, blockquote, abbr. Linebreaks will be converted automatically.</i></p>
-            <div class="form">
-                <div class="clear">&nbsp;</div>
-                    <div class="formleft"><label for="title">Comment Title:</label></div>
-                    <div class="formright"><input name="title" type="text" id="title" value="{$commentreplytitle}"/></div>
-                <div class="clear">&nbsp;</div>
-                    <div class="formleft"><label for="name">Your Name:</label></div>
-                    <div class="formright"><input name="name" type="text" id="author" /></div>
-                <div class="clear">&nbsp;</div>
-                    <div class="formleft"><label for="email">Email Address:</label></div>
-                    <div class="formright"><input name="email" type="text" id="email" /> <label for="public_email">Make Public?</label> <input class="checkbox" name="public_email" type="checkbox" id="public_email" value="1" checked="checked"/></div>
-                <div class="clear">&nbsp;</div>
-                    <div class="formleft"><label for="website">Website:</label></div>
-                    <div class="formright"><input name="website" type="text" id="url" /> <label for="public_website">Make Public?</label> <input class="checkbox" name="public_website" type="checkbox" id="public_website" value="1" checked="checked" /></div>
-				{if $C_CAPTCHA_ENABLE === 'true'}
-				<div class="clear">&nbsp;</div>
-				<div class="formleft"><label for="imagecode">Captcha:</label></div>
-				<div class="formright">
-					<div class="formfieldcontainer">
-						<div>
-							<img src="{$blogurl}visualcaptcha.php" alt="Visual CAPTCHA" />
-						</div>
-						Text: <input name="imagecode" id="imagecode" type="text" class="formfield" />
-					</div>
-				</div>
-		        {/if}
-                <div class="clear">&nbsp;</div>
-                    <div class="formleft"><label for="comment">Comment:</label></div>
-                    <div class="formright"><textarea name="comment" cols="30" rows="6" wrap="VIRTUAL" id="text"></textarea></div>
-                <div class="clear">&nbsp;</div>
-                    <div class="formleft">&nbsp;</div> 
-                    <div class="formright"><input name="submit" type="submit" id="submit" value="Submit Comment" /><input type="hidden" name="do" value="submitcomment" /></div>
-                <div class="clear">&nbsp;</div>
-            </div> 
+	{include file="side.html"}
+	<div id="articles"><div id="articles-content">
+		<div id="headerAds">&nbsp;
+		</div>
+		<div class="article">
+			<h4 id="{$post.title|escape}"><a href="{$post.permalink|escape}">{$post.title}</a></h4>
+			<div class="box nobb">
+			{$post.body}
+			</div>
+			<div class="articleMeta">
+				Category: {sectionlinks sep=" &middot; " sections=$post.sections} &#8226; 
+				Author: {$post.author.fullname} <br />
+				Trackback {$post.trackbackurl}
+			</div>
+		</div>
+        <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:trackback="http://madskills.com/public/xml/rss/module/trackback/">
+          <rdf:Description rdf:about="{$post.permalink}" dc:identifer="{$post.permalink}" dc:title="{$post.title}" trackback:ping="{$post.trackbackurl}" />
+        </rdf:RDF>
+        <div class="article">
+			<h2>Comments</h2>
+          	{getcomments assign=comments}
+          	{if count($comments) gt 0}
+          		{foreach from=$comments item=comment}
+          		<div class="comment{if $comment.deleted eq 'true'} deleted{elseif $comment.onhold} onhold{/if}" style="margin-left: {$comment.level25}px;{if $comment.level25 gt 1}border-top: none;{/if}">
+	            	{if $comment.deleted eq "true"}
+            		<div class="comment-body"><strong>Deleted</strong></div>
+            		{elseif $comment.onhold}
+              		<div class="comment-body">Comment pending moderation</div>
+            		{else}
+	              	<div class="comment-head">{$comment.title|nohtml}</div>
+	              	<div class="comment-body">
+                		{$comment.commenttext|nl2br|kses}
+                		<div class="comment-meta">
+	                  		{if $comment.type eq 'trackback'}
+	                  		<p>Trackback from <a href="{$comment.posterwebsite}">{$comment.postername}</a> {$comment.posttime|date_format:since} &#8226; <a href="replyto={$comment.id}#commentform">Reply</a></p>
+	                  		{else}
+	                  		<p>Comment #{$comment.id} &nbsp; {$comment.posttime|date_format:since} by {$comment.postername} &#8226; {$comment.emaillink} &#8226; {$comment.posterwebsite} &#8226; <a href="replyto={$comment.id}#commentform">Reply</a></p>
+	                  		{/if}
+	                  		<div class="comment-trackback">Comment Trackback URL : {$comment.trackbackurl}</div>
+                		</div>
+              		</div>
+              		{/if}
+            	</div>
+          		{/foreach}
+          	{/if}
+          	{if $post.allowcomments}
+          	<form method="post" action="{$commentformaction}">
+	            {$commentformhiddenfields}
+	            <h3 class="title">Add Comment</h3>
+	            <div class="form">
+	                <div class="clear">&nbsp;</div>
+                    <label for="name">Name </label>
+	                <input name="name" type="text" value="" id="author" size="22" tabindex="1" />
+	                <div class="clear">&nbsp;</div>
+	                <label for="website">Website </label>
+	                <input name="website" type="text" value="" id="url" size="22" tabindex="2" />
+					{if $C_CAPTCHA_ENABLE === 'true'}
+					<div class="clear">&nbsp;</div>
+					<img src="{$blogurl}visualcaptcha.php" alt="Visual CAPTCHA" />
+					<label for="imagecode">Image Text </label>
+					<input name="imagecode" id="imagecode" type="text" tabindex="3" />
+			        {/if}
+	                <div class="clear">&nbsp;</div>
+	                <label for="comment">Comment </label>
+	                <textarea name="comment" cols="80" rows="10" id="text" tabindex="4"></textarea>
+	                <div class="clear">&nbsp;</div>
+	                <div class="">&nbsp;</div> 
+	                <input name="submit" type="submit" id="submit" value="Add Comment" tabindex="5" /><input type="hidden" name="do" value="submitcomment" />
+	                <div class="clear">&nbsp;</div>
+	                <div id="commentPreview"></div>
+	            </div> 
           </form>
           {else}
           <p>Comments have now been turned off for this post</p>
           {/if}
           </div>
-    </div>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+	      xmlns:dc="http://purl.org/dc/elements/1.1/"
+	      xmlns:trackback="http://madskills.com/public/xml/rss/module/trackback/">
+		  <rdf:Description
+		  rdf:about="{$post.permalink}"
+		  dc:identifer="{$post.permalink}"
+		  dc:title="{$post.title}"
+		  trackback:ping="{$post.trackbackurl}" />
+			</rdf:RDF>
     {include file="footer.html"}

@@ -67,10 +67,11 @@ class installprescan extends installbase{
 				if($upgrade_from === false){
 					$this->errors[] = 'Unknown upgrade option.';
 				}
-				include_once(LOQ_INSTALLER.'/installupgrade.class.php');
+				/*include_once(LOQ_INSTALLER.'/installupgrade.class.php');
 				$up = new installupgrade();
 				//$this->form_action = 'install.php?install=upgrade&from='.$upgrade_from;
-				$this->template = 'complete.html';
+				$this->template = 'complete.html';*/
+				$this->forceStep('upgrade');
 			}
 		}
         installbase::installbase();
