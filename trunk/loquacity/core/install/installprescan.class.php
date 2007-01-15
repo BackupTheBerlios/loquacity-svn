@@ -58,7 +58,7 @@ class installprescan extends installbase{
     
 	function installprescan(){
 		if(isset($_POST['install_type'])){
-			if($_POST['install_type'] === 'fresh_install'){
+			if($_POST['install_type'] === 'fresh'){
 		        $this->form_action = 'install.php?install=install';
 		        $this->template = 'configuration.html';
 			}
