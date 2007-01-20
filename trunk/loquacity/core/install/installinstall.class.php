@@ -132,8 +132,8 @@ class installinstall extends installbase{
 	 *
 	*/
     function writeconfig(){
-        if(file_exists(LOQ_APP_ROOT.'config.tmpl') && is_readable(LOQ_APP_ROOT.'config.tmpl')){
-            $config = file_get_contents(LOQ_APP_ROOT.'config.tmpl');
+        if(file_exists(LOQ_INSTALLER.DIRECTORY_SEPARATOR.'config.tmpl') && is_readable(LOQ_INSTALLER.DIRECORY_SEPARATOR.'config.tmpl')){
+            $config = file_get_contents(LOQ_INSTALLER.DIRECTORY_SEPARATOR.'config.tmpl');
             $config = str_replace('__pfx__', $_SESSION['config']['table_prefix'], $config);
             foreach($_SESSION['config'] as $setting=>$value){
                 $config = str_replace('__'.$setting.'__', $value, $config);

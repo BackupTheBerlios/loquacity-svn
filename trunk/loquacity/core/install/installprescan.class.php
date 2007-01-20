@@ -63,15 +63,13 @@ class installprescan extends installbase{
 		        $this->template = 'configuration.html';
 			}
 			else{
-				$upgrade_from = $this->selectUpgrade($_POST['upgrade_from']);
+				$choice = (isset($_POST['upgrade_from'])) ? $_POST['upgrade_from'] : (isset($_SESSION['upgrade'])) ? $_SESSION['upgrade'] : null;
+				$upgrade_from = $this->checkUpgrade($choice);
 				if($upgrade_from === false){
 					$this->errors[] = 'Unknown upgrade option.';
 				}
-				/*include_once(LOQ_INSTALLER.'/installupgrade.class.php');
-				$up = new installupgrade();
 				//$this->form_action = 'install.php?install=upgrade&from='.$upgrade_from;
-				$this->template = 'complete.html';*/
-				$this->forceStep('upgrade');
+				$this->template = 'complete.html';
 			}
 		}
         installbase::installbase();
@@ -86,7 +84,14 @@ class installprescan extends installbase{
             $this->assign('notice_message', $this->noticeMessage());
             $this->assign('action', 'install.php?install=prescan');
         }
-        $this->assign('form_action', $this->form_action);
+		if(isset($_SESSION['upgrade']){
+			if(!isset($this->errors) || count($this->errors) > 0){
+				$this->forceStep('upgrade');
+			}
+		}
+		else{
+			$this->assign('form_action', $this->form_action);
+		}
     }
 
 
@@ -129,11 +134,13 @@ class installprescan extends installbase{
      * @param string $chosen
      * @return mixed
      */
-    function selectUpgrade($chosen){
+    function checkUpgrade($chosen){
     	$from = false;
     	switch($chosen){
     		case 'bblog07':
     			$from = $chosen;
+				$_SESSION['upgrade'] = $from;
+				$this->upgrade = $from;
     			break;
     	}
     	return $from;

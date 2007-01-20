@@ -179,7 +179,15 @@ class BackupManager{
 	}
 	/**
 	 * TODO Move all below functions to a Database class
+	 * NOTE Currently below only works with MySQL
 	 */
+	 
+	/**
+	* Initiates the database backup
+	*
+	* @param filehandle $backup_fh
+	* @return void
+	*/
 	function dumpSQL(&$backup_fh){
 		$tables = $this->grabTables();
 		fwrite($backup_fh, $tables[0]."\n");
@@ -189,6 +197,12 @@ class BackupManager{
 			$this->grabTableData($table, &$backup_fh);
 		}
 	}
+	
+	/**
+	* Generates a list of the database tables
+	* 
+	* @return array
+	*/
 	function grabTables(){
 		$sql = 'show tables';
 		$rs = $this->_db->Execute($sql);
@@ -198,12 +212,27 @@ class BackupManager{
 		}
 		return array(join(',', $tables), $tables);
 	}
+	
+	/**
+	* Retrieves the schema for specified table
+	*
+	* @param string $table
+	* @return string
+	*/
 	function grabTableSchema($table){
 		$sql = 'SHOW CREATE TABLE loq_authors';
 		$rs = $this->_db->Execute($sql);
 		$drop = 'DROP TABLE `'.$table."`;\n";
 		return $drop . $rs->fields[1];
 	}
+	
+	/**
+	* Retrieve SQL Statements that will restore data for a table
+	*
+	* @param string $table Database table to dump
+	* @param filehandle $fh Open filehandle to receive the data
+	* @return void
+	*/
 	function grabTableData($table, &$fh){
 		$sql = 'SELECT * FROM `'.$table.'`';
 		$rs = $this->_db->Execute($sql);
