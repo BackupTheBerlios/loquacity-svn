@@ -4,7 +4,7 @@
  *
  * This class should manage the obtaining, resetting, and
  * passing of passwords from and to the DB.
- * 
+ *
  * Loquacity - A web blogging application with simplicity in mind - http://www.loquacity.info/
  * Copyright (C) 2006 Kenneth Power <telcor@users.berlios.de>
  *
@@ -148,7 +148,7 @@ class passwordManager {
 	 * @return bool	true/false.
 	*/
 	function checkAnswers($str1, $str2) {
-		($str1 == $str2)?true:false;
+		return ($str1 == $str2)?true:false;
 	}
 
 }

@@ -84,7 +84,7 @@ class installprescan extends installbase{
             $this->assign('notice_message', $this->noticeMessage());
             $this->assign('action', 'install.php?install=prescan');
         }
-		if(isset($_SESSION['upgrade']){
+		if(isset($_SESSION['upgrade'])){
 			if(!isset($this->errors) || count($this->errors) > 0){
 				$this->forceStep('upgrade');
 			}
