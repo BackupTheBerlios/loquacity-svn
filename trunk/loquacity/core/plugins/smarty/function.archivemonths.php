@@ -41,7 +41,8 @@ function identify_function_archivemonths(){
         "nicename" => "Archive Month Listing",
         "description" => "Generates a list of archive months",
         "authors" => "c.boulton@mybboard.com, Kenneth Power <telcor@users.berlios.de>",
-        'license' => 'GPL'
+        'license' => 'GPL',
+         'help'           => ''
     );
 }
 

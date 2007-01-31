@@ -36,7 +36,8 @@ function identify_admin_captcha(){
         'nicename'       =>'Captcha Admin',
         'description'    =>'Configure and Enable Captcha use',
         'authors'         =>'TelCor',
-        'licence'         =>'GPL'
+        'licence'         =>'GPL',
+        'help'			 => ''
     );
 }
 

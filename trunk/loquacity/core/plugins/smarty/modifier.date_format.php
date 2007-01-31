@@ -116,7 +116,8 @@ function identify_modifier_date_format () {
     'nicename'       =>'Date Format',
     'description'    =>'Date format takes a timestamp, and turns it into a nice looking date',
     'authors'         =>'Dean Allen, Eaden McKee, Tobias Schlottke',
-    'licence'         =>'Textpattern'
+    'licence'         =>'Textpattern',
+    'help'			 => ''
   );
 }
 

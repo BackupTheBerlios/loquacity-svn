@@ -45,7 +45,8 @@ function identify_admin_archives ()
     'nicename'       =>'Archives Admin',
     'description'    =>'Edit archives',
     'authors'         =>'Eaden McKee, Tobias Schlottke',
-    'licence'         =>'GPL'
+    'licence'         =>'GPL',
+    'help'			 => ''
   );
 }
 

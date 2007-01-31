@@ -36,7 +36,8 @@ function identify_admin_help () {
     'nicename'       =>'Help',
     'description'    =>'Displays Help',
     'authors'         =>'Eaden McKee',
-    'licence'         =>'GPL'
+    'licence'         =>'GPL',
+    'help'			 => ''
   );
 }
 if(is_numeric($_GET['pid']) or strlen($_GET['mod'])>0) {

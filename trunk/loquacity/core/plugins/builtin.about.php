@@ -40,8 +40,9 @@ function identify_admin_help () {
     'type'           =>'builtin',
     'nicename'       =>'About',
     'description'    =>'Displays Loquacity information',
-    'authors'         =>'Eaden McKee <email@eadz.co.nz>',
-    'licence'         =>'GPL'
+    'authors'        =>'Eaden McKee <email@eadz.co.nz>',
+    'licence'        =>'GPL',
+    'help'			 => ''
   );
 }
 include_once('includes/credits.php');

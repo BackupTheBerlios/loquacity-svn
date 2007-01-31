@@ -49,7 +49,8 @@ function identify_admin_plugins () {
     'nicename'       =>'Plugins',
     'description'    =>'Display information about, and run plugins',
     'authors'         =>'Eaden McKee',
-    'licence'         =>'GPL'
+    'licence'         =>'GPL',
+    'help'			 => ''
   );
 }
 // PLUGINS :

@@ -48,7 +48,8 @@ function identify_modifier_locale () {
     'nicename'       =>'Set Locale',
     'description'    =>'Set locale and return unmodified input data',
     'authors'         =>'Sebastian Werner',
-    'licence'         =>'GPL'
+    'licence'         =>'GPL',
+    'help'			 => ''
   );
 }
 
