@@ -55,17 +55,21 @@ class BackupManager{
 		$tmp_file = tempnam($this->_store, $type.'_');
 		$sql_file = $this->_store.DIRECTORY_SEPARATOR.'backup.sql';
 		touch($tmp_file);
-		$fh = fopen($tmp_file, 'w+b');
-		$this->dumpSQL(&$fh);
-		fclose($fh);
-		chmod($tmp_file, 0666);
-		if(is_file($sql_file)){
-			unlink($sql_file);
-		}
-		rename($tmp_file, $sql_file);
-		$this->compress($type);
-		if($this->checkArchive()){
-			unlink($sql_file);
+		if(($fh = fopen($tmp_file, 'w+b')) !== false){
+			if(flock($fh, LOCK_EX)){
+				$dbm = new DatabaseManager($this->_db);
+				$dbm->backup($fh);
+				fclose($fh);
+				chmod($tmp_file, 0666);
+				if(is_file($sql_file)){
+					unlink($sql_file);
+				}
+				rename($tmp_file, $sql_file);
+				$this->compress($type);
+				if($this->checkArchive()){
+					unlink($sql_file);
+				}
+			}
 		}
 	}
 	/**
@@ -176,87 +180,6 @@ class BackupManager{
 		}
 		$d->close();
 		return $files;
-	}
-	/**
-	 * TODO Move all below functions to a Database class
-	 * NOTE Currently below only works with MySQL
-	 */
-	 
-	/**
-	* Initiates the database backup
-	*
-	* @param filehandle $backup_fh
-	* @return void
-	*/
-	function dumpSQL(&$backup_fh){
-		$tables = $this->grabTables();
-		fwrite($backup_fh, $tables[0]."\n");
-		foreach($tables[1] as $table){
-			$schema = $this->grabTableSchema($table);
-			fwrite($backup_fh, $schema."\n");
-			$this->grabTableData($table, &$backup_fh);
-		}
-	}
-	
-	/**
-	* Generates a list of the database tables
-	* 
-	* @return array
-	*/
-	function grabTables(){
-		$sql = 'show tables';
-		$rs = $this->_db->Execute($sql);
-		while(!$rs->EOF){
-			$tables[] = $rs->fields[0];
-			$rs->MoveNext();
-		}
-		return array(join(',', $tables), $tables);
-	}
-	
-	/**
-	* Retrieves the schema for specified table
-	*
-	* @param string $table
-	* @return string
-	*/
-	function grabTableSchema($table){
-		$sql = 'SHOW CREATE TABLE loq_authors';
-		$rs = $this->_db->Execute($sql);
-		$drop = 'DROP TABLE `'.$table."`;\n";
-		return $drop . $rs->fields[1];
-	}
-	
-	/**
-	* Retrieve SQL Statements that will restore data for a table
-	*
-	* @param string $table Database table to dump
-	* @param filehandle $fh Open filehandle to receive the data
-	* @return void
-	*/
-	function grabTableData($table, &$fh){
-		$sql = 'SELECT * FROM `'.$table.'`';
-		$rs = $this->_db->Execute($sql);
-		$max = $rs->FieldCount();
-		while(!$rs->EOF){
-			$stmt = 'INSERT INTO `'.$table.'` VALUES(';
-			$vals = array();
-			for($i = 0; $i< $max; $i++){
-				$fld = $rs->FetchField($i);
-				$type = $rs->MetaType($fld->type);
-				if($type == 'L' || $type == 'N' || $type == 'I' || $type == 'R'){
-					$stmt .= $rs->fields[$i];
-				}
-				else{
-					$stmt .= $this->_db->qstr($rs->fields[$i], get_magic_quotes_gpc());
-				}
-				if($i !== $max -1){
-					$stmt .=', ';
-				}
-			}
-			$stmt .= ');';
-			fwrite($fh, $stmt."\n");
-			$rs->MoveNext();
-		}
 	}
 }
 ?>
