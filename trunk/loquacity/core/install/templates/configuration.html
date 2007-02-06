@@ -1,7 +1,7 @@
 {include file='header.html'}
 	<div id="content">
 		<h3>Database and blog settings</h3>
-		<form action="{$form_action}" method="POST" name="install">
+		<form action="{$action}" method="POST" name="install">
 			<p>Please fill in the config settings below - all values, except for table prefix, are required</p>
 			{if isset($errors)}
 				{if isset($prescan_errors)}

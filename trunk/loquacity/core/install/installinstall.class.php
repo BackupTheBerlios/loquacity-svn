@@ -9,7 +9,7 @@
  * @copyright Copyright &copy; 2006 Kenneth Power
  * @license    http://www.gnu.org/licenses/gpl.html GPL
  * @link http://www.loquacity.info
- * @since 0.8-alpha1
+ * @since 0.8-alpha2
  *
  * LICENSE:
  *
@@ -45,10 +45,10 @@ class installinstall extends installbase{
             $this->install();
         }
         if(isset($this->errors) && count($this->errors) > 0){
-            $this->template = 'configuration.html';
+            $this->setTemplate('configuration.html');
         }
         else{
-            $this->template = 'complete.html';
+            $this->setTemplate('complete.html');
         }
     }
 

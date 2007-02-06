@@ -9,7 +9,7 @@
  * @copyright Copyright &copy; 2006 Kenneth Power
  * @license    http://www.gnu.org/licenses/gpl.html GPL
  * @link http://www.loquacity.info
- * @since 0.8-alpha1
+ * @since 0.8-alpha2
  *
  * LICENSE:
  *
@@ -38,7 +38,7 @@
  
 class installupgrade extends installbase{
 	function installupgrade(){
-		$this->from = $_POST['upgrade_from'];
+		$this->from = $_SESSION['upgrade_from'];
 		installbase::installbase();
 	}
 	function __init(){

@@ -9,7 +9,7 @@
  * @copyright Copyright &copy; 2006 Kenneth Power
  * @license    http://www.gnu.org/licenses/gpl.html GPL
  * @link http://www.loquacity.info
- * @since 0.8-alpha1
+ * @since 0.8-alpha2
  *
  * LICENSE:
  *
@@ -57,41 +57,26 @@ class installprescan extends installbase{
     var $template;
     
 	function installprescan(){
-		if(isset($_POST['install_type'])){
-			if($_POST['install_type'] === 'fresh'){
-		        $this->form_action = 'install.php?install=install';
-		        $this->template = 'configuration.html';
-			}
-			else{
-				$choice = (isset($_POST['upgrade_from'])) ? $_POST['upgrade_from'] : (isset($_SESSION['upgrade'])) ? $_SESSION['upgrade'] : null;
-				$upgrade_from = $this->checkUpgrade($choice);
-				if($upgrade_from === false){
-					$this->errors[] = 'Unknown upgrade option.';
-				}
-				//$this->form_action = 'install.php?install=upgrade&from='.$upgrade_from;
-				$this->template = 'complete.html';
-			}
-		}
+		$this->setTemplate('welcome.html');
+		$this->setAction('install.php?install=install');
         installbase::installbase();
 	}
 
     function __init(){
         $this->checkwritable();
+        $this->checkChoice();
         if(isset($this->errors) && count($this->errors) > 0){
             $this->assign("errors", $this->errors);
             $this->assign("prescan_errors", true);
-            $this->template = 'notice.html';
+            $this->setTemplate('notice.html');
             $this->assign('notice_message', $this->noticeMessage());
-            $this->assign('action', 'install.php?install=prescan');
+            $this->setAction('install.php?install=prescan');
         }
-		if(isset($_SESSION['upgrade'])){
-			if(!isset($this->errors) || count($this->errors) > 0){
-				$this->forceStep('upgrade');
+        else{
+	        if(isset($_SESSION['upgrade'])){
+					$this->forceStep('upgrade');
 			}
-		}
-		else{
-			$this->assign('form_action', $this->form_action);
-		}
+        }
     }
 
 
@@ -139,10 +124,24 @@ class installprescan extends installbase{
     	switch($chosen){
     		case 'bblog07':
     			$from = $chosen;
-				$_SESSION['upgrade'] = $from;
-				$this->upgrade = $from;
+				$_SESSION['upgrade_from'] = $from;
     			break;
     	}
     	return $from;
+    }
+    /**
+     * Perform some sanity checking on the form input. If valid, save in session state
+     *
+     */
+    function checkChoice(){
+    	if(isset($_POST['install_type'])){
+    		$choice = $_POST['install_type'];
+    		if(in_array($choice, array('fresh', 'upgrade_from'))){
+    			$_SESSION['install_type'] = $choice;
+    			if($choice === 'upgrade'){
+    				$this->checkUpgrade($_POST['upgrade_from']);
+    			}
+    		}
+    	}
     }
 }

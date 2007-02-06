@@ -9,7 +9,7 @@
  * @copyright Copyright &copy; 2006 Kenneth Power
  * @license    http://www.gnu.org/licenses/gpl.html GPL
  * @link http://www.loquacity.info
- * @since 0.8-alpha1
+ * @since 0.8-alpha2
  *
  * LICENSE:
  *
@@ -55,7 +55,7 @@ class installbase extends Smarty{
         $this->_steps = array('prescan', 'install', 'postscan', 'upgrade');
         $this->assign('version', LOQ_CUR_VERSION);
         $this->template_dir = LOQ_INSTALLER.'/templates';
-        $this->compile_dir = ini_get("session.save_path");
+        $this->setCompileDir();
         $this->loadconfiguration();
         $this->__init();
 	}
@@ -67,9 +67,7 @@ class installbase extends Smarty{
     * to the user.
     */
     function display(){
-        /*if(isset($this->errors) && count($this->errors) > 0){
-            $this->assign('errors', $this->errors);
-        }*/
+        $this->assign('action', $this->action);
         parent::display($this->template);
     }
 
@@ -112,5 +110,42 @@ class installbase extends Smarty{
 	        $step = new $class();
 	        $step->display();
     	}
+    }
+    
+    /**
+     * Find and set an appropriate directory for Smarty::compile_dir
+     * 
+     */
+    function setCompileDir(){
+    	$compile = null;
+    	foreach(array('session.save_path', 'upload_tmp_dir') as $d){
+    		$res = ini_get($d);
+    		if(!empty($compile)){
+    			$compile = $res;
+    			break;
+    		}
+    	}
+    	if(is_null($compile)){
+    		$compile = '/tmp';
+    	}
+    	return $compile;
+    }
+    
+    /**
+     * Set the template used
+     * 
+     * @param string $tpl The template file name
+     */
+    function setTemplate($tpl){
+    	$this->template = $tpl;
+    }
+    
+    /**
+     * Sets the command activated by user interaction with installer
+     *
+     * @param string $act
+     */
+    function setAction($act){
+    	$this->action = $act;
     }
 }
