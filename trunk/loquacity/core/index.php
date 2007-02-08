@@ -43,6 +43,7 @@ define('IN_BBLOG_ADMIN',TRUE);
 
 // include the config and main code
 include_once("config.php");
+include_once(LOQ_APP_ROOT.'includes/init.php');
 include_once('includes/charsets.php');
 include_once('includes/taglines.php');
 

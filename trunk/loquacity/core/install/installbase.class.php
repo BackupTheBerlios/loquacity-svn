@@ -44,6 +44,15 @@
 
 class installbase extends Smarty{
 
+	/**
+	 * The action to present to the user
+	 * 
+	 * @var string
+	 * @access private
+	 */
+	
+	var $action;
+	
     /**
     * Performs basic setup and then calls __init
     *
@@ -57,6 +66,7 @@ class installbase extends Smarty{
         $this->template_dir = LOQ_INSTALLER.'/templates';
         $this->setCompileDir();
         $this->loadconfiguration();
+        $this->action = null;
         $this->__init();
 	}
 
@@ -128,7 +138,7 @@ class installbase extends Smarty{
     	if(is_null($compile)){
     		$compile = '/tmp';
     	}
-    	return $compile;
+    	$this->compile_dir = $compile;
     }
     
     /**

@@ -40,6 +40,7 @@
 testInstall();
 
 include_once("core/config.php");
+include_once(LOQ_APP_ROOT.'includes/init.php');
 
 if(isset($_GET['postid']) && is_numeric($_GET['postid'])) {
     if(isset($_COOKIE['bBcomment'])){

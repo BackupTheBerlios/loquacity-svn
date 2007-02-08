@@ -45,7 +45,9 @@ class installinstall extends installbase{
             $this->install();
         }
         if(isset($this->errors) && count($this->errors) > 0){
+        	$this->assign("errors", $this->errors);
             $this->setTemplate('configuration.html');
+            $this->setAction('install.php?install=install');
         }
         else{
             $this->setTemplate('complete.html');
@@ -122,6 +124,8 @@ class installinstall extends installbase{
     function installplugins(){
         include_once(LOQ_APP_ROOT.'includes/pluginhandler.class.php');
         define('T_PLUGINS',$_SESSION['config']['table_prefix'].'plugins');
+        define('TBL_PREFIX', $_SESSION['config']['table_prefix']);
+        define('BLOGURL', $_SESSION['config']['blog_url']);
         $ph = new pluginhandler($this->db);
         $ph->scan_for_plugins(LOQ_APP_ROOT.'plugins');
     }
@@ -132,7 +136,7 @@ class installinstall extends installbase{
 	 *
 	*/
     function writeconfig(){
-        if(file_exists(LOQ_INSTALLER.DIRECTORY_SEPARATOR.'config.tmpl') && is_readable(LOQ_INSTALLER.DIRECORY_SEPARATOR.'config.tmpl')){
+        if(file_exists(LOQ_INSTALLER.DIRECTORY_SEPARATOR.'config.tmpl') && is_readable(LOQ_INSTALLER.DIRECTORY_SEPARATOR.'config.tmpl')){
             $config = file_get_contents(LOQ_INSTALLER.DIRECTORY_SEPARATOR.'config.tmpl');
             $config = str_replace('__pfx__', $_SESSION['config']['table_prefix'], $config);
             foreach($_SESSION['config'] as $setting=>$value){
@@ -176,7 +180,7 @@ class installinstall extends installbase{
                     $sql = str_replace('__charset__', $charset, $sql);
                 }
                 foreach($_SESSION['config'] as $setting=>$value){
-                    $sql = str_replace('__'.$setting.'__', $value, $sql);
+                    $sql = str_replace('__'.$setting.'__', addslashes($value), $sql);
                 }
                 $sql = str_replace('__loq_version__', LOQ_CUR_VERSION, $sql);
                 $statements = explode(';', $sql);

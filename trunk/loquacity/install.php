@@ -70,16 +70,18 @@ if(isset($_GET['install'])){
     /*
     Check for and create an Install object of our current progress
     */
-    if(isset($_GET['reset']) && $_GET['reset'] === 'reset'){
-        @session_destroy();
-        header("Location: install.php");
-        exit;
-    }
-    else if(in_array($_GET['install'], array('prescan', 'install', 'postscan'))){
-        include_once(LOQ_INSTALLER.'/install'.$_GET['install'].'.class.php');
-        $class = 'install'.$_GET['install'];
-        $step = new $class();
-        $step->display();
+    if(isset($_GET['install'])){
+    	if($_GET['install'] === 'reset'){
+	        @session_destroy();
+	        header("Location: install.php");
+	        exit;
+	    }
+	    else if(in_array($_GET['install'], array('prescan', 'install', 'postscan'))){
+	        include_once(LOQ_INSTALLER.'/install'.$_GET['install'].'.class.php');
+	        $class = 'install'.$_GET['install'];
+	        $step = new $class();
+	        $step->display();
+	    }
     }
 }
 else{

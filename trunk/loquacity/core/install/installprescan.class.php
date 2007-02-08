@@ -39,14 +39,6 @@
 */
 class installprescan extends installbase{
 
-
-    /**
-    * URI contained defines next step in Installer
-    *
-    * @var string
-    * @access private
-    */
-    var $form_action;
     
     /**
     * The template to display
@@ -57,9 +49,9 @@ class installprescan extends installbase{
     var $template;
     
 	function installprescan(){
-		$this->setTemplate('welcome.html');
+		installbase::installbase();
+		$this->setTemplate('configuration.html');
 		$this->setAction('install.php?install=install');
-        installbase::installbase();
 	}
 
     function __init(){
