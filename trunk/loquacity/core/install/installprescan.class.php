@@ -49,9 +49,9 @@ class installprescan extends installbase{
     var $template;
     
 	function installprescan(){
-		installbase::installbase();
 		$this->setTemplate('configuration.html');
 		$this->setAction('install.php?install=install');
+		installbase::installbase();
 	}
 
     function __init(){

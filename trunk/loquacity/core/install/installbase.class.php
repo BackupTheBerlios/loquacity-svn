@@ -72,12 +72,13 @@ class installbase extends Smarty{
 
 
     /**
-    * Wrapper for Smarty::Dispaly
+    * Wrapper for Smarty::Display
     * This is to allow final preprocessing before handing control back
     * to the user.
     */
     function display(){
         $this->assign('action', $this->action);
+        var_dump($this->template);
         parent::display($this->template);
     }
 
