@@ -56,10 +56,10 @@ class installinstall extends installbase{
 
 
     /**
-    * Verify all required settings exist
-    *
-    * @return bool
-    */
+	* Verify all required settings exist
+	*
+	* @return bool
+	*/
     function checkConfigSettings(){
         $rval = false;
         include_once(LOQ_APP_ROOT.'includes/validateconfiguration.class.php');
@@ -75,9 +75,9 @@ class installinstall extends installbase{
 
 
     /**
-    * Executes the install routines
-    *
-    */
+	* Executes the install routines
+	*
+	*/
     function install(){
         if($this->dbConnect()){
             $this->installplugins();
@@ -87,11 +87,11 @@ class installinstall extends installbase{
 
 	/**
 	 * Create a connection to the database
-     *
-     * Using the ADODB Library, attempts to create a DB connection. Returns TRUE
-     * on success and FALSE on failure. Error messages are logged manually. Due
-     * to the nature of this, PHP error handling is disabled in this function.
-     *
+	 *
+	 * Using the ADODB Library, attempts to create a DB connection. Returns TRUE
+	 * on success and FALSE on failure. Error messages are logged manually. Due
+	 * to the nature of this, PHP error handling is disabled in this function.
+	 *
 	 * @return mixed
 	*/
     function dbConnect(){
@@ -117,8 +117,8 @@ class installinstall extends installbase{
 
 	/**
 	 * Install the plugins
-     *
-     * Uses pluginhandler to perform this task
+	 *
+	 * Uses pluginhandler to perform this task
 	 * 
 	*/
     function installplugins(){
@@ -140,6 +140,12 @@ class installinstall extends installbase{
             $config = file_get_contents(LOQ_INSTALLER.DIRECTORY_SEPARATOR.'config.tmpl');
             $config = str_replace('__pfx__', $_SESSION['config']['table_prefix'], $config);
             foreach($_SESSION['config'] as $setting=>$value){
+				//This is not the proper place to put this fix
+				if($setting == 'fs_path'){
+					if(strrpos($value, DIRECTORY_SEPARATOR) == strlen($value) && DIRECTORY_SEPARATOR == '\\'){
+						$value = substr_replace($value, '\\', strlen($value));
+					}
+				}
                 $config = str_replace('__'.$setting.'__', $value, $config);
             }
             $config = str_replace('__loq_version__', LOQ_CUR_VERSION, $config);
@@ -155,16 +161,16 @@ class installinstall extends installbase{
 
 
     /**
-    * Retrieves the proper SQL file and replaces the tokens with the user's configuration
-    * Uses result to create the database and populate it with the configuration and sample data
-    *
-    * TODO abstract some of the specifics away so it is easier to support different DBs
-    */
+	* Retrieves the proper SQL file and replaces the tokens with the user's configuration
+	* Uses result to create the database and populate it with the configuration and sample data
+	*
+	* TODO abstract some of the specifics away so it is easier to support different DBs
+	*/
     function createdatabase(){
         /* For MySQL there are three main versions to worry about:
-         * 4.0, 4.1 and 5.0
-         * 4.1+ has real charset support, while < 4.1 doesn't
-         */
+	         * 4.0, 4.1 and 5.0
+	         * 4.1+ has real charset support, while < 4.1 doesn't
+	         */
         $info = $this->db->ServerInfo();
         $charset = null;
         $rval = false;

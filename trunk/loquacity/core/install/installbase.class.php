@@ -66,7 +66,6 @@ class installbase extends Smarty{
         $this->template_dir = LOQ_INSTALLER.'/templates';
         $this->setCompileDir();
         $this->loadconfiguration();
-        $this->action = null;
         $this->__init();
 	}
 
@@ -78,7 +77,6 @@ class installbase extends Smarty{
     */
     function display(){
         $this->assign('action', $this->action);
-        var_dump($this->template);
         parent::display($this->template);
     }
 
@@ -131,7 +129,7 @@ class installbase extends Smarty{
     	$compile = null;
     	foreach(array('session.save_path', 'upload_tmp_dir') as $d){
     		$res = ini_get($d);
-    		if(!empty($compile)){
+    		if(!empty($res)){
     			$compile = $res;
     			break;
     		}

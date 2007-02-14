@@ -68,7 +68,7 @@ class posthandler {
     	$rval = false;
         $now = strtotime(gmdate("M d Y H:i:s"));
         $sections = ':';
-        if(count($post['frm_sections'])>0) {
+        if(isset($post['frm_sections']) && count($post['frm_sections'])>0) {
             $sections = ':'.implode(":", $post['frm_sections']).':';
         }
         $rs['title'] = stringHandler::removeMagicQuotes($post['frm_post_title']);
@@ -81,9 +81,9 @@ class posthandler {
         $rs['modifier'] = $post['frm_modifier'];
         $rs['sections'] = $sections;
         $rs['ownerid'] = (isset($post['ownerid'])) ? intval($post['ownerid']) : $_SESSION['user_id'];
-        $rs['hidefromhome'] = ($post['frm_post_hidefromhome'] == 1) ? 1: 0;
-        $rs['allowcomments'] = ($post['frm_post_allowcomments'] == ('allow' or 'disallow' or 'timed')) ? $post['frm_post_allowcomments'] : 'disallow';
-        $rs['autodisabledate'] = (is_numeric($post['frm_post_autodisabledate'])) ? intval($post['frm_post_autodisabledate']) : '';
+        $rs['hidefromhome'] = (isset($post['frm_post_hidefromhome']) && $post['frm_post_hidefromhome'] == 1) ? 1: 0;
+        $rs['allowcomments'] = (isset($post['frm_post_allowcomments']) && $post['frm_post_allowcomments'] == ('allow' or 'disallow' or 'timed')) ? $post['frm_post_allowcomments'] : 'disallow';
+        $rs['autodisabledate'] = (isset($post['frm_post_autodisabledate']) && is_numeric($post['frm_post_autodisabledate'])) ? intval($post['frm_post_autodisabledate']) : '';
         
         if($this->_db->AutoExecute(T_POSTS, $rs, $method, $where, false, get_magic_quotes_runtime()) !== false){
             if($method === 'INSERT' ){
@@ -141,8 +141,8 @@ class posthandler {
     function prep_post($post) {
     	$npost['id'] = $post['postid'];
         $npost['postid'] = $post['postid'];
-        $npost['permalink'] = (defined(CLEANURLS)) ? str_replace('%postid%',$post['postid'],URL_POST) : BLOGURL.'?postid='.$post['postid'];
-        $npost['trackbackurl'] = (defined(CLEANURLS)) ?  BLOGURL.'trackback/tbpost='.$post['postid'] : BLOGURL.'trackback.php&amp;tbpost='.$post['postid'];
+        $npost['permalink'] = (defined('CLEANURLS')) ? str_replace('%postid%',$post['postid'],URL_POST) : BLOGURL.'?postid='.$post['postid'];
+        $npost['trackbackurl'] = (defined('CLEANURLS')) ?  BLOGURL.'trackback/tbpost='.$post['postid'] : BLOGURL.'trackback.php&amp;tbpost='.$post['postid'];
         $npost['title'] = htmlspecialchars($post['title']);
         //var_dump($npost['permalink']);
         // do the body text
@@ -180,7 +180,7 @@ class posthandler {
               $rs = $this->_db->Execute($sql);
               if($rs){
                   while($section = $rs->FetchRow()){
-                      $npost['sections'][] = array('id' => $section['sectionid'], 'nicename' => $section['nicename'], 'url' => $section['url']);
+                      $npost['sections'][] = array('id' => $section['sectionid'], 'nicename' => $section['nicename']); //, 'url' => $section['url']);
                   }
               }
         }
