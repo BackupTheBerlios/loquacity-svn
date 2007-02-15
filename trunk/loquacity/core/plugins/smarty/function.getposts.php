@@ -127,7 +127,7 @@ function smarty_function_getposts($params, &$loq) {
 
 	$opt['home'] = $params['home'];
 
-    if(($posts = $ph->get_posts($opt)) !== false){
+    if(($posts = $ph->get_posts($opt, 'html')) !== false){
         $lastmonth = 0;
         $lastdate = 0;
         foreach($posts as $key => $value) {
@@ -138,7 +138,7 @@ function smarty_function_getposts($params, &$loq) {
             if(intval(date('Fy',$posts[$key]['posttime'])) != $lastmonth) {
               $posts[$key]['newmonth'] = TRUE;
             }
-            $lastmonth = strftime('%B%Y', intval($osts[$key]['posttime'])); //date('Fy',$ar['posts'][$key]['posttime']);
+            $lastmonth = strftime('%B%Y', intval($posts[$key]['posttime'])); //date('Fy',$ar['posts'][$key]['posttime']);
         }
         $loq->assign($params['assign'],$posts);
     }

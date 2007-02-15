@@ -43,23 +43,23 @@ class posthandler {
         $this->modifier_paths = $m_paths;
     }
     /**
-    * inserts a new entry
-    * returns the new entryid on success
-    * error message on fail
-    * assumes that my_addslashes() has already been applied and data is safe.
-    */
+	* inserts a new entry
+	* returns the new entryid on success
+	* error message on fail
+	* assumes that my_addslashes() has already been applied and data is safe.
+	*/
     function new_post($post) {
         return $this->modifyPost($post, 'INSERT');
     }
     
     /**
-     * Adds a new or edits an existing post
-     *
-     * @param array $post
-     * @param string $method Only accepts INSERT and UPDATE
-     * @param string $where Optional unless $method == UPDATE
-     * @return unknown
-     */
+	 * Adds a new or edits an existing post
+	 *
+	 * @param array $post
+	 * @param string $method Only accepts INSERT and UPDATE
+	 * @param string $where Optional unless $method == UPDATE
+	 * @return unknown
+	 */
     function modifyPost($post, $method='INSERT', $where=false){
     	if($method !== 'INSERT' && $method !== 'UPDATE'){
     		$this->_last_error = 'Unknown method stipulated for modifyPost';
@@ -71,8 +71,8 @@ class posthandler {
         if(isset($post['frm_sections']) && count($post['frm_sections'])>0) {
             $sections = ':'.implode(":", $post['frm_sections']).':';
         }
-        $rs['title'] = stringHandler::removeMagicQuotes($post['frm_post_title']);
-        $rs['body'] = stringHandler::removeMagicQuotes($post['frm_post_body']);
+        $rs['title'] = $post['frm_post_title'];
+        $rs['body'] = $post['frm_post_body'];
         if($method !== 'UPDATE'){
 	        $rs['posttime'] = (isset($post['posttime'])) ? $post['posttime'] : $now;
         }
@@ -105,19 +105,22 @@ class posthandler {
     }
     
     /**
-     * Retrieve one or most posts based upon criteria
-     *
-     * @param array $crit Hash of selection criteria
-     * @param bool $raw If false return in a format sufficient for browser display
-     * @return mixed False on error, arroy of posts on success
-     */
-    function get_posts($crit, $raw=FALSE) {
+	 * Retrieve one or most posts based upon selection criteria. May stipulate wether to process it for display purpose
+	 *
+	 * @param array $crit Hash of selection criteria
+	 * @param string $process Prepare the data for use in special process. Valid arguments:
+	 *	none	Do not process
+	 * 	html	Make suitable for web display
+	 *
+	 * @return mixed False on error, arroy of posts on success
+	 */
+    function get_posts($crit, $process='none') {
         if(is_array($crit)){
             $rs = $this->_db->Execute($this->make_post_query($crit));
             if($rs !== false && !$rs->EOF){
                 $posts = array();
                 while($p = $rs->FetchRow()){
-                    $posts[] = $this->get_post($p['postid'], false, $raw);
+                    $posts[] = $this->get_post($p['postid'], false, $process);
                 }
                 return $posts;
             }
@@ -133,27 +136,24 @@ class posthandler {
     }
 
     /**
-     * Prepares a post for HTML display
-     * 
-     * @param array $post
-     * @return array
-     */
-    function prep_post($post) {
+	 * Prepares a post for HTML display
+	 * 
+	 * @param array $post
+	 * @return array
+	 */
+    function processForHtmlDisplay($post) {
+		$npost = array();
     	$npost['id'] = $post['postid'];
         $npost['postid'] = $post['postid'];
         $npost['permalink'] = (defined('CLEANURLS')) ? str_replace('%postid%',$post['postid'],URL_POST) : BLOGURL.'?postid='.$post['postid'];
         $npost['trackbackurl'] = (defined('CLEANURLS')) ?  BLOGURL.'trackback/tbpost='.$post['postid'] : BLOGURL.'trackback.php&amp;tbpost='.$post['postid'];
         $npost['title'] = htmlspecialchars($post['title']);
-        //var_dump($npost['permalink']);
-        // do the body text
         if($post['modifier'] != '') {
             $npost['body'] = $this->apply_modifier($post['modifier'], $post['body']);
             // replace only &'s that are by themselves, else we risk converting an entity
             $npost['body'] = str_replace(' & ', ' &amp; ', $npost['body']);
         }
         $npost['status'] = $post['status'];
-
-        // in the future
         $npost['posttime'] = $post['posttime'];
         $npost['modifytime'] = $post['modifytime'];
 
@@ -162,7 +162,6 @@ class posthandler {
         // this is only here as a convience, the date_format modifier should be used.
         //$npost['posttime_f'] = date("D M j G:i:s T Y",$post['posttime']);
         //$npost['modifytime_f'] = date("D M j G:i:s T Y",$post['modifytime']);
-        $npost['sections']   = array();
         switch(intval($post['NUMCOMMENTS'])) {
              case 1 : $npost['commenttext'] = "One comment"; break;
              case 0 : $npost['commenttext'] = "Add Comment"; break;
@@ -170,26 +169,27 @@ class posthandler {
         }
         $npost['commentcount'] = $post['NUMCOMMENTS'];
         //TODO move this to a section module
+		$npost['sections']   = array();
         if($post['sections'] != '') {
             //Transform the 'list' of sections into an array for use in a SQL statement
-              $tmp_sec_ar = explode(":",trim($post['sections']));
-              array_shift($tmp_sec_ar);
-              array_pop($tmp_sec_ar);
-              $sect = join(',', $tmp_sec_ar);
-              $sql = 'SELECT * FROM `'.T_SECTIONS.'` WHERE sectionid IN ('.$sect.')';
-              $rs = $this->_db->Execute($sql);
-              if($rs){
-                  while($section = $rs->FetchRow()){
-                      $npost['sections'][] = array('id' => $section['sectionid'], 'nicename' => $section['nicename']); //, 'url' => $section['url']);
-                  }
-              }
+			$tmp_sec_ar = explode(":",trim($post['sections']));
+			array_shift($tmp_sec_ar);
+			array_pop($tmp_sec_ar);
+			$sect = join(',', $tmp_sec_ar);
+			$sql = 'SELECT * FROM `'.T_SECTIONS.'` WHERE sectionid IN ('.$sect.')';
+			$rs = $this->_db->Execute($sql);
+			if($rs){
+				while($section = $rs->FetchRow()){
+					$npost['sections'][] = array('id' => $section['sectionid'], 'nicename' => $section['nicename']); //, 'url' => $section['url']);
+				}
+			}
         }
         //add the author info
         $npost['author'] = array(
              'id' => $post['ownerid'],
-             'nickname' => $post['nickname'],
-             'email' => $post['email'],
-             'fullname' => $post['fullname']);
+             'nickname' => htmlspecialchars($post['nickname']),
+             'email' => htmlspecialchars($post['email']),
+             'fullname' => htmlspecialchars($post['fullname']));
         $npost['hidefromhome'] = $post['hidefromhome'];
         $npost['autodisabledate'] = $post['autodisabledate'];
         if($post['allowcomments'] == 'disallow' or ($post['allowcomments'] == 'timed' and $post['autodisabledate'] < time())){
@@ -198,16 +198,15 @@ class posthandler {
         else {
             $npost['allowcomments'] = TRUE;
         }
-
         return $npost;
     }
 
     /**
-     * Build a SQL statement from specified criteria
-     *
-     * @param array $params Criteria used to build SQL statement
-     * @return string
-     */
+	 * Build a SQL statement from specified criteria
+	 *
+	 * @param array $params Criteria used to build SQL statement
+	 * @return string
+	 */
     function make_post_query($params) {
         $skip           = 0;
         $num            = 20;
@@ -243,41 +242,42 @@ class posthandler {
 
 
     /**
-     * Retrieves a single post
-     *
-     * @param int $postid
-     * @param bool $draftok If true, its ok to retrieve a draft post
-     * @param bool $raw If true, don't prepare for display
-     * @return mixed
-     */
-    function get_post ($postid, $draftok = FALSE, $raw = FALSE){
+	 * Retrieves a single post
+	 *
+	 * @param int $postid
+	 * @param bool $draftok If true, its ok to retrieve a draft post
+	 * @param string $process Prepare data for use in special processes
+	 * @return mixed
+	 */
+    function get_post ($postid, $draftok = FALSE, $process = 'none'){
+		$process = strtolower($process);
         if (!is_numeric($postid))
             return false;
-        // this makes it safe for general use.
-        // we don't want ppl being able to view drafts.
-        if (!$draftok)
-            $draft_q = "AND posts.status='live' ";
-        else
-            $draft_q = '';
-        $q = "SELECT posts.*, authors.nickname, authors.email, authors.fullname, COUNT(comments.commentid) AS NUMCOMMENTS FROM `".T_POSTS."` AS posts LEFT JOIN `".T_AUTHORS."` AS authors ON posts.ownerid = authors.id LEFT JOIN `".T_COMMENTS."` AS comments ON posts.postid = comments.postid WHERE posts.postid='$postid' $draft_q GROUP BY posts.postid LIMIT 0,1";
-        $post = $this->_db->GetRow($q);
+		$stmt = '';
+        if (!$draftok){
+            $stmt = $this->_db->Prepare("SELECT posts.*, authors.nickname, authors.email, authors.fullname, COUNT(comments.commentid) AS NUMCOMMENTS FROM `".T_POSTS."` AS posts LEFT JOIN `".T_AUTHORS."` AS authors ON posts.ownerid = authors.id LEFT JOIN `".T_COMMENTS."` AS comments ON posts.postid = comments.postid WHERE posts.postid=? AND posts.status='live' GROUP BY posts.postid");
+		}
+        else{
+            $stmt = $this->_db->Prepare("SELECT posts.*, authors.nickname, authors.email, authors.fullname, COUNT(comments.commentid) AS NUMCOMMENTS FROM `".T_POSTS."` AS posts LEFT JOIN `".T_AUTHORS."` AS authors ON posts.ownerid = authors.id LEFT JOIN `".T_COMMENTS."` AS comments ON posts.postid = comments.postid WHERE posts.postid=? GROUP BY posts.postid");
+		}
+        $post = $this->_db->GetRow($stmt, array($postid));
         if(!$post){
             $this->status = 'No post found';
             return false;
         }
-        if($raw)
+        if($process == 'none')
             return $post;
         else{
-            return $this->prep_post($post);
+            return $this->processForHtmlDisplay($post);
         }
     }
 
     /**
-     * Removes a post and all associated comments
-     * 
-     * @param int $postid
-     * @return void
-     */
+	 * Removes a post and all associated comments
+	 * 
+	 * @param int $postid
+	 * @return void
+	 */
     function delete_post($postid) {
         $postid = intval($postid);
         if(!is_int($postid) && $postid <= 0) return false;
@@ -310,11 +310,11 @@ class posthandler {
     }
     
     /**
-     * Returns the direct link to a post
-     * 
-     * @param int $postid
-     * @return string
-     */
+	 * Returns the direct link to a post
+	 * 
+	 * @param int $postid
+	 * @return string
+	 */
     function get_post_permalink($postid){
         if(defined('CLEANURLS')){
             return str_replace('%postid%',$postid,URL_POST);
@@ -324,13 +324,13 @@ class posthandler {
         }
     }
     /**
-     * Loads and applies a Smarty based modifier to a post
-     *
-     * TODO This is a hack and should be better designed
-     * 
-     * @param array $post
-     * @return array
-     */
+	 * Loads and applies a Smarty based modifier to a post
+	 *
+	 * TODO This is a hack and should be better designed
+	 * 
+	 * @param array $post
+	 * @return array
+	 */
     function apply_modifier($mod, $body){
         $modifier = 'modifier.'.$mod.'.php';
         if(($m_path = $this->find_path($modifier)) !== false){
@@ -342,11 +342,11 @@ class posthandler {
         return $body;
     }
     /**
-    * Searches the modifier paths looking for the requested modifier
-    *
-    * @param string $modifier File name of modifier
-    * @return mixed Fullty qualified path on success; False on failure
-    */
+	* Searches the modifier paths looking for the requested modifier
+	*
+	* @param string $modifier File name of modifier
+	* @return mixed Fullty qualified path on success; False on failure
+	*/
     function find_path($modifier){
         foreach($this->modifier_paths as $path){
             $f_path = $path.'/'.$modifier;

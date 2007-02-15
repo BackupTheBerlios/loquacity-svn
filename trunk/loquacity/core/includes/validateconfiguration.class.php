@@ -62,8 +62,8 @@ class validateconfiguration{
         $this->validate();
     }
     /**
-    * Performs the checks and retrieves the errors
-    */
+	* Performs the checks and retrieves the errors
+	*/
     function validate(){
         foreach($this->config as $key=>$val){
             if(!$val->isValid()){
@@ -72,27 +72,22 @@ class validateconfiguration{
         }
     }
     /**
-    * Reports whether errors occurred
-    *
-    * @return bool
-    */
+	* Reports whether errors occurred
+	*
+	* @return bool
+	*/
     function isValid(){
         return (count($this->errors) > 0) ? false : true;
     }
     
     /**
-    * Makes a copy of the user data for temporary storage
-    */
+	* Makes a copy of the user data for temporary storage
+	*/
     function storeCurrent(){
         foreach(array('blog_name', 'blog_description', 'author_name', 'login_name', 'login_password', 'verify_password', 'secret_question', 'secret_answer', 'email_address', 'db_username', 'db_password', 'db_database', 'db_host', 'blog_url', 'fs_path') as $setting){
             if(isset($_POST[$setting]) && strlen($_POST[$setting]) > 0){
                 $_SESSION['config'][$setting] = $_POST[$setting];
             }
-            /*else{
-                $label = str_replace('_', ' ', $setting);
-                $this->errors[] = ucwords($label).' value not set';
-                $rval = false;
-            }*/
         }
         //Not mandatory, but set if defined
         if(isset($_POST['table_prefix'])){

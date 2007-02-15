@@ -31,16 +31,16 @@
  */
 
 /**
- * Start the Loquacity engine, include needed files
- *
- * @version $Revision$
+ * Build the necessary environment needed for Loquacity to function.
+ * Remove all magic_quote enabled escapes - this is to ensure we have the same environment everywhere
  */
 if ( ! is_dir(LOQ_APP_ROOT) ) {
   // throw meaningful error here
   echo "There was an error : LOQ_APP_ROOT is not a directory. Please check that you have configured Loquacity correctly by checking the values in config.php";
   die();
    
-}    
+}
+
 // define the table names
 define('T_CONFIG',TBL_PREFIX.'config');
 define('T_POSTS',TBL_PREFIX.'posts');
@@ -72,17 +72,22 @@ include_once(LOQ_APP_ROOT.'includes/sectionhandler.class.php');
 include_once(LOQ_APP_ROOT.'includes/Loquacity.class.php');
 include_once(LOQ_APP_ROOT.'includes/templates.php');
 
+//Remove magic quotes
+foreach($_POST as $key=>$val){
+	$_POST[$key] = stringHandler::removeMagicQuotes($val);
+}
+foreach($_GET as $key=>$val){
+	$_GET[$key] = stringHandler::removeMagicQuotes($val);
+}
+unset($key);
+unset($val);
 
-// start your engines
 $loq = new Loquacity();
 if(defined(C_CAPTCHA_ENABLE) && C_CAPTCHA_ENABLE == 'true'){
     include_once(LOQ_APP_ROOT.'3rdparty/captcha/php-captcha.inc.php');
 }
 /* $mtime = explode(" ",microtime());
 $loq->begintime = $mtime[1] + $mtime[0]; */
-
-// this is only here until I work out the best way to do theming.
-//$loq->clear_compiled_tpl();
 
 
 /* $loq->template_dir = LOQ_APP_ROOT.'templates/'.C_TEMPLATE;
