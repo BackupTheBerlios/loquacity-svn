@@ -6,7 +6,7 @@
  * @package Loquacity
  * @subpackage Publishing
  * @author Kenneth Power <telcor@users.berlios.de>, Demian Turner
- * @copyright &copy; 2006 Kenneth Power, Demian Turner
+ * @copyright &copy; 2006, 2007 Kenneth Power, Demian Turner
  * @license    http://www.gnu.org/licenses/gpl.html GPL
  * @link http://www.loquacity.info
  * @since 0.8-alpha1
@@ -83,7 +83,11 @@ class posthandler {
         $rs['ownerid'] = (isset($post['ownerid'])) ? intval($post['ownerid']) : $_SESSION['user_id'];
         $rs['hidefromhome'] = (isset($post['frm_post_hidefromhome']) && $post['frm_post_hidefromhome'] == 1) ? 1: 0;
         $rs['allowcomments'] = (isset($post['frm_post_allowcomments']) && $post['frm_post_allowcomments'] == ('allow' or 'disallow' or 'timed')) ? $post['frm_post_allowcomments'] : 'disallow';
-        $rs['autodisabledate'] = (isset($post['frm_post_autodisabledate']) && is_numeric($post['frm_post_autodisabledate'])) ? intval($post['frm_post_autodisabledate']) : '';
+        # TODO this needs refactored as everytime the post is edited, the disable date will auto-change (unintended). Make it use a definite date
+        if(isset($post['disallowcommentsdays']) && in_array($post['disallowcommentsdays'], array(7, 14, 30, 90))){
+        	$inc = $post['disallowcommentsdays'];
+        	$rs['autodisabledate'] = strtotime("+$inc days");
+        }
         
         if($this->_db->AutoExecute(T_POSTS, $rs, $method, $where, false, get_magic_quotes_runtime()) !== false){
             if($method === 'INSERT' ){
@@ -192,7 +196,7 @@ class posthandler {
              'fullname' => htmlspecialchars($post['fullname']));
         $npost['hidefromhome'] = $post['hidefromhome'];
         $npost['autodisabledate'] = $post['autodisabledate'];
-        if($post['allowcomments'] == 'disallow' or ($post['allowcomments'] == 'timed' and $post['autodisabledate'] < time())){
+        if($post['allowcomments'] == 'disallow' || ($post['allowcomments'] == 'timed' and $post['autodisabledate'] < time())){
             $npost['allowcomments'] = FALSE;
         }
         else {
@@ -208,36 +212,59 @@ class posthandler {
 	 * @return string
 	 */
     function make_post_query($params) {
-        $skip           = 0;
-        $num            = 20;
-        $sectionid      = FALSE;
-        $postid         = FALSE;
-        $wherestart     = " WHERE status='live' ";
-        $where          = "";
-        $order          = " ORDER BY posts.posttime desc ";
-        $what           = "*";
-        $home           = 0;
+    	$args = array();
+        $skip           = (isset($params['skip'])) ? $params['skip'] : 0;
+        $num            = (isset($params['num'])) ? $params['num'] : 20;
+        $sectionid      = (isset($params['sectionid'])) ? $params['sectionid'] : FALSE;
+        $postid         = (isset($params['postid'])) ? $params['postid'] : FALSE;
+        $args['status']         = (isset($params['wherestart'])) ? $params['wherestart'] : 'status="live"';
+        $column         = (isset($params['what'])) ? $params['what'] : "*";
+        $order          = (isset($params['order'])) ? $params['order'] : "ORDER BY posts.posttime desc";
+        $home           = (isset($params['home'])) ? intval($params['home']) : 0;
 
-        // overwrite the above defaults with options from the $params array
-        extract($params);
-
-        if (!isset($limit))                                 $limit = " LIMIT $skip,$num ";
-        if ((isset($postid)) && ($postid != FALSE))         $where .= " AND postid='$postid' ";
-        if (isset($year))                                   $where .= " AND FROM_UNIXTIME(posttime,'%Y') = '" . addslashes($year) . "' ";
-        if (isset($month))                                  $where .= " AND FROM_UNIXTIME(posttime,'%m') = '" . addslashes($month) . "' ";
-        if (isset($day))                                    $where .= " AND FROM_UNIXTIME(posttime,'%D') = '" . addslashes($day) . "' ";
-        if (isset($hour))                                   $where .= " AND FROM_UNIXTIME(posttime,'%H') = '" . addslashes($hour) . "' ";
-        if (isset($minute))                                 $where .= " AND FROM_UNIXTIME(posttime,'%i') = '" . addslashes($minute) . "' ";
-        if (isset($second))                                 $where .= " AND FROM_UNIXTIME(posts.posttime,'%S') = '" . addslashes($second) . "' ";
-
+		$limit = 'LIMIT '.$skip.','.$num;
+        if (isset($params['year'])){
+        	$args['year'] = 'FROM_UNIXTIME(posts.posttime,"%Y") = '. intval($params['year']);
+        }
+        if (isset($params['month'])){
+        	$m = intval($params['month']);
+        	if($m > 0 && $m < 13){
+        		$args['month'] = 'FROM_UNIXTIME(posts.posttime,"%m") = ' . $m;
+        	}
+        }
+        if (isset($params['day'])){
+        	$d = intval($params['day']);
+        	if($d > 0 && $d < 32){
+        		$args['day'] = 'FROM_UNIXTIME(posts.posttime,"%D") = ' . $d;
+        	}
+        }
+        if (isset($params['hour'])){
+        	$h = intval($params['hour']);
+        	if($h >= 0 && $h < 24){
+        		$args['hour'] = 'FROM_UNIXTIME(posts.posttime,"%H") = ' . $h;
+        	}
+        }
+        if (isset($params['minute'])){
+        	$m = intval($params['minute']);
+        	if ( $m >=0 && $m < 60){
+        		$args['minute'] = 'FROM_UNIXTIME(posts.posttime"%i") = ' . $m;
+        	}
+        }
+        if (isset($params['second'])){
+        	$s = intval($params['second']);
+        	if($s >= 0 && $s < 60){
+        		$args['second'] = 'FROM_UNIXTIME(posts.posttime,"%S") = ' . $s;
+        	}
+        }
+		$where = 'WHERE '.join(' AND ', $args);
+		
         // There should be a ":" at the beginning and end of
         // any sections list
         if ((isset($sectionid)) && ($sectionid != FALSE))   $where .= " AND sections like '%:$sectionid:%' ";
 
-        if($home) $where .= " AND hidefromhome=0 ";
+        if($home) $where .= " AND hidefromhome=0";
         //$q = "SELECT posts.$what, authors.nickname, authors.email, authors.fullname, COUNT(`comments`.`commentid`) AS NUMCOMMENTS FROM ".T_POSTS." AS posts LEFT JOIN ".T_AUTHORS." AS authors ON posts.ownerid = authors.id LEFT JOIN `".T_COMMENTS."` as comments ON posts.postid = comments.postid $wherestart $where GROUP BY posts.postid $order $limit";
-        $q = "SELECT posts.postid FROM ".T_POSTS." AS posts LEFT JOIN ".T_AUTHORS." AS authors ON posts.ownerid = authors.id LEFT JOIN `".T_COMMENTS."` as comments ON posts.postid = comments.postid $wherestart $where GROUP BY posts.postid $order $limit";
-        return $q;
+        return"SELECT posts.postid FROM `".T_POSTS."` AS posts LEFT JOIN ".T_AUTHORS." AS authors ON posts.ownerid = authors.id $where GROUP BY posts.postid $order $limit";
     }
 
 
@@ -357,6 +384,12 @@ class posthandler {
     }
     function lastError(){
         return $this->_last_error;
+    }
+    function getBySection($section){
+    	if(is_int($section) && $section > 0){
+    		$sql = 'SELECT posts.postid FROM `'.T_POSTS.'` as posts WHERE posts.sections LIKE "%'.$section.'%"';
+    		return $this->_db->Execute($sql);
+    	}
     }
 }
 ?>

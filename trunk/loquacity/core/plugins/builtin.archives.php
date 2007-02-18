@@ -6,7 +6,7 @@
  * @package Loquacity
  * @subpackage Plugins
  * @author Kenneth Power <telcor@users.berlios.de>, Eaden McKee, http://www.bblog.com, Tobias Schlottke
- * @copyright @copy; 2006 Kenneth Power <telcor@users.berlios.de>, &copy; 2003  Eaden McKee <email@eadz.co.nz>, Tobias Schlottke
+ * @copyright @copy; 2006, 2007 Kenneth Power <telcor@users.berlios.de>, &copy; 2003  Eaden McKee <email@eadz.co.nz>, Tobias Schlottke
  * @license    http://www.gnu.org/licenses/gpl.html GPL
  * @link http://www.loquacity.info
  * @since 0.8-alpha1
@@ -52,37 +52,78 @@ function identify_admin_archives ()
 
 $loq->assign('form_type','edit');
 $loq->get_modifiers();
+$actions = array('delete', 'edit', 'postedit', 'filter', 'allowcomments');
 
-$ph = $loq->_ph;
-if (isset($_GET['delete']) or isset($_POST['delete'])){
-    if ($_POST['confirm'] == "cd".$_POST['delete'] && is_numeric($_POST['delete'])){
-        $res = $ph->delete_post($_POST['delete']);
+if(in_array($_POST['action'], $actions)){
+	$postid = intval($_POST['postid']);
+	switch($_POST['action']){
+		case 'delete':
+			deletePost($loq, $postid);
+			break;
+		case 'edit':
+			editPost($loq, $postid);
+			break;
+		case 'postedit':
+			savePost($loq, $postid);
+			break;
+		case 'filter':
+			filterDisplay($loq);
+			break;
+		case 'allowcomments':
+			allowComments($loq, $postid);
+			break;
+		default:
+			//Unknown - handle this error
+			break;
+	}
+}
+else{
+	defaultDisplay($loq);
+}
+
+function deletePost(&$loq, $postid=null){
+	if(is_null($postid) || $postid === 0){
+		return;
+	}
+    if (isset($_POST['confirm']) && $_POST['confirm'] == "cd".$postid){
+        $res = $loq->_ph->delete_post($postid);
         $loq->assign('showmessage',TRUE);
         $loq->assign('message_title','Message Deleted');
         $loq->assign('message_content','The message you selected has now been deleted'); // -1 Redundant  ;)
+		defaultDisplay($loq);
+    }
+    if(isset($_POST['submit']) && ($_POST['submit'] === 'Delete it') && !isset($_POST['confirm'])){
+    	defaultDisplay($loq);
     }
     else{
         $loq->assign('showmessage',TRUE);
-        $p = $ph->get_post($_POST['delete']);
-        $loq->assign('message_title','Are you sure you want to delete the post "'.$p['title'].'"');
-        $loq->assign('message_content',"
-            <form action='index.php' method='POST'>
-            <input type='hidden' name='b' value='archives'>
-            <input type='hidden' name='confirm' value='cd".$_POST['delete']."'>
-            <input type='hidden' name='delete' value='".$_POST['delete']."'>
-            <center><input type='submit' class='bf' name='submit' value='Delete it'></center>
-            </form>");
+        $p = $loq->_ph->get_post($postid, true);
+        $loq->assign('message_title','Confirm Delete');
+        $loq->assign('message_content','
+            <form action="index.php" method="POST">
+            <input type="hidden" name="b" value="archives" />
+			<input type="hidden" name="action" value="delete" />
+            <input type="hidden" name="postid" value="'.$postid.'" />
+			<input type="checkbox" name="confirm" value="cd'.$postid.'" /> Yes, I really want to delete the post "'.htmlspecialchars($p['title']).'"
+            <center><input type="submit" class="bf" name="submit" value="Delete it" /></center>
+            </form>');
+        $loq->assign('showarchives','no');
+    	defaultDisplay();
     }
 }
-
-if (isset($_POST['edit']) && is_numeric($_POST['edit'])){
-    $epost = $ph->get_post($_POST['edit'], true, true);
+function editPost(&$loq, $postid=null){
+	
+	if(is_null($postid) || $postid === 0){
+		return;
+	}
+	
+    $epost = $loq->_ph->get_post($postid, true);
     $loq->assign('title_text',htmlspecialchars($epost['title']));
     $loq->assign('body_text',htmlspecialchars($epost['body']));
     $loq->assign('selected_modifier',$epost['modifier']);
     $loq->assign('editpost',TRUE);
     $loq->assign('showarchives','no');
-    $loq->assign('postid',$_POST['edit']);
+    $loq->assign('postid',$postid);
     $loq->assign('timestampform',timestAmpform($epost['posttime']));
 
     // to hide a post from the homepage
@@ -94,12 +135,7 @@ if (isset($_POST['edit']) && is_numeric($_POST['edit'])){
     if($epost['allowcomments'] == 'timed') $loq->assign('commentstimedvalue'," checked ");
     elseif($epost['allowcomments'] == 'disallow') $loq->assign('commentsdisallowvalue'," checked ");
     else $loq->assign('commentsallowvalue'," checked='checked' ");
-
-
-    if($epost['status'] == 'draft') $loq->assign('statusdraft','checked');
-    else $loq->assign('statuslive','checked');
-
-    $sects = $loq->sections;
+	$sects = $loq->sections;
     $editpostsections = array();
     $_post_sects = (strlen($epost['sections']) > 1) ? explode(":",$epost['sections']) : array($epost['sections']);
     foreach($sects as $id=>$sect){
@@ -109,70 +145,70 @@ if (isset($_POST['edit']) && is_numeric($_POST['edit'])){
         }
     }
     $loq->assign("sections",$sects);
-    //$loq->assign_by_ref("sections",$nsects);
+
+    if($epost['status'] == 'draft'){
+    	$loq->assign('statusdraft','checked');
+    }
+    else{
+    	$loq->assign('statuslive','checked');
+    }
+    defaultDisplay();
 }
 
-if ((isset($_POST['postedit'])) && ($_POST['postedit'] == 'true')){
-    // a post to be editited has been submitted
-    if ((isset($_POST['postedit'])) && (!is_numeric($_POST['postid']))){
+function savePost(&$loq, $postid=null){
+	if(is_null($postid) || $postid === 0){
+		return;
+	}
+    // a post to be edited has been submitted
+    if ((isset($_POST['postedit'])) && (!is_numeric($postid))){
         echo "Provided PostID value is not a Post ID. (Fatal error)";
         die;
     }
 
-    if($ph->edit_post($_POST)){
-	if ((isset($_POST['send_trackback'])) && ($_POST['send_trackback'] == "TRUE")){
-		// send a trackback
-		include "includes/trackbackhandler.class.php";
-		$tb = new trackbackhandler($loq->_adb);
-		if (!isset($_POST['title_text']))   { $_POST['title_text']  = ""; }
-		if (!isset($_POST['excerpt']))      { $_POST['excerpt']     = ""; }
-		if (!isset($_POST['tburl']))        { $_POST['tburl']       = ""; }
-		$tb->send_trackback($ph->get_post_permalink($_POST['postid']), $_POST['title_text'], $_POST['excerpt'], $_POST['tburl']);
-	}
+    if($loq->_ph->edit_post($_POST)){
+		if ((isset($_POST['send_trackback'])) && ($_POST['send_trackback'] == "TRUE")){
+			// send a trackback
+			include "includes/trackbackhandler.class.php";
+			$tb = new trackbackhandler($loq->_adb);
+			if (!isset($_POST['title_text']))   { $_POST['title_text']  = ""; }
+			if (!isset($_POST['excerpt']))      { $_POST['excerpt']     = ""; }
+			if (!isset($_POST['tburl']))        { $_POST['tburl']       = ""; }
+			$tb->send_trackback($ph->get_post_permalink($_POST['postid']), $_POST['title_text'], $_POST['excerpt'], $_POST['tburl']);
+		}
     }
+	defaultDisplay($loq);
 }
 
-if ((isset($_POST['filter'])) && ($_POST['filter'] == 'true')){
-    if ((isset($_POST['shownum'])) && (is_numeric($_POST['shownum'])))
-    {
-    	$num = $_POST['shownum'];
+function filterDisplay(&$loq){
+    if ((isset($_POST['shownum'])) && (is_numeric($_POST['shownum']))){
+    	$searchopts['num'] = intval($_POST['shownum']);
     }
-    else
-    {
-	$num=20;
+    else{
+		$searchopts['num']=20;
     }
 
-	$searchopts['num'] = $num;
-	$searchopts['wherestart'] = ' WHERE 1 ';
-
-	if(is_numeric($_POST['showsection']))
-	{
-		$searchopts['sectionid'] = $_POST['showsection'];
+	if(is_numeric($_POST['showsection'])){
+		$searchopts['sectionid'] = intval($_POST['showsection']);
 	}
 
-	if($_POST['showmonth'] != 'any')
-	{
-		$searchopts['month'] = substr($_POST['showmonth'],0,2);
-		$searchopts['year']  = substr($_POST['showmonth'],3,4);
+	if($_POST['showmonth'] != 'any'){
+		list($searchopts['month'], $searchopts['year']) = explode('-', $_POST['showmonth']);
 	}
-	//print_r($searchopts);
-	$q = $loq->make_post_query($searchopts);
-	//echo $q;
-	$archives = $loq->get_posts($q);
+	
+	$archives = $loq->_ph->get_posts($searchopts);
+	defaultDisplay($loq, $archives);
 }
-if (isset($_POST['allowcomments']) && (is_numeric($_POST['allowcomments']) === true)){
-    $sql = 'UPDATE '.T_POSTS.' SET allowcomments=IF(allowcomments="allow", "disallow", "allow") WHERE postid='.intval($_POST['allowcomments']);
+
+function allowComments(&$loq, $postid=null){
+	if(is_null($postid) || $postid === 0){
+		return;
+	}
+    $sql = 'UPDATE '.T_POSTS.' SET allowcomments=IF(allowcomments="allow", "disallow", "allow") WHERE postid='.intval($postid);
     $loq->_adb->Execute($sql);
+	defaultDisplay($loq);
 }
-$searchopts['wherestart'] = ' WHERE 1 ';
-$archives = $ph->get_posts($searchopts);
 
-$loq->assign('postmonths',get_post_months());
-$loq->assign_by_ref('archives',$archives);
-$loq->display('archives.html');
-
-function get_post_months()
-{
+function get_post_months(){
 	global $loq;
     $rs = $loq->_adb->Execute("SELECT FROM_UNIXTIME(posttime,'%Y%m') yyyymm,  posttime from ".T_POSTS." group by yyyymm order by yyyymm");
     if($rs !== false && !$rs->EOF){
@@ -213,4 +249,14 @@ function maketimestamp($day,$month,$year,$hour,$minute){
     return mktime($hour, $minute, 00, $month, $day, $year);
 }
 
+function defaultDisplay(&$loq, $archives=null){
+	$searchopts = array();
+	if(is_null($archives)){
+		$archives = $loq->_ph->get_posts($searchopts, true, 'html');
+	}
+	
+	$loq->assign('postmonths',get_post_months());
+	$loq->assign_by_ref('archives',$archives);
+	$loq->display('archives.html');
+}
 ?>

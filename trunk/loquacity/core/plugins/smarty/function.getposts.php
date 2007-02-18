@@ -148,9 +148,9 @@ function smarty_function_getposts($params, &$loq) {
 }
 
 function get_single_post(&$loq, &$ph, $postid){
-    $post = $ph->get_post($postid);
+    $post = $ph->get_post($postid, false, 'html');
     if(!is_array($post))
-        return false;;
+        return false;
     $post['newday'] = 'yes';
     $post['newmonth'] = 'yes';
     return $post;

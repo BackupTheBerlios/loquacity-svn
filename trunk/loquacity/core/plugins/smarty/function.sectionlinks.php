@@ -80,26 +80,38 @@ function smarty_function_sectionlinks($params, &$loq) {
     $num = count($sections);
     $i=0;
   
-    if ($mode=='list') $linkcode .= "<ul>";
-    foreach ($sections as $section) {
-        $i++;
-        //we using arrays in the template and objects in the core..
-        $url = '';
-        $nicename = $section['nicename'];
-        if(defined(CLEAN_URLS) && CLEAN_URLS == 'true'){
-                $url = '<a href="'.BLOGURL .'/section/'.urlencode($section['name']).'">'.$nicename.'</a>';
-        }
-        else{
-                $url = '<a href="'.BLOGURL .'?sectionid='.urlencode($section['id']).'">'.$nicename.'</a>';
-        }
-        if($mode=='list')
-            $linkcode .= "<li>";
-        $linkcode .= $url;
-
-        if($mode=='list')
-            $linkcode .= "</li>";
-        else if($num > $i)
-            $linkcode .= $sep;
+    if ($mode=='list'){
+    	$linkcode .= "<ul>";
+    }
+    if(is_array($sections) && count($sections) > 0){
+	    foreach ($sections as $section) {
+	        $i++;
+	        //we using arrays in the template and objects in the core..
+	        $url = '';
+	        $nicename = $section['nicename'];
+	        if(defined(CLEAN_URLS) && CLEAN_URLS == 'true'){
+	                $url = '<a href="'.BLOGURL .'/section/'.urlencode($section['name']).'">'.$nicename.'</a>';
+	        }
+	        else{
+	                $url = '<a href="'.BLOGURL .'?sectionid='.urlencode($section['id']).'">'.$nicename.'</a>';
+	        }
+	        if($mode=='list')
+	            $linkcode .= "<li>";
+	        $linkcode .= $url;
+	
+	        if($mode=='list')
+	            $linkcode .= "</li>";
+	        else if($num > $i)
+	            $linkcode .= $sep;
+	    }
+    }
+    else{
+    	if($mode == 'list'){
+    		$linkcode .= '<li>No sections</li>';
+    	}
+    	else{
+    		$linkcode .= 'No sections';
+    	}
     }
 
     if ($mode=='list')

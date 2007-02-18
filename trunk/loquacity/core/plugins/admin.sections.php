@@ -6,7 +6,7 @@
  * @package Loquacity
  * @subpackage Plugins
  * @author Eaden McKee, http://www.bblog.com
- * @copyright &copy; 2003  Eaden McKee <email@eadz.co.nz>
+ * @copyright &copy; 2007 Kenneth Power <telcor@users.berlios.de>, &copy; 2003  Eaden McKee <email@eadz.co.nz>
  * @license    http://www.gnu.org/licenses/gpl.html GPL
  * @link http://www.loquacity.$loq->
  * @since 0.8-alpha1
@@ -51,46 +51,39 @@ function identify_admin_sections () {
 
 function admin_plugin_sections_run(&$loq) {
     // Again, the plugin API needs work.
-    if(isset($_GET['sectdo']))  { $sectdo = $_GET['sectdo']; }
-    elseif(isset($_POST['sectdo'])) { $sectdo = $_POST['sectdo']; }
-    else { $sectdo = ''; }
-
-    switch($sectdo) {
+	$action = (isset($_POST['action'])) ? strtolower($_POST['action']) : '';
+    switch($action){
         case 'new' :  // sections are being editied
-            $nicename = stringHandler::removeMagicQuotes($_POST['nicename']);
-            $urlname = stringHandler::removeMagicQuotes($_POST['urlname']);
+            $nicename = $_POST['nicename'];
+            $urlname = $_POST['urlname'];
             $loq->_adb->Execute("insert into ".T_SECTIONS." set nicename=".$loq->_adb->quote($nicename).", name=".$loq->_adb->quote($urlname));
             $insid = $loq->_adb->insert_id();
             break;
-        case "Delete" : // delete section
+        case 'delete':
             // have to remove all references to the section in the posts
-            $sname = stringHandler::removeMagicQuotes($_POST['sname']);
-            $sql = 'SELECT `sectionid` FROM `'.T_SECTIONS.'` WHERE `name`='.$loq->_adb->quote($sname);
-            $sect_id = $loq->_adb->GetOne($sql);
-            if($sect_id !== false) {
+			$sectionid = intval($_POST['id']);
+            if($sect_id !== 0) {
                 $ph = $loq->_ph;
-                $posts_in_section_q = $ph->make_post_query(array("sectionid"=>$sect_id));
-                $posts_in_section = $ph->get_posts($posts_in_section_q,TRUE);
-                if($posts_in_section) {
-                    foreach($posts_in_section as $post) {
-                        unset($tmpr);
-                        $tmpr = array();
-                        $tmpsections = explode(":",$post->sections);
-                        foreach($tmpsections as $tmpsection) {
-                            if($tmpsection != $sect_id) $tmpr[] = $tmpsection;
-                        }
-                        $newsects = implode(":",$tmpr);
-                        // update the posts to remove the section
-                        $loq->_adb->Execute("update ".T_POSTS." set sections='$newsects' where postid={$post->postid}");
-                    } // end foreach ($post_in_section as $post)
-                } // end if($posts_in_section)
-                // delete the section
-                $loq->_adb->Execute("delete from `".T_SECTIONS."` where sectionid=$sect_id");
-            } // else show error
-        case "Save" :
-            $sect_id = $loq->sect_by_name[$_POST['sname']];
-            if($sect_id < 1) break;
-            $sql = "update ".T_SECTIONS ." set nicename='".stringHandler::clean($_POST['nicename'])."' where sectionid='$sect_id'";
+                $posts = $ph->getBySection($sectionid);
+                if(!$posts->EOF){
+                    while($posts->EOF === FALSE) {
+                    	$s = $posts->fields['sections'];
+                    	$s = str_replace($sectionid.':', '', $s);
+                    	if(strlen($s) == 1){
+                    		//Handles the case where the post was only assigned to this section
+                    		$s = '::';
+                    	}
+                    	$loq->_adb->Execute('update `'.T_POSTS.'` set sections='.$s.' where postid='.$post->fields['id']);
+                        $posts->MoveNext();
+                    }
+                }
+                $loq->_adb->Execute("delete from `".T_SECTIONS."` where sectionid=$sectionid");
+            }
+			break;
+        case 'edit':
+        	$sectionid = intval($_POST['id']);
+            if($sectionid < 1) break;
+            $sql = "update `".T_SECTIONS ."` set nicename='".$_POST['nicename']."' where sectionid=$sectionid";
             $loq->_adb->Execute($sql);
             break;
         default : // show form

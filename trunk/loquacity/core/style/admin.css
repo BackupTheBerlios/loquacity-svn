@@ -381,6 +381,10 @@ ul#tabs li.ontab {
 .errorMsg{
 	color: red;
 }
+.high{
+}
+.low{
+}
 /* Mozilla users will see it at width: 99, and IE won't **** up. */
 /*
 html>body textarea#postarea { width:99%; }

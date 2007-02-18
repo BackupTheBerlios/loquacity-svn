@@ -6,7 +6,7 @@
  * @package Loquacity
  * @subpackage Plugins
  * @author Eaden McKee, http://www.bblog.com
- * @copyright &copy; 2003  Eaden McKee <email@eadz.co.nz>
+ * @copyright &copy; 2007 Kenneth Power <telcor@users.berlios.de>, &copy; 2003  Eaden McKee <email@eadz.co.nz>
  * @license    http://www.gnu.org/licenses/gpl.html GPL
  * @link http://www.loquacity.info
  * @since 0.8-alpha1
@@ -55,16 +55,19 @@ function admin_plugin_comments_run(&$loq) {
         $articles = ($_POST['commentsPosts'] === 'All') ? null : intval($_POST['commentsPosts']);
     }
 
-    $commentdo = (isset($_POST['commentdo'])) ? $_POST['commentdo'] : '';
+    $commentdo = (isset($_POST['commentdo'])) ? strtolower($_POST['commentdo']) : '';
+    if($commentdo == ''){
+    	$commentdo = (isset($_GET['commentdo'])) ? strtolower($_GET['commentdo']) : '';
+    }
     switch($commentdo) {
-        case "Delete" : // delete comments
+        case "delete" : // delete comments
             if(is_array($_POST['commentid'])){
                 foreach($_POST['commentid'] as $key=>$val){
                     deleteComment($loq, $val);
                 }
             }
             break;
-        case "Edit" :
+        case "edit" :
             $commentid = intval($_GET['editComment']);
             $postid = intval($_GET['postid']);
             editComment($loq, $commentid, $postid);
@@ -72,7 +75,7 @@ function admin_plugin_comments_run(&$loq) {
         case "editsave" :
           saveEdit($loq);
           break;
-        case "Approve":
+        case "approve":
             if(is_array($_POST['commentid'])){
                 foreach($_POST['commentid'] as $key=>$val)
                     $loq->_adb->Execute("UPDATE ".T_COMMENTS." SET onhold='0' WHERE commentid='".intval($val)."'");
@@ -89,48 +92,52 @@ function admin_plugin_comments_run(&$loq) {
 }
 
 function deleteComment(&$loq, $id){
-  $id = intval($id);
-  $postid = $loq->_adb->GetOne('select postid from '.T_COMMENTS.' where commentid="'.$id.'"');
-  $childcount = $loq->_adb->GetOne('select count(*) as c from '.T_COMMENTS .' where parentid="'.$id.'" group by commentid');
-  if($childcount > 0) { // there are replies to the comment so we can't delete it.
-    $loq->_adb->Execute('update '.T_COMMENTS.' set deleted="true", postername="", posteremail="", posterwebsite="", pubemail=0, pubwebsite=0, commenttext="Deleted Comment" where commentid="'.$id.'"');
-  } else { // just delete the comment
-    $loq->_adb->Execute('delete from '.T_COMMENTS.' where commentid="'.$id.'"');
-  }
-  $newnumcomments = $loq->_adb->GetOne('SELECT count(*) as c FROM '.T_COMMENTS.' WHERE postid="'.$postid.'" and deleted="false" group by postid');
-  $loq->_adb->Execute('update '.T_POSTS.' set commentcount="'.$newnumcomments.'" where postid="'.$postid.'"');
-  //$loq->modifiednow();
+	$id = intval($id);
+	$postid = $loq->_adb->GetOne('select postid from '.T_COMMENTS.' where commentid="'.$id.'"');
+	$childcount = $loq->_adb->GetOne('select count(*) as c from '.T_COMMENTS .' where parentid="'.$id.'" group by commentid');
+	if($childcount > 0) {
+		$loq->_adb->Execute('update '.T_COMMENTS.' set deleted="true", postername="", posteremail="", posterwebsite="", pubemail=0, pubwebsite=0, commenttext="Deleted Comment" where commentid="'.$id.'"');
+	} else {
+		$loq->_adb->Execute('delete from '.T_COMMENTS.' where commentid="'.$id.'"');
+	}
+	$newnumcomments = $loq->_adb->GetOne('SELECT count(*) as c FROM '.T_COMMENTS.' WHERE postid="'.$postid.'" and deleted="false" group by postid');
+	$loq->_adb->Execute('update '.T_POSTS.' set commentcount="'.$newnumcomments.'" where postid="'.$postid.'"');
 }
 
 function editComment(&$loq, $commentid, $postid){
-  $rval = true;
-  if(!(is_numeric($commentid) && is_numeric($postid)))
-    $rval = false;
-  $comment = $loq->get_comment($postid,$commentid);
-  if(!$comment)
-    $rval = false;
-  if($rval === true){
-    $loq->assign('showeditform',TRUE);
-    $loq->assign('comment',$comment[0]);
-  }
-  return $rval;
+	$rval = true;
+	if(!(is_numeric($commentid) && is_numeric($postid))){
+		$rval = false;
+	}
+	$ch = new commenthandler($loq->_adb, $postid);
+	$comment = $ch->get_comment($commentid);
+	if(!$comment){
+		$rval = false;
+	}
+	if($rval === true){
+		$loq->assign('showeditform',TRUE);
+		$loq->assign('comment',$comment);
+	}
+	return $rval;
 }
 
 function saveEdit(&$loq){
-  $rval = true;
-  if(!(is_numeric($_POST['commentid'])))
-    $rval = false;
-  $title = stringHandler::clean($_POST['title']);
-  $author = stringHandler::clean($_POST['author']);
-  $email  = stringHandler::clean($_POST['email']);
-  $websiteurl = stringHandler::clean($_POST['websiteurl']);
-  $body = stringHandler::clean($_POST['body']);
-  if($rval === true){
-    $q = "update ".T_COMMENTS." set title='$title', postername='$author', posterwebsite='$websiteurl', posteremail='$email', commenttext='$body' where commentid='{$_POST['commentid']}'";
-    if($loq->_adb->Execute($q) === true)
-      $loq->assign('message', 'Comment <em>'.$title.'</em> saved');
-  }
-  return $rval;
+	$rval = true;
+	if(!(is_numeric($_POST['commentid']))){
+		$rval = false;
+	}
+	$title = $_POST['title'];
+	$author = $_POST['author'];
+	$email  = $_POST['email'];
+	$websiteurl = $_POST['websiteurl'];
+	$body = $_POST['body'];
+	if($rval === true){
+		$q = "update ".T_COMMENTS." set title='$title', postername='$author', posterwebsite='$websiteurl', posteremail='$email', commenttext='$body' where commentid='{$_POST['commentid']}'";
+	    if($loq->_adb->Execute($q) === true){
+	    	$loq->assign('message', 'Comment <em>'.$title.'</em> saved');
+	    }
+	}
+	return $rval;
 }
 
 /**

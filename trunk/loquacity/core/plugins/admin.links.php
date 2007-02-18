@@ -6,7 +6,7 @@
  * @package Loquacity
  * @subpackage Plugins
  * @author Mario Delgado
- * @copyright &copy; 2003  Mario Delgado <mario@seraphworks.com>
+ * @copyright &copy; 2007 Kenneth Power <telcor@users.berlios.de>, &copy; 2003  Mario Delgado <mario@seraphworks.com>
  * @license    http://www.gnu.org/licenses/gpl.html GPL
  * @link http://www.loquacity.info
  * @since 0.8-alpha1
@@ -54,35 +54,37 @@ function admin_plugin_links_run(&$loq) {
     if(isset($_GET['linkdo']))  { $linkdo = $_GET['linkdo']; }
     elseif(isset($_POST['linkdo'])) { $linkdo = $_POST['linkdo']; }
     else { $linkdo = ''; }
+    $linkdo = strtolower($linkdo);
     switch($linkdo) {
-        case "New" :  // add new link
-            $maxposition = $loq->_adb->GetOne("select position from `".T_LINKS."` order by position desc limit 0,1");
-            $position = $maxposition + 10;
-            $loq->_adb->Execute("insert into ".T_LINKS."
-                set nicename='".stringHandler::removeMagicQuotes($_POST['nicename'])."',
-                url='".stringHandler::removeMagicQuotes($_POST['url'])."',
-                category='".stringHandler::removeMagicQuotes($_POST['category'])."',
-            position='$position'");
+        case "new":
+			$link_name = $_POST['nicename'];
+			$link_url = $_POST['url'];
+			$link_cat = intval($_POST['category']);
+			if(strlen($link_name) > 0 && strlen($link_url) > 0 && $link_cat > 0){
+				$maxposition = $loq->_adb->GetOne("select MAX(position) from `".T_LINKS."`");
+	            $position = $maxposition + 10;
+				$stmt = $loq->_adb->Prepare('INSERT INTO `'.T_LINKS.'` VALUES(null, ?, ?, ?, ?)');
+				$loq->_adb->Execute($stmt, array($link_name, $link_url, $link_cat, $postition));
+			}
             break;
-    
-        case "Delete" : // delete link
+        case "delete" : // delete link
                 $loq->_adb->Execute("delete from ".T_LINKS." where linkid=".$_POST['linkid']);
                 break;
     
-        case "Save" : // update an existing link
+        case "save" : // update an existing link
                 $loq->_adb->Execute("update ".T_LINKS."
                 set nicename='".stringHandler::removeMagicQuotes($_POST['nicename'])."',
                 url='".stringHandler::removeMagicQuotes($_POST['url'])."',
                 category='".stringHandler::removeMagicQuotes($_POST['category'])."'
                 where linkid=".$_POST['linkid']);
                 break;
-        case "Up" :
+        case "up" :
             $loq->_adb->Execute("update ".T_LINKS." set position=position-15 where linkid=".$_POST['linkid']);
             reorder_links();
     
             break;
     
-        case "Down" :
+        case "down" :
             $loq->_adb->Execute("update ".T_LINKS." set position=position+15 where linkid=".$_POST['linkid']);
             reorder_links();
             break;
@@ -92,13 +94,17 @@ function admin_plugin_links_run(&$loq) {
     if(isset($_GET['catdo']))  { $catdo = $_GET['catdo']; }
     elseif (isset($_POST['catdo'])) { $catdo = $_POST['catdo']; }
     else { $catdo = ''; }
+    $catod = strtolower($catdo);
     switch($catdo) {
-        case "New" :  // add new category
-            $loq->_adb->Execute("insert into ".T_CATEGORIES."
-                set name='".stringHandler::removeMagicQuotes($_POST['name'])."'");
+        case "new" :  // add new category
+			$cat_name = $_POST['name'];
+			if(strlen($cat_name) > 0){
+				$stmt = $loq->_adb->Prepare('INSERT INTO `'.T_CATEGORIES.'` VALUES(null, ?)');
+            	$loq->_adb->Execute($stmt, array($cat_name));
+			}
             break;
     
-        case "Delete" : // delete category
+        case "delete" : // delete category
             // have to remove all references to the category in the links
                 $loq->_adb->Execute("update ".T_LINKS."
                 set linkid=0 where linkid=".$_POST['categoryid']);
@@ -106,9 +112,9 @@ function admin_plugin_links_run(&$loq) {
                 $loq->_adb->Execute("delete from ".T_CATEGORIES." where categoryid=".$_POST['categoryid']);
                 break;
     
-        case "Save" : // update an existing category
+        case "save" : // update an existing category
                 $loq->_adb->Execute("update ".T_CATEGORIES."
-                set name='".stringHandler::removeMagicQuotes($_POST['name'])."'
+                set name='".$_POST['name']."'
                 where categoryid=".$_POST['categoryid']);
                 break;
     

@@ -6,7 +6,7 @@
   <form action="index.php" method="post">
     <input type="hidden" name="b" value="plugins" />
     <input type="hidden" name="p" value="comments" />
-    <input type="hidden" name="commentid" value="{$comment.commentid}" />
+    <input type="hidden" name="commentid" value="{$comment.id}" />
     <input type="hidden" name="commentdo" value="editsave" />
     <h4>Title</h4>
     <div class="frame">
@@ -14,19 +14,19 @@
     </div>
     <h4>Author</h4>
     <div class="frame">
-      <input class="text" size="40" type="text" name="author" value="{$comment.author|htmlspecialchars}" />
+      <input class="text" size="40" type="text" name="author" value="{$comment.postername|htmlspecialchars}" />
     </div>
     <h4>Email</h4>
     <div class="frame">
-      <input class="text" size="40" type="text" name="email" value="{$comment.email|htmlspecialchars}" />
+      <input class="text" size="40" type="text" name="email" value="{$comment.posteremail|htmlspecialchars}" />
     </div>
     <h4>Website</h4>
     <div class="frame">
-      <input class="text" size="40" type="text" name="websiteurl" value="{$comment.websiteurl|htmlspecialchars}" />
+      <input class="text" size="40" type="text" name="websiteurl" value="{$comment.posterwebsite|htmlspecialchars}" />
     </div>
     <h4>Comment Body</h4>
     <div class="frame">
-      <textarea class="text" name="body" cols="60" rows="10" >{$comment.body|htmlspecialchars}</textarea>
+      <textarea class="text" name="body" cols="60" rows="10" >{$comment.commenttext|htmlspecialchars}</textarea>
     </div>
     <h4>Save Comment</h4>
     <div class="button">
