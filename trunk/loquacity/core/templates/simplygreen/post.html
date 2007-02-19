@@ -50,6 +50,8 @@
           	{if $post.allowcomments}
           	<form method="post" action="{$commentformaction}">
 	            {$commentformhiddenfields}
+	            <input type="hidden" name="title" value="{$post.title}" />
+        	    <input type="hidden" name="email" value="worthless" />
 	            <h3 class="title">Add Comment</h3>
 	            <div class="form">
 	                <div class="clear">&nbsp;</div>

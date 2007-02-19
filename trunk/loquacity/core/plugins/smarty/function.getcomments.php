@@ -45,37 +45,27 @@ function identify_function_getcomments () {
 function smarty_function_getcomments($params, &$loq) {
 	$assign="comments";
 	$postid=$loq->show_post;
-	$replyto = $_REQUEST['replyto'];
-    if($postid > 0 ){
-        $ch = $loq->get_comment_handler($postid);
+	$replyto = null;
+	if(isset($_POST['replyto'])){
+		$replyto = intval($_POST['replyto']);
+	}
+	
+    $ch = $loq->get_comment_handler();
+    if(isset($_POST['do']) && $_POST['do'] == 'submitcomment' && is_numeric($_POST['comment_postid'])) {
+        if(is_null($replyto)){
+            $replyto = false;
+        }
+        $ch->new_comment($loq->_ph->get_post($_POST['comment_postid']),$replyto, $_POST);
     }
-    else{
-        $ch = $loq->get_comment_handler($_REQUEST['postid']);
+    $rt = false;
+    $cs = '';
+    if(is_numeric($_GET['replyto'])) {
+        $rt = intval($_GET['replyto']);
+        $cs = $ch->getComment($rt, 'html');
+    } else {
+        $cs = $ch->getComments($postid, 'none', 'thread');
     }
     prep_form($loq, $postid, $_REQUEST['replyto']);
-    // are we posting a comment ?
-    if($_POST['do'] == 'submitcomment' && is_numeric($_POST['comment_postid'])) { // we are indeed!
-        if(is_numeric($_POST['replytos'])){
-            $rt = $_POST['replytos'];
-        }
-        else{
-            $rt =  false;
-        }
-        $ch->new_comment($loq->_ph->get_post($_POST['comment_postid'], false, true),$rt, $_POST);
-    }
-               
-    // get the comments.
-    
-    /* start loop and get posts*/
-    
-    $rt = false;
-    if(is_numeric($_GET['replyto'])) {
-        $rt = $_GET['replyto'];
-        $cs = $ch->get_comment($_REQUEST['postid'],$rt);
-    } else {
-        $cs = $ch->get_comments(true);
-    }
-    /* assign loop variable */
     $loq->assign($assign, $cs);
 }
 
@@ -84,7 +74,7 @@ function prep_form(&$loq, $postid, $replyto){
     $commentformhiddenfields = '<input type="hidden" name="do" value="submitcomment" />';
     $commentformhiddenfields .='<input type="hidden" name="comment_postid" value="'.$postid.'" />';
     if(is_numeric($replyto)) {
-          $commentformhiddenfields .= '<a name="commentform"></a><input type="hidden" name="replytos" value="'.$replyto.'" />';
+          $commentformhiddenfields .= '<a name="commentform"></a><input type="hidden" name="replyto" value="'.$replyto.'" />';
     }
     $ph = $loq->_ph;
     $loq->assign("commentformhiddenfields",$commentformhiddenfields);

@@ -378,8 +378,8 @@ class Loquacity extends Smarty {
     	echo $page;
     	die();
     }
-    function get_comment_handler($postid){
-        return new commentHandler($this->_adb, $postid);
+    function get_comment_handler(){
+        return new commentHandler($this->_adb);
     }
 
 } // end of Loquacity class

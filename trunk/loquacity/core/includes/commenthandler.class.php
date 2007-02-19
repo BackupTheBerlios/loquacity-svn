@@ -43,10 +43,12 @@ class commentHandler {
      * Constructor
      * Supplying a postid means we are working with a saved post
      */
-    function commentHandler(&$db, $postid=null) {
-        $postid = intval($postid);
+    function commentHandler(&$db) {
         $this->_db = $db;
-        $this->_highestlevel = 0;
+        
+    }
+    function commentThread(){
+    	$this->_highestlevel = 0;
         if(!is_null($postid) && $postid > 0){
             //$this->_db->debug = true;
             $this->_post = $postid;
@@ -77,32 +79,101 @@ class commentHandler {
         }
     }
     /**
-     * Retrieve all comments for the specific post
+     * Retrieve all comments for a specific post
+     * 
+     * Returns a dataset of comments for the post matching $postid. If special processing is requested, the resulting
+     * dataset is an index-based array, otherwise it's a an ADODB::Recordset object.
+     * 
+     * @param int $postid
+     * @param string $process Whether to process the resulting data for special purposes. Accepts one of the following:
+     *	<table>
+     * 		<tr>
+     * 			<td><strong>none</strong></td>
+     * 			<td>Do no further processing</td>
+     * 		</tr>
+     *		<tr>
+     * 			<td>html</td>
+     * 			<td>Apply rules to make data safe for HTML presentation</td>
+     * 		</tr>
+     * 	</table>
+     * @param string $format Apply specified formatting to comments. Only applied when $pocess does not equal 'none'. Accepts one of the following:
+     *	<table>
+     * 		<tr>
+     * 			<td><strong>none</strong></td>
+     * 			<td>Do not applying any formating</td>
+     * 		</tr>
+     * 		<tr>
+     * 			<td>flat</td>
+     * 			<td>The same as none</td>
+     * 		</tr>
+     * 		<tr>
+     * 			<td>thread</td>
+     * 			<td>Created nested comment threads</td>
+     * 		</tr>
+     * 	</table>
+     * @return mixed
      */
-    function get_comments($fordisplay=false){
-        if($fordisplay){
-            if(is_array($this->_comments)){
-                foreach($this->_comments as $id=>$comment){
-                    $this->_comments[$id] = $this->prepFieldsForDisplay($comment);
-                }
-                $this->makethread(0, $this->_thread, 0);
-                return $this->_comments;
-            }
-            else{
-                return;
-            }
-        }
-        else{
-            return $this->_comments;
+    function getComments($postid=null, $process='none', $format='none'){
+    	if(is_null($postid)){
+    		return false;
+    	}
+    	$format = strtolower($format);
+    	$process = strtolower($process);
+    	$stmt = $this->_db->Prepare('SELECT comm.* FROM `'.T_COMMENTS.'` AS comm WHERE commentid=? ORDER BY `posttime` ASC');
+   		$comments = $this->_db->Execute($stmt, array($postid));
+    	if($process === 'html' && ($format === 'flat' || $format === 'none')){
+    		return $this->flatComments($comments);
+    	}
+    	else if($process === 'html' && $format === 'thread'){
+    		return $this->threadedComments($comments);
+    	}
+    	else{
+    		return $comments; 
+    	}
+    }
+    /**
+     * Retrieve a single comment by id
+     * 
+     * @param int $cid Id of the comment to retrieve
+     * @param string $process Apply special processing rules to resulting dataset. Accepts one of the following:
+     * <table>
+     * 		<tr>
+     * 			<td><strong>none</strong></td>
+     * 			<td>Do no further processing</td>
+     * 		</tr>
+     *		<tr>
+     * 			<td>html</td>
+     * 			<td>Apply rules to make data safe for HTML presentation</td>
+     * 		</tr>
+     * 	</table>
+     * @return array
+     */
+    function getComment($cid=0, $process='none'){
+    	$cid = intval($cid);
+        if($cid > 0){
+        	$stmt = $this->_db->Prepare('SELECT com.* FROM `'.T_COMMENTS.'` as comm WHERE `commentid`=?');
+        	$comment = $this->_db->Execute($stmt, array($cid));
+        	if($process !== 'none'){
+        		return $this->processForHTML($comment);
+        	}
+        	else{
+        		return $comment[0];
+        	}
         }
     }
-    function get_comment($cid=0){
-        if($cid > 0){
-            if(array_key_exists($cid, $this->_comments))
-                return $this->_comments[$cid];
-            else
-                return;
-        }
+    function threadedComments(&$comments){
+    	if(is_object($comments) && !$comments->EOF){
+    		while(!$comments->EOF){
+    			$comments->MoveNext();
+    		}
+    	}
+    }
+    function flatComments(&$comments){
+    	if(is_object($comments) && !$comments->EOF){
+    		while(!$comments->EOF){
+    			$comments->MoveNext();
+    		}
+    	}
     }
     /**
     * Add a new comment to an article
@@ -116,11 +187,9 @@ class commentHandler {
 		$result = false;
         if($this->canProceed($post, $post_vars['imagecode'], $post_vars['comment'])){
             $vars = $this->prepFieldsForDB($post_vars, $post['postid'], $replyto);
-            
             if ($post_vars['set_cookie']) {
                 $this->setCommentCookie($vars['postername'], $vars['posteremail'], $vars['posterwebsite']);
             }
-
             $id = $this->saveComment($vars);
             if($id !== false && $id > 0){
                 if(C_NOTIFY == 'true'){
@@ -148,12 +217,12 @@ class commentHandler {
      * @param int   $replyto If supplied, the id of the comment being replied to
      */
     function prepFieldsForDB($vars, $id, $replyto = 0){
-        $rval['postername'] = stringHandler::clean($vars["name"]);
+        $rval['postername'] = $vars["name"];
         if (empty($rval['postername']))
             $rval['postername'] = "Anonymous";
-        $rval['posteremail'] = stringHandler::clean($vars["email"]);
-        $rval['title'] = stringHandler::clean($vars["title"]);
-        $rval['posterwebsite'] = stringHandler::clean($vars["website"]);
+        $rval['posteremail'] = $vars["email"];
+        $rval['title'] = (strlen($vars["title"]) > 0) ? $vars['title'] : 'Title';
+        $rval['posterwebsite'] = $vars["website"];
         $rval['commenttext'] = $this->processCommentText($vars["comment"]);
         $rval['pubemail'] = ($vars["public_email"] == 1) ? 1 : 0;
         $rval['pubwebsite'] = ($vars["public_website"] == 1) ? 1 : 0;
@@ -230,7 +299,7 @@ class commentHandler {
     * @param string $comment Comment text
     * @return array
     */
-    function canProceed(&$post, $code, $comment){
+    function canProceed($post, $code, $comment){
         $rval = true;
         if($this->isFlooding( $_SERVER['REMOTE_ADDR'], time())){
             $rval = false;
@@ -251,12 +320,13 @@ class commentHandler {
     * Checks whether commenting is disabled for this post
     *
     * @param object $post
-    * @return bool
+    * @return bool False if commetns are allowed, True if disabled
     */
     function isDisabled($post){
         $rval = false;
-        if ($post['allowcomments'] == 'disallow' or ($post['allowcomments'] == 'timed' and $post['autodisabledate'] < time()))
+        if ($post['allowcomments'] == 'disallow' || ($post['allowcomments'] == 'timed' && $post['autodisabledate'] < time())){
             $rval = true;
+        }
         return $rval;
     }
 
@@ -285,6 +355,7 @@ class commentHandler {
     *
     * @param string $ip IP Address of commentor
     * @param int $now Unix Timestamp of current time
+    * @return bool True if violates timespan rule, False if doesn't
     */
     function isFlooding($ip, $now){
         $rval = false;
@@ -323,7 +394,6 @@ class commentHandler {
     */
     function failsCaptcha($code){
         $rval = true;
-        var_dump($code);
         return false;
         if(C_IMAGE_VERIFICATION == 'true' && !empty($code)) { //Some templates may not have the iamge verification enabled
             if (!PhpCaptcha::Validate($code)){
