@@ -202,9 +202,12 @@ p{
 .clear{
     clear: both;
 }
-.form > label{
+.article form{
+
+}
+.article form label{
 	display: block;
 }
-.form > img{
+.article form img{
 	display: block;
 }

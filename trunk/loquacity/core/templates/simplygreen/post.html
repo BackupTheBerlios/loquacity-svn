@@ -21,14 +21,12 @@
           <rdf:Description rdf:about="{$post.permalink}" dc:identifer="{$post.permalink}" dc:title="{$post.title}" trackback:ping="{$post.trackbackurl}" />
         </rdf:RDF>
         <div class="article">
-			<h2>Comments</h2>
+			<h4>Comments</h4>
           	{getcomments assign=comments}
           	{if count($comments) gt 0}
           		{foreach from=$comments item=comment}
-          		<div class="comment{if $comment.deleted eq 'true'} deleted{elseif $comment.onhold} onhold{/if}" style="margin-left: {$comment.level25}px;{if $comment.level25 gt 1}border-top: none;{/if}">
-	            	{if $comment.deleted eq "true"}
-            		<div class="comment-body"><strong>Deleted</strong></div>
-            		{elseif $comment.onhold}
+          		<div class="comment{if $comment.onhold} onhold{/if}" style="margin-left: {$comment.level25}px;{if $comment.level25 gt 1}border-top: none;{/if}">
+            		{if $comment.onhold}
               		<div class="comment-body">Comment pending moderation</div>
             		{else}
 	              	<div class="comment-head">{$comment.title|nohtml}</div>
@@ -47,39 +45,34 @@
             	</div>
           		{/foreach}
           	{/if}
+          </div>
+          <div class="article">
           	{if $post.allowcomments}
+          	<h3 class="title">Add Comment</h3>
           	<form method="post" action="{$commentformaction}">
 	            {$commentformhiddenfields}
 	            <input type="hidden" name="title" value="{$post.title}" />
         	    <input type="hidden" name="email" value="worthless" />
-	            <h3 class="title">Add Comment</h3>
-	            <div class="form">
-	                <div class="clear">&nbsp;</div>
                     <label for="name">Name </label>
 	                <input name="name" type="text" value="" id="author" size="22" tabindex="1" />
-	                <div class="clear">&nbsp;</div>
 	                <label for="website">Website </label>
 	                <input name="website" type="text" value="" id="url" size="22" tabindex="2" />
 					{if $C_CAPTCHA_ENABLE === 'true'}
-					<div class="clear">&nbsp;</div>
 					<img src="{$blogurl}visualcaptcha.php" alt="Visual CAPTCHA" />
 					<label for="imagecode">Image Text </label>
 					<input name="imagecode" id="imagecode" type="text" tabindex="3" />
 			        {/if}
-	                <div class="clear">&nbsp;</div>
 	                <label for="comment">Comment </label>
 	                <textarea name="comment" cols="80" rows="10" id="text" tabindex="4"></textarea>
-	                <div class="clear">&nbsp;</div>
 	                <div class="">&nbsp;</div> 
 	                <input name="submit" type="submit" id="submit" value="Add Comment" tabindex="5" /><input type="hidden" name="do" value="submitcomment" />
-	                <div class="clear">&nbsp;</div>
 	                <div id="commentPreview"></div>
 	            </div> 
-          </form>
+          	</form>
           {else}
           <p>Comments have now been turned off for this post</p>
           {/if}
-          </div>
+	      </div>
           <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
 	      xmlns:dc="http://purl.org/dc/elements/1.1/"
 	      xmlns:trackback="http://madskills.com/public/xml/rss/module/trackback/">

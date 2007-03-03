@@ -44,53 +44,23 @@ class DatabaseManager{
 	 * @return DatabaseManager
 	 */
 	function DatabaseManager(&$db, $driver='mysql'){
-		$this->_db = $db;
-		$this->_drivers = dirname(__FILE__).DIRECTORY_SEPARATOR.'dbdrivers';
-		$this->loadDriver($driver);
-	}
-	
-	/**
-	 * Creates the tables needed by the application
-	 *
-	 * @return void
-	 */
-	function create(){
-		$schema = $this->_dbadmin->getSchema();
-		foreach($schema as $line){
-			if(trim($line) !== ''){
-		        $this->_db->Execute($line);
-		    }
-		}
-	}
-	
-	/**
-	 * Stores the backup in a file
-	 *
-	 */
-	function backup(&$backup_fh){
-		$this->_dbadmin->backup($backup_fh);
-	}
-	
-	/**
-	 * Restores the database tables and data from a backup dump file
-	 *
-	 */
-	function restore(){
-		
+		$path = dirname(__FILE__).DIRECTORY_SEPARATOR.'dbdrivers';
+		return DatabaseManager::loadDriver($path, $driver);
 	}
 	
 	/**
 	 * Checks whether driver exists and instantiates an object from it. Returns false on error
 	 *
+	 * @param string $path Path to dbadmin drivers
 	 * @param string $driver
 	 * @return mixed
 	 */
-	function loadDriver($driver){
+	function loadDriver($path, $driver){
 		//Check for the existence of a driver class
 		$rval = false;
 		$drivers = array();
-		if(is_dir($this->_drivers)){
-			$d = dir($this->_drivers);
+		if(is_dir($path)){
+			$d = dir($path);
 			while(($e = $d->read()) !== false){
 				if($e !== '.' && $e !== '..'){
 					$parts = explode('.', $e);
