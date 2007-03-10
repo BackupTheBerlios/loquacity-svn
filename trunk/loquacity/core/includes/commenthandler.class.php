@@ -45,7 +45,6 @@ class commentHandler {
      */
     function commentHandler(&$db) {
         $this->_db = $db;
-        
     }
     function commentThread(){
     	$this->_highestlevel = 0;
@@ -119,13 +118,11 @@ class commentHandler {
     	}
     	$format = strtolower($format);
     	$process = strtolower($process);
-    	$stmt = $this->_db->Prepare('SELECT comm.* FROM `'.T_COMMENTS.'` AS comm WHERE commentid=? ORDER BY `posttime` ASC');
-   		$comments = $this->_db->Execute($stmt, array($postid));
     	if($process === 'html' && ($format === 'flat' || $format === 'none')){
     		return $this->flatComments($comments);
     	}
     	else if($process === 'html' && $format === 'thread'){
-    		return $this->threadedComments($comments);
+    		return $this->threadedComments($postid);
     	}
     	else{
     		return $comments; 
@@ -151,21 +148,48 @@ class commentHandler {
     function getComment($cid=0, $process='none'){
     	$cid = intval($cid);
         if($cid > 0){
-        	$stmt = $this->_db->Prepare('SELECT com.* FROM `'.T_COMMENTS.'` as comm WHERE `commentid`=?');
+        	$stmt = $this->_db->Prepare('SELECT comm.* FROM `'.T_COMMENTS.'` AS comm WHERE `commentid`=?');
         	$comment = $this->_db->Execute($stmt, array($cid));
         	if($process !== 'none'){
-        		return $this->processForHTML($comment);
+        		return array($this->processForHTML($comment));
         	}
         	else{
         		return $comment[0];
         	}
         }
     }
-    function threadedComments(&$comments){
+	function processForHTML(&$comment){
+		return array(
+					'id' => $comment->fields[0],
+					'title' => htmlspecialchars(stringHandler::removeJs(stringHandler::clean($comment->fields[3]))),
+					'body' => $this->processCommentText(stringHandler::removeJs($comment->fields[13])),
+					'author' => stringHandler::removeJs($comment->fields['postername']),
+					'email' => stringHandler::removeJs($comment->fields[7]),
+					'website' => stringHandler::transformLinks(stringHandler::removeJs($comment->fields[8])),
+					'posted' => $comment->fields[5],
+					'url' => (defined('CLEANURLS')) ?  BLOGURL.'trackback/'.$comment->fields[2].'/'.$comment->fields[0] : BLOGURL.'trackback.php&amp;tbpost='.$comment->fields[2].'&amp;cid='.$comment->fields[0],
+					'type' => $comment->fields[4],
+					'onhold' => ($comment->fields[15] == 1) ? true : false,
+					'reply' => $postlink.'?replyto='.$comment->fields[0].'#commentform',
+                    'parent' => $comment->fields['parentid'],
+					);
+	}
+	/**
+	* Processes comments in a threaded display
+	*
+	*/
+    function threadedComments($postid){
+		$this->_db->debug = true;
+		$stmt = $this->_db->Prepare('SELECT lcomm.*, rcomm.* FROM `'.T_COMMENTS.'` AS lcomm LEFT JOIN `'.T_COMMENTS.'` AS rcomm ON lcomm.commentid = rcomm.parentid WHERE lcomm.postid=? ORDER BY lcomm.commentid ASC');
+   		$comments = $this->_db->Execute($stmt, array($postid));
     	if(is_object($comments) && !$comments->EOF){
+			$tc = array();
+			$postlink = (defined('CLEANURLS')) ? BLOGURL.'item/'.$postid.'/' : BLOGURL.'?postid='.$postid;
     		while(!$comments->EOF){
+				$tc[$comments->fields[0]] = $this->processForHTML(&$comments);
     			$comments->MoveNext();
     		}
+			return $tc;
     	}
     }
     function flatComments(&$comments){
@@ -217,12 +241,12 @@ class commentHandler {
      * @param int   $replyto If supplied, the id of the comment being replied to
      */
     function prepFieldsForDB($vars, $id, $replyto = 0){
-        $rval['postername'] = $vars["name"];
+        $rval['postername'] = stringHandler::clean($vars["name"]);
         if (empty($rval['postername']))
             $rval['postername'] = "Anonymous";
-        $rval['posteremail'] = $vars["email"];
+        $rval['posteremail'] = $this->_db->qstr(stringHandler::clean($vars["email"]), get_magic_quotes_gpc());
         $rval['title'] = (strlen($vars["title"]) > 0) ? $vars['title'] : 'Title';
-        $rval['posterwebsite'] = $vars["website"];
+        $rval['posterwebsite'] = stringHandler::transformLinks(stringHandler::clean($vars["website"]));
         $rval['commenttext'] = $this->processCommentText($vars["comment"]);
         $rval['pubemail'] = ($vars["public_email"] == 1) ? 1 : 0;
         $rval['pubwebsite'] = ($vars["public_website"] == 1) ? 1 : 0;
@@ -231,8 +255,7 @@ class commentHandler {
         $rval['ip'] = $_SERVER['REMOTE_ADDR'];
         $rval['onhold'] = ($this->needsModeration($rval['commenttext'])) ? 1 : 0;
         $rval['postid'] = $id;
-        if ($replyto > 0)
-            $rval['parentid'] = $replyto;
+        $rval['parentid'] = $replyto;
         $rval['type'] = 'comment';
         return $rval;
     }
@@ -242,18 +265,20 @@ class commentHandler {
     * Save the comment/trackback
     *
     * The SQL statement for saving data is built based upon the values of
-    * `$vars`. It is an associative array where the keys are the `T_CONFIG`
+    * `$vars`. It is an associative array where the keys are the `T_COMMENT`
     * field names and the elements are values for the fields. On success, the
     * row id(integer) is returned, on failure either false (boolean) or
     * an error message (string) is returned.
     *
-    * @param array $vars An associative array
+    * @param array $vars
     * @return mixed
     */
     function saveComment($vars){
+        //$this->_db->debug = true;
         $rval = false;
         if(is_array($vars)){
-            if($this->_db->AutoExecute(T_COMMENTS, $vars, 'INSERT')){
+            $stmt = $this->_db->Prepare('INSERT INTO `'.T_COMMENTS.'` (parentid, postid, title, type, posttime, postername, posteremail, posterwebsite, posternotify, pubemail, pubwebsite, ip, commenttext, onhold) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?) ');
+            if($this->_db->Execute($stmt, array($vars['parentid'], $vars['postid'], $vars['title'], $vars['type'], $vars['posttime'], $vars['postername'], $vars['posteremail'], $vars['posterwebsite'], $vars['posternotify'], $vars['pubemail'], $vars['pubwebsite'], $vars['ip'], $vars['commenttext'], $vars['onhold'])) !== false){
                 $rval = $this->_db->Insert_Id();
             }
         }

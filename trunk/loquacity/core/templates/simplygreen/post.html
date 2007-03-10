@@ -29,15 +29,16 @@
             		{if $comment.onhold}
               		<div class="comment-body">Comment pending moderation</div>
             		{else}
-	              	<div class="comment-head">{$comment.title|nohtml}</div>
+	              	<div class="comment-head">{$comment.title}</div>
 	              	<div class="comment-body">
-                		{$comment.commenttext|nl2br|kses}
+                		{$comment.body}
                 		<div class="comment-meta">
 	                  		{if $comment.type eq 'trackback'}
 	                  		<p>Trackback from <a href="{$comment.posterwebsite}">{$comment.postername}</a> {$comment.posttime|date_format:since} &#8226; <a href="replyto={$comment.id}#commentform">Reply</a></p>
 	                  		{else}
-	                  		<p>Comment #{$comment.id} &nbsp; {$comment.posttime|date_format:since} by {$comment.postername} &#8226; {$comment.emaillink} &#8226; {$comment.posterwebsite} &#8226; <a href="replyto={$comment.id}#commentform">Reply</a></p>
+	                  		<p>Comment #{$comment.id} &nbsp; {$comment.posttime|date_format:since} by {$comment.author} &#8226; {$comment.email} &#8226; {$comment.website} &#8226; <a href="replyto={$comment.id}#commentform">Reply</a></p>
 	                  		{/if}
+							<strong>Parent: {$comment.parent}</strong>
 	                  		<div class="comment-trackback">Comment Trackback URL : {$comment.trackbackurl}</div>
                 		</div>
               		</div>

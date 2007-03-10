@@ -63,7 +63,7 @@ function smarty_function_getcomments($params, &$loq) {
         $rt = intval($_GET['replyto']);
         $cs = $ch->getComment($rt, 'html');
     } else {
-        $cs = $ch->getComments($postid, 'none', 'thread');
+        $cs = $ch->getComments($postid, 'html', 'thread');
     }
     prep_form($loq, $postid, $_REQUEST['replyto']);
     $loq->assign($assign, $cs);
