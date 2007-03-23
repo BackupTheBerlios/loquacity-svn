@@ -46,37 +46,7 @@ class commentHandler {
     function commentHandler(&$db) {
         $this->_db = $db;
     }
-    function commentThread(){
-    	$this->_highestlevel = 0;
-        if(!is_null($postid) && $postid > 0){
-            //$this->_db->debug = true;
-            $this->_post = $postid;
-            $sql = 'SELECT * from `'.T_COMMENTS.'` WHERE postid='.$this->_post;
-            $rs = $this->_db->Execute($sql);
-            if($rs){
-                while($row = $rs->FetchRow()){
-                    $this->_comments[$row[0]] = array(
-                        'id'             => $row[0],
-                        'parentid'       => $row[1],
-                        'title'          => $row[3],
-                        'type'           => $row[4],
-                        'posttime'       => $row[5],
-                        'postername'     => $row[6],
-                        'posteremail'    => $row[7],
-                        'posterwebsite'  => $row[8],
-                        'posternotify'   => $row[9],
-                        'pubemail'       => $row[10],
-                        'pubwebsite'     => $row[11],
-                        'ip'             => $row[12],
-                        'commenttext'    => $row[13],
-                        'delete'         => $row[14],
-                        'onhold'         => $row[15]
-                    );
-                    $this->_thread[$row[1]][$row[0]] = $row[0];
-                }
-            }
-        }
-    }
+    
     /**
      * Retrieve all comments for a specific post
      * 
@@ -119,7 +89,7 @@ class commentHandler {
     	$format = strtolower($format);
     	$process = strtolower($process);
     	if($process === 'html' && ($format === 'flat' || $format === 'none')){
-    		return $this->flatComments($comments);
+    		return $this->flatComments($postid);
     	}
     	else if($process === 'html' && $format === 'thread'){
     		return $this->threadedComments($postid);
@@ -158,6 +128,14 @@ class commentHandler {
         	}
         }
     }
+    
+    /**
+    * Process the textual elements of the comment, making fit for HTML display. This removes Javascript and other dangerous text
+    * for safety reasons.
+    *
+    * @param object ADODB_Recordset
+    * @return array
+    */
 	function processForHTML(&$comment){
 		return array(
 					'id' => $comment->fields[0],
@@ -175,28 +153,62 @@ class commentHandler {
 					);
 	}
 	/**
-	* Processes comments in a threaded display
+	* Retrieves comments for a particular post and creates a threaded listing.
 	*
+    * @param int $postid
+    * @return array
 	*/
     function threadedComments($postid){
-		$this->_db->debug = true;
-		$stmt = $this->_db->Prepare('SELECT lcomm.*, rcomm.* FROM `'.T_COMMENTS.'` AS lcomm LEFT JOIN `'.T_COMMENTS.'` AS rcomm ON lcomm.commentid = rcomm.parentid WHERE lcomm.postid=? ORDER BY lcomm.commentid ASC');
+		$stmt = $this->_db->Prepare('SELECT * FROM `'.T_COMMENTS.'` WHERE postid=? ORDER BY commentid ASC');
    		$comments = $this->_db->Execute($stmt, array($postid));
     	if(is_object($comments) && !$comments->EOF){
 			$tc = array();
 			$postlink = (defined('CLEANURLS')) ? BLOGURL.'item/'.$postid.'/' : BLOGURL.'?postid='.$postid;
     		while(!$comments->EOF){
-				$tc[$comments->fields[0]] = $this->processForHTML(&$comments);
+				$tc[$comments->fields['parentid']][$comments->fields['commentid']] = $this->processForHTML(&$comments);
     			$comments->MoveNext();
     		}
-			return $tc;
+            $this->_createThreading(0, $tc, 0);
+			return $this->_threaded;
     	}
     }
-    function flatComments(&$comments){
+    
+    /**
+    * Transforms list of comments into a thread suitable for display purposes. Recursive.
+    * Expects the $comments array to be in a particular format:
+    *   array[ parentid ][ commentid] = comment data 
+    *
+    * @param int $parent The current Parent ID being processed
+    * @param array $comments A 2-dimension array of comments
+    * @param int $level The current nested level
+    */
+    function _createThreading($parent, $comments, $level){
+        while(list($cid, $data) = each($comments[$parent])){
+            $data['level'] = $level * 25;
+            $this->_threaded[] = $data;
+            if(isset($comments[$cid])){
+                $this->_createThreading($cid, $comments, $level+1);
+            }
+        }
+    }
+    
+    /**
+    * Retrieves comments for a particular post and creates a flat-list for display
+    *
+    * @param int $postid
+    * @return array
+    */
+    function flatComments($postid){
+        $stmt = $this->_db->Prepare('SELECT * FROM `'.T_COMMENTS.'` WHERE postid=? ORDER BY commentid ASC');
+   		$comments = $this->_db->Execute($stmt, array($postid));
     	if(is_object($comments) && !$comments->EOF){
     		while(!$comments->EOF){
+                $c = $this->processForHTML(&$comments);
+                $c['level'] = 0;
+                $this->_flat[] = 
     			$comments->MoveNext();
     		}
+            return $this->_flat;
     	}
     }
     /**
@@ -506,141 +518,6 @@ class commentHandler {
         $comment = str_replace('%%%COMMENT:TRANSFORM:NEWLINE:%%%', "\n", $comment);
         return $comment;
     }
-
-    function prepFieldsForDisplay($vars, $replyto=0){
-        $rval['id'] = $vars['id'];
-        $rval['postername'] = htmlspecialchars($vars["postername"]);
-        if (empty($rval['postername']))
-            $rval['postername'] = "Anonymous";
-        $rval['posteremail'] = htmlspecialchars(stripslashes($vars["posteremail"]));
-        $rval['title'] = htmlspecialchars($vars["title"]);
-        $rval['posterwebsite'] = stringHandler::transformLinks(htmlspecialchars(stripslashes($vars["posterwebsite"])));
-        $rval['commenttext'] = $this->processCommentText(stripslashes($vars["commenttext"]));
-        $rval['pubemail'] = ($vars["pubemail"] == 1) ? true : false;
-        $rval['pubwebsite'] = ($vars["pubwebsite"] == 1) ? true : false;
-        $rval['posternotify'] = ($vars["posternotify"] == 1) ? true : false;
-        $rval['posttime'] = $vars['posttime'];
-        $rval['ip'] = $vars['ip'];
-        $rval['onhold'] = ($this->needsModeration($rval['commenttext'])) ? true : false;
-        $rval['postid'] = $this->_post;
-        $rval['parent'] = ($vars['parentid'] > 0) ? $vars['parentid'] : false;
-        $rval['type'] = $vars['type'];
-        $rval['deleted'] = ($vars['deleted'] == 1) ? true : false;
-        $rval['link'] = LOQ_APP_URL.'trackback.php/'.$this->_post.'/'.$vars['id'];
-
-        return $rval;
-    }
-    ////
-    // !changes the array type and sets some default values for each comment
-    function format_comment ($comment) {
-        if($comment['data']['pubemail'] > 0) {
-            $commentr['email'] = $comment['data']['posteremail'];
-        }
-
-        if($comment['data']['pubwebsite'] > 0) {
-            $commentr['website'] = $comment['data']->posterwebsite;
-        }
-        if($comment['data']['pubemail'] > 0 && $comment['data']['posteremail'] != '') {
-            $commentr['emaillink'] = "<a href='mailto:".$comment['data']['posteremail']."'>@</a>";
-        } else $commentr['emaillink'] = '';
-
-
-        if($comment['data']['pubwebsite'] > 0 && $comment['data']['posterwebsite'] != '') {
-            $commentr['websitelink'] = $comment['data']['posterwebsite'];
-        } else $commentr['websitelink'] = '';
-
-        $commentr['websiteurl'] = $comment['data']['posterwebsite'];
-        $commentr['permalink'] = "<a name='comment{$comment['data']['commentid']}'></a>
-                          <a href='".$this->_get_comment_permalink($postid,$comment['data']['commentid'])."'>#</a>";
-
-        $commentr['permalinkurl'] = $this->_get_comment_permalink($postid,$comment['data']['commentid']);
-
-        $commentr['replylinkurl'] = $this->_get_entry_permalink($postid);
-
-        if(substr_count($commentr['replylinkurl'],"?") == 1) {
-                $commentr['replylinkurl'] .= "&amp;";
-        } else {
-            $commentr['replylinkurl'] .= "?";
-        }
-
-        $commentr['replylinkurl'] .= "replyto={$comment['data']['commentid']}#commentform";
-
-        $commentr['replylink'] = "<a href='".$commentr['replylinkurl']."'>Reply</a>";
-
-        $commentr['commentid'] = $comment['data']['commentid'];
-        $commentr['postid'] = $postid;
-
-        if($comment['level'] > 0 ) {
-            $commentr['level25'] = $comment['level']*25;
-        } else {
-            $commentr['level25'] = 1;
-        }
-        if($comment['level'] > 0 ) {
-            $commentr['level15'] = $comment['level']*15;
-        } else {
-            $commentr['level25'] = 1;
-        }
-        if($comment['level'] > 0 ) {
-            $commentr['level10'] = $comment['level']*10;
-        } else {
-            $commentr['level10'] = 1;
-        }
-
-        $commentr['level'] = $comment['level'];
-
-        if($this->highestlevel == 0 || $comment['level'] == 0) {
-            $commentr['levelpercent']   = 0;
-            $commentr['levelhalfpercent']   = 0;
-        } else {
-            $commentr['levelpercent']   = floor(( 100 / $this->highestlevel )*$comment['level']);
-            $commentr['levelhalfpercent']   = floor(( 50 / $this->highestlevel )* $comment['level']);
-        }
-
-        $commentr['levelpercentremainder'] = 100 - $commentr['levelpercent'];
-
-        $commentr['trackbackurl']  = $this->_get_comment_trackback_url($postid,$comment['data']->commentid);
-
-        return $commentr;
-
-    }
-
-    function makethread($index,$table,$level){
-        if($level > $this->_highestlevel){
-            $this->_highestlevel = $level;
-        }
-        $list=$table[$index];
-        while(list($key,$val)=each($list)){
-            $this->_comments[$key]['level'] = $level;
-            if($level > 0 ) {
-                $this->_comments[$key]['level25'] = $level*25;
-            } else {
-                $this->_comments[$key]['level25'] = 1;
-            }
-            if($level > 0 ) {
-                $this->_comments[$key]['level15'] = $level*15;
-            } else {
-                $this->_comments[$key]['level25'] = 1;
-            }
-            if($level > 0 ) {
-                $this->_comments[$key]['level10'] = $level*10;
-            } else {
-                $this->_comments[$key]['level10'] = 1;
-            }
-            if($this->_highestlevel == 0 || $this->_comments['level'] == 0) {
-                $this->_comments[$key]['levelpercent']   = 0;
-                $this->_comments[$key]['levelhalfpercent']   = 0;
-            } else {
-                $this->_comments[$key]['levelpercent'] = floor(( 100 / $this->_highestlevel )*$this->_comments[$key]['level']);
-                $this->_comments[$key]['levelhalfpercent'] = floor(( 50 / $this->_highestlevel )* $this->_comments[$key]['level']);
-            }
-
-            $this->_comments[$key]['levelpercentremainder'] = 100 - $this->_comments[$key]['levelpercent'];
-            if ((isset($table[$key]))){
-                $this->makethread($key,$table,$level+1);
-            }
-        }
-        return true;
-    } // end function makethread
     function debug($msg){
         echo '<pre>';
         var_dump($msg);

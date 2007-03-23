@@ -25,7 +25,7 @@
           	{getcomments assign=comments}
           	{if count($comments) gt 0}
           		{foreach from=$comments item=comment}
-          		<div class="comment{if $comment.onhold} onhold{/if}" style="margin-left: {$comment.level25}px;{if $comment.level25 gt 1}border-top: none;{/if}">
+          		<div class="comment{if $comment.onhold} onhold{/if}" style="margin-left: {$comment.level}px;{if $comment.level gt 1}border-top: none;{/if}">
             		{if $comment.onhold}
               		<div class="comment-body">Comment pending moderation</div>
             		{else}
@@ -39,7 +39,7 @@
 	                  		<p>Comment #{$comment.id} &nbsp; {$comment.posttime|date_format:since} by {$comment.author} &#8226; {$comment.email} &#8226; {$comment.website} &#8226; <a href="replyto={$comment.id}#commentform">Reply</a></p>
 	                  		{/if}
 							<strong>Parent: {$comment.parent}</strong>
-	                  		<div class="comment-trackback">Comment Trackback URL : {$comment.trackbackurl}</div>
+	                  		<div class="comment-trackback">Comment Trackback URL : {$comment.url}</div>
                 		</div>
               		</div>
               		{/if}
