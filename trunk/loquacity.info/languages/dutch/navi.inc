@@ -1,1 +1,0 @@
-<a href="#">Schakels gaan hier</a> &bull; <a href="#">Ga tussen hen</a>
