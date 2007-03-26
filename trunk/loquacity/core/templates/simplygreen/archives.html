@@ -1,14 +1,23 @@
 {assign var=title value="$blogname :: Archives"}
 {assign var=pagetitle value="`$blogname` :: Archives"}
 {include file="header.html"}
-    <div id="contentBox">
-      {getarchiveposts assign=archives}
-      {foreach from=$archives item=archive}
-      <div class="article">
-          {if $archive.newmonth}
-          <h2>Posts for {$archive.posttime|date_format:'F of Y'}</h1>
-          {/if}
-          <h4>{$archive.posttime|date_format:"j<\s\u\p>S</\s\u\p>"} <a href="{$archive.permalink}">{$archive.title}</a></h4>
-       </div>
-      {/foreach}
+			{include file="side.html"}
+			<div id="articles"><div id="articles-content">
+				<div id="headerAds">&nbsp;
+				</div>
+				{getarchiveposts assign=archives}
+				{foreach from=$archives key=pos item=post name=archives_loop}
+				{if $post.newmonth == "yes"}
+					{if $archives_loop.first !== true}
+					</ol>
+				</div>
+					{/if}
+				<h3 class="date">{$post.posttime|date_format:monthyear}</h3>
+				<div id="toc" class="box">
+					<ol class="toc">
+				{/if}
+						<li><a href="{$post.permalink|escape}">{$post.title}</a> &nbsp; (Posted: {$post.posttime|date_format:s1})</li>
+				{/foreach}
+			</div></div>
+			<hr class="cleaner" />
     {include file="footer.html"}

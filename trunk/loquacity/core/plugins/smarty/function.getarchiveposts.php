@@ -55,9 +55,8 @@ second: second of posts';
   );
 }
 function smarty_function_getarchiveposts($params, &$loq) {
-  $ar = array();
-  $opt = array();
-
+    $ar = array();
+    $opt = array();
 	// If "assign" is not set... we'll establish a default.
 	if($params['assign'] == '') {
 		$params['assign'] = 'posts';
@@ -124,17 +123,17 @@ function smarty_function_getarchiveposts($params, &$loq) {
 		$opt['sectionid'] = $loq->sect_by_name[$params['section']];
 	}
 
-  $ar['posts'] = $loq->_ph->get_posts($opt);
+    $posts = $loq->_ph->get_posts($opt, 'html');
         
 	// No posts.
-  if(!is_array($ar['posts'])) {
-		return '';
+    if(!is_array($posts)) {
+		return;
 	}
 
 	$lastmonth = '';
 	$lastdate = '';
 
-	foreach($ar['posts'] as $key => $value) {
+	foreach($posts as $key => $value) {
 		// It seems silly to do this. Especially since,
 		// this kind of check can be done in Smarty template.
 		// Additionally, since {newday} and {newmonth} require
@@ -142,22 +141,27 @@ function smarty_function_getarchiveposts($params, &$loq) {
 		// function at all.
 		//
 		// We'll leave it here for now.
-
-    if(date('Fy',$ar['posts'][$key]['posttime']) != $lastmonth) {
-      $ar['posts'][$key]['newmonth'] = 'yes';
-		}
-    $lastmonth = date('Fy',$ar['posts'][$key]['posttime']);
-		
-    if(date('Ymd',$ar['posts'][$key]['posttime']) != $lastdate) {
-      $ar['posts'][$key]['newday'] = 'yes';
-    }
-    $lastdate = date('Ymd',$ar['posts'][$key]['posttime']);
+        
+        //print "lastmonth: $lastmonth<br />";
+        $month = strftime('%B', $value['posttime']);
+        if($month != $lastmonth){
+            $posts[$key]['newmonth'] = 'yes';
+            //print "month: $month<br />";
+        }
+        $lastmonth = $month;
+        /*if(date('Fy',$posts[$key]['posttime']) != $lastmonth) {
+            $posts[$key]['newmonth'] = 'yes';
+        }
+        $lastmonth = date('Fy',$posts[$key]['posttime']);
+        if(date('Ymd',$posts[$key]['posttime']) != $lastdate) {
+            $posts[$key]['newday'] = 'yes';
+        }
+        $lastdate = date('Ymd',$posts[$key]['posttime']);*/
 	}
+    //var_dump($posts);
+	$loq->assign($params['assign'],$posts);
 
-	$loq->assign($params['assign'],$ar['posts']);
-
-  return '';
-	
+    return;
 }
 
 ?>
