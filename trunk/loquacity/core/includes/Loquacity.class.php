@@ -159,11 +159,10 @@ class Loquacity extends Smarty {
 
 
 		if($opts['count'] == true) {
-			$stmt = "select DISTINCT FROM_UNIXTIME(posttime, '" . $archformat . "') as archname, count(*) as cnt from ".T_POSTS." where status = 'live' " . $where . " group by archname order by archname";
+			$stmt = "select DISTINCT FROM_UNIXTIME(posttime, '" . $archformat . "') as archname, count(*) as cnt from `".T_POSTS."` where status = 'live' " . $where . " group by archname order by archname";
 		} else {
-			$stmt = "select DISTINCT FROM_UNIXTIME(posttime, '" . $archformat . "') as archname from ".T_POSTS." where status = 'live' " . $where . " order by archname";
+			$stmt = "select DISTINCT FROM_UNIXTIME(posttime, '" . $archformat . "') as archname from `".T_POSTS."` where status = 'live' " . $where . " order by archname";
 		}
-		//echo $stmt;
         $rs = $this->_adb->Execute($stmt);
         if($rs !== false && !$rs->EOF){
             $ret = array();
@@ -193,11 +192,11 @@ class Loquacity extends Smarty {
                     'count' => $arch['cnt']
                 );
             }
+            return $ret;
         }
         else{
 			return false;
 		}
-		return $ret;
 	}
 
 	/**

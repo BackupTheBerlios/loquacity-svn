@@ -45,7 +45,7 @@ class DatabaseManager{
 	 */
 	function DatabaseManager(&$db, $driver='mysql'){
 		$path = dirname(__FILE__).DIRECTORY_SEPARATOR.'dbdrivers';
-		return DatabaseManager::loadDriver($path, $driver);
+		return DatabaseManager::loadDriver($db, $path, $driver);
 	}
 	
 	/**
@@ -55,7 +55,7 @@ class DatabaseManager{
 	 * @param string $driver
 	 * @return mixed
 	 */
-	function loadDriver($path, $driver){
+	function loadDriver(&$db, $path, $driver){
 		//Check for the existence of a driver class
 		$rval = false;
 		$drivers = array();
@@ -65,12 +65,11 @@ class DatabaseManager{
 				if($e !== '.' && $e !== '..'){
 					$parts = explode('.', $e);
 					if($parts[0] === $driver){
-						include_once($this->_driver.DIRECTORY_SEPARATOR.$e);
-						$classname = $driver.'admin';
-						$this->_dbadmin = new $classname;
-						$this->_dbadmin->_db = $this->_db;
-						$rval = true;
-						break;
+						include_once($path.DIRECTORY_SEPARATOR.$e);
+						$classname = $driver.'driver';
+						$this->_dbadmin = new $classname($db);
+						$this->_dbadmin->_db = $db;
+						return $this->_dbadmin;
 					}
 				}
 			}

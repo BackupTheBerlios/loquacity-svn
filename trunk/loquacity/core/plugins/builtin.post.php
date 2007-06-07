@@ -56,9 +56,8 @@ if((isset($_POST['newpost'])) && ($_POST['newpost'] == 'true')) {
     if(is_int($res)) {
         $loq->assign('post_message',"Post #$res Added :)");
         if(strlen(C_PING)>0) {
-            include LOQ_APP_ROOT.'libs/rpc.php'; // include stuff needed to ping
-            register_shutdown_function('ping'); // who wants to wait for 4
-            // requests before the page loads ?
+            include LOQ_APP_ROOT.'3rdparty/rpc.php';
+            register_shutdown_function('ping');
         }
         
         /*if ((isset($_POST['send_trackback'])) && ($_POST['send_trackback'] == "TRUE")) {
@@ -77,8 +76,12 @@ if((isset($_POST['newpost'])) && ($_POST['newpost'] == 'true')) {
 $loq->get_modifiers();
 $loq->assign('selected_modifier',C_DEFAULT_MODIFIER);
 
-if(C_DEFAULT_STATUS == 'draft') $loq->assign('statusdraft','checked="checked"');
-else $loq->assign('statuslive','checked="checked"');
+if(C_DEFAULT_STATUS == 'draft'){
+    $loq->assign('statusdraft','checked="checked"');
+}
+else{
+    $loq->assign('statuslive','checked="checked"');
+}
 
 if ((isset($_REQUEST['popup']) && ($_REQUEST['popup'] == 'true'))) {
 	include 'includes/bookmarkletstuff.php';
@@ -90,7 +93,7 @@ if ((isset($_REQUEST['popup']) && ($_REQUEST['popup'] == 'true'))) {
 ////
 // !makes sure post data is sql safe
 // and in a nice format
-function prep_new_post () {
+/*function prep_new_post () {
     $post->title = stringHandler::removeMagicQuotes($_POST['title_text']);
     $post->body  = stringHandler::removeMagicQuotes($_POST['body_text']);
 
@@ -129,5 +132,5 @@ function prep_new_post () {
     $post->autodisabledate = $autodisabledate;
 
     return $post;
-}
+}*/
 ?>

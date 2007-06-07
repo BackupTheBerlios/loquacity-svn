@@ -48,8 +48,59 @@ class posthandler {
 	* error message on fail
 	* assumes that my_addslashes() has already been applied and data is safe.
 	*/
-    function new_post($post) {
-        return $this->modifyPost($post, 'INSERT');
+    function new_post($post){
+        $this->newPost($post);
+    }
+    
+    /**
+    * Inserts a new article into the system
+    *
+    * When successful, the ID of the post is returned, otherwise FALSE is returned
+    * and any error message is assigned to _last_error
+    *
+    * @param array $post The data from the post form
+    * @return mixed
+    */
+    function newPost($post){
+        $rval = false;
+        $now = strtotime(gmdate("M d Y H:i:s"));
+        $sections = ':';
+        if(isset($post['frm_sections']) && count($post['frm_sections'])>0) {
+            $sections = ':'.implode(":", $post['frm_sections']).':';
+        }
+        $title =  $post['frm_post_title'];
+        $body =  $post['frm_post_body'];
+        $posttime = (isset($post['posttime'])) ? $post['posttime'] : $now;
+        $modifytime = $posttime;
+        $status = $post['frm_post_status'];
+        $modifier = $post['frm_modifier'];
+        $ownerid = (isset($post['ownerid'])) ? intval($post['ownerid']) : $_SESSION['user_id'];
+        $hidefromhome = (isset($post['frm_post_hidefromhome']) && $post['frm_post_hidefromhome'] == 1) ? 1: 0;
+        $allowcomments = (isset($post['frm_post_allowcomments']) && $post['frm_post_allowcomments'] == ('allow' or 'disallow' or 'timed')) ? $post['frm_post_allowcomments'] : 'disallow';
+        # TODO this needs refactored as everytime the post is edited, the disable date will auto-change (unintended). Make it use a definite date
+        $autodisabledate = 'null';
+        if(isset($post['disallowcommentsdays']) && in_array($post['disallowcommentsdays'], array(7, 14, 30, 90))){
+        	$inc = $post['disallowcommentsdays'];
+        	$rs['autodisabledate'] = strtotime("+$inc days");
+        }
+        $sql = 'INSERT INTO `'.T_POSTS.'` VALUES(null, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)';
+        $stmt = $this->_db->Prepare($sql);
+        $this->_db->debug = true;
+        if($this->_db->Execute($stmt, array($title, $body, $posttime, $modifytime, $status, $modifier, $sections, $ownerid, $hidefromhome, $allowcomments, $autodisabledate, $commentcount)) !== false){
+            if($method === 'INSERT' ){
+                $rval = intval($this->_db->insert_id());
+            }
+            if(isset($post['send_trackback']) && $post['send_trackback'] == true){
+            	include_once(LOQ_APP_ROOT.'includes/trackbackhandler.class.php');
+            	$tb = new trackbackhandler($this->_db);
+            	$tb->send_trackback('', $post['title'], $post['excerpt'], $post['tburl']);
+            }
+        }
+        else{
+            $this->_last_error = $this->_db->ErrorMsg();
+        }
+        return $rval;
+        //return $this->modifyPost($post, 'INSERT');
     }
     
     /**
@@ -60,7 +111,7 @@ class posthandler {
 	 * @param string $where Optional unless $method == UPDATE
 	 * @return unknown
 	 */
-    function modifyPost($post, $method='INSERT', $where=false){
+    function modifyPost($post){
     	if($method !== 'INSERT' && $method !== 'UPDATE'){
     		$this->_last_error = 'Unknown method stipulated for modifyPost';
     		return false;

@@ -82,60 +82,60 @@ class mysqldriver{
 	*/
 	function createDB($config){
 		/* For MySQL there are three main versions to worry about:
-         * 4.0, 4.1 and 5.0
-         * 4.1+ has real charset support, while < 4.1 doesn't
-         */
-        $info = $this->db->ServerInfo();
-        $charset = null;
-        $rval = false;
-        if((strstr($info['version'], '4.1') !== false) || (strstr($info['version'], '5.0') !== false)){
-            //We have a database that supports charsets properly!
-            $charset = ' CHARACTER SET utf8 COLLATE utf8_bin';
-        }
-        if(file_exists(LOQ_INSTALLER.'/sql/mysql.sql') && is_readable(LOQ_INSTALLER.'/sql/mysql.sql')){
-            $sql = file_get_contents(LOQ_INSTALLER.'/sql/mysql.sql');
-            $sql = str_replace('__pfx__', $config['table_prefix'], $sql);
-            if($this->tablesDontExist($sql)){
-                if(!is_null($charset)){
-                    $sql = str_replace('__charset__', $charset, $sql);
-                }
-                foreach($config as $setting=>$value){
-                    $sql = str_replace('__'.$setting.'__', str_replace("'", "\'", $value), $sql);
-                }
-                $sql = str_replace('__loq_version__', LOQ_CUR_VERSION, $sql);
-                $statements = explode(';', $sql);
-                foreach($statements as $line){
-                    if(trim($line) !== ''){
-                        $this->db->Execute($line);
-                    }
-                }
-                $rval = true;
-            }
-            else{
-                $this->errors[] = 'The database "'.htmlentities($_POST['db_database']).'" already contains tables with the same names as used by Loquacity. Perhaps you meant to select "upgrade" rather than "Fresh Install"';
-            }
-        }
-        else{
-            $this->errors[] = 'Unable to find the SQL file to create the database.';
-        }
-        return $rval;
+		* 4.0, 4.1 and 5.0
+		* 4.1+ has real charset support, while < 4.1 doesn't
+		*/
+		$info = $this->_db->ServerInfo();
+		$charset = null;
+		$rval = false;
+		if((strstr($info['version'], '4.1') !== false) || (strstr($info['version'], '5.0') !== false)){
+		    //We have a database that supports charsets properly!
+		    $charset = ' CHARACTER SET utf8 COLLATE utf8_bin';
+		}
+		if(file_exists(LOQ_INSTALLER.'/sql/mysql.sql') && is_readable(LOQ_INSTALLER.'/sql/mysql.sql')){
+		    $sql = file_get_contents(LOQ_INSTALLER.'/sql/mysql.sql');
+		    $sql = str_replace('__pfx__', $config['table_prefix'], $sql);
+		    if($this->tablesDontExist($sql)){
+			if(!is_null($charset)){
+			    $sql = str_replace('__charset__', $charset, $sql);
+			}
+			foreach($config as $setting=>$value){
+			    $sql = str_replace('__'.$setting.'__', str_replace("'", "\'", $value), $sql);
+			}
+			$sql = str_replace('__loq_version__', LOQ_CUR_VERSION, $sql);
+			$statements = explode(';', $sql);
+			foreach($statements as $line){
+			    if(trim($line) !== ''){
+				$this->_db->Execute($line);
+			    }
+			}
+			$rval = true;
+		    }
+		    else{
+			$this->errors[] = 'The database "'.htmlentities($_POST['db_database']).'" already contains tables with the same names as used by Loquacity. Perhaps you meant to select "upgrade" rather than "Fresh Install"';
+		    }
+		}
+		else{
+		    $this->errors[] = 'Unable to find the SQL file to create the database.';
+		}
+		return $rval;
 	}
 	
 	function tablesDontExist($sql){
 		$rval = true;
-        $tables = '/CREATE\s+TABLE\s+IF\s+NOT\s+EXISTS\s+`(.*?)`/';
-        $matches = array();
-        preg_match_all($tables, $sql, $matches);
-        if(count($matches) > 0){
-            $db_tables = $this->db->MetaTables("TABLES");
-            foreach($db_tables as $dt){
-                    #echo "<pre>$dt[0]</pre>";
-                    if(in_array($dt, $matches[1])){
-                        $rval = false;
-                    }
-            }
-        }
-        return $rval;
+		$tables = '/CREATE\s+TABLE\s+IF\s+NOT\s+EXISTS\s+`(.*?)`/';
+		$matches = array();
+		preg_match_all($tables, $sql, $matches);
+		if(count($matches) > 0){
+		    $db_tables = $this->_db->MetaTables("TABLES");
+		    foreach($db_tables as $dt){
+			    #echo "<pre>$dt[0]</pre>";
+			    if(in_array($dt, $matches[1])){
+				$rval = false;
+			    }
+		    }
+		}
+		return $rval;
 	}
 }
 ?>

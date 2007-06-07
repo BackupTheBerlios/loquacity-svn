@@ -91,7 +91,7 @@
 			  </li>
 			  <li>
 			    <input class="radio" type="radio" name="frm_post_allowcomments" id="timedcomments" value="timed" onClick=" document.forms.post.elements['disallow_comments_after'].disabled = false;" {$commentstimedvalue} />
-			    <label for="timedcomments">Allow comments on this post but disable after </label> <select name='disallowcommentsdays' id='disallow_comments_after' {if $commentstimedvalue ne " checked "}disabled{/if}><option value='7'>1 Week</option><option value='14'>2 Weeks</option><option value='30'>30 Days</option><option value='90'>90 Days</option></select>
+			    <label for="timedcomments">Allow comments on this post but disable after </label> <select name='disallowcommentsdays' id='disallow_comments_after' {if $commentstimedvalue ne "checked"}disabled{/if}><option value='7'>1 Week</option><option value='14'>2 Weeks</option><option value='30'>30 Days</option><option value='90'>90 Days</option></select>
 			  </li>
 			  <li>
 			    <input class="radio" type="radio" name="frm_post_allowcomments" id="disallowcomments" value="disallow" onClick=" document.forms.post.elements['disallow_comments_after'].disabled = true;"  {$commentsdisallowvalue}/>
@@ -127,8 +127,8 @@
 			    </li>
 			 </ul>
 			 <div class="hide" id="timestamp">
-			 	{$timestampform}	
-			 </div>
+			 	{$timestampform}
+			</div>
 			</div>
 			{/if}
 			<div class="button">

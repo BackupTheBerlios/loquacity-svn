@@ -112,7 +112,6 @@ function deletePost(&$loq, $postid=null){
     }
 }
 function editPost(&$loq, $postid=null){
-	
 	if(is_null($postid) || $postid === 0){
 		return;
 	}
@@ -124,7 +123,7 @@ function editPost(&$loq, $postid=null){
     $loq->assign('editpost',TRUE);
     $loq->assign('showarchives','no');
     $loq->assign('postid',$postid);
-    $loq->assign('timestampform',timestAmpform($epost['posttime']));
+    $loq->assign('timestampform',timestampform($epost['posttime']));
 
     // to hide a post from the homepage
     if($epost['hidefromhome'] == 1){
@@ -132,9 +131,15 @@ function editPost(&$loq, $postid=null){
     }
 
     // to disable comments either now or in the future
-    if($epost['allowcomments'] == 'timed') $loq->assign('commentstimedvalue'," checked ");
-    elseif($epost['allowcomments'] == 'disallow') $loq->assign('commentsdisallowvalue'," checked ");
-    else $loq->assign('commentsallowvalue'," checked='checked' ");
+    if($epost['allowcomments'] == 'timed'){
+        $loq->assign('commentstimedvalue',"checked");
+    }
+    elseif($epost['allowcomments'] == 'disallow'){
+        $loq->assign('commentsdisallowvalue',"checked");
+    }
+    else{
+        $loq->assign('commentsallowvalue',"checked");
+    }
 	$sects = $loq->sections;
     $editpostsections = array();
     $_post_sects = (strlen($epost['sections']) > 1) ? explode(":",$epost['sections']) : array($epost['sections']);
@@ -152,7 +157,7 @@ function editPost(&$loq, $postid=null){
     else{
     	$loq->assign('statuslive','checked');
     }
-    defaultDisplay();
+    defaultDisplay($loq);
 }
 
 function savePost(&$loq, $postid=null){
@@ -210,7 +215,7 @@ function allowComments(&$loq, $postid=null){
 
 function get_post_months(){
 	global $loq;
-    $rs = $loq->_adb->Execute("SELECT FROM_UNIXTIME(posttime,'%Y%m') yyyymm,  posttime from ".T_POSTS." group by yyyymm order by yyyymm");
+    $rs = $loq->_adb->Execute("SELECT FROM_UNIXTIME(posttime,'%Y%m') yyyymm,  posttime from `".T_POSTS."` group by yyyymm order by yyyymm");
     if($rs !== false && !$rs->EOF){
         $months = array();
         while($month = $rs->FetchRow()){
@@ -226,11 +231,11 @@ function get_post_months(){
 }
 
 function timestampform($ts){
-	$day = date('j',$ts);
-	$month = date('m',$ts);
-	$year = date('Y',$ts);
-	$hour = date('H',$ts);
-	$minute = date('i',$ts);
+	$day = strftime('%e',$ts);
+	$month = strftime('%m',$ts);
+	$year = strftime('%G',$ts);
+	$hour = strftime('%H',$ts);
+	$minute = strftime('%M',$ts);
 	$o  = "<span class='ts'>Day</span> /
 	       <span class='ts'>Month</span> /
 	       <span class='ts'>Year</span> @
