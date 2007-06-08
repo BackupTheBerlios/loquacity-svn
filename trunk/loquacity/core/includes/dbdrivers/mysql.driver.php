@@ -88,7 +88,7 @@ class mysqldriver{
 		$info = $this->_db->ServerInfo();
 		$charset = null;
 		$rval = false;
-		if((strstr($info['version'], '4.1') !== false) || (strstr($info['version'], '5.0') !== false)){
+		if((strstr($info['version'], '4.1') !== false) || (strstr($info['version'], '5.0') !== false) || (strstr($info['version'], '5.1') !== false)){
 		    //We have a database that supports charsets properly!
 		    $charset = ' CHARACTER SET utf8 COLLATE utf8_bin';
 		}
@@ -96,23 +96,23 @@ class mysqldriver{
 		    $sql = file_get_contents(LOQ_INSTALLER.'/sql/mysql.sql');
 		    $sql = str_replace('__pfx__', $config['table_prefix'], $sql);
 		    if($this->tablesDontExist($sql)){
-			if(!is_null($charset)){
-			    $sql = str_replace('__charset__', $charset, $sql);
-			}
-			foreach($config as $setting=>$value){
-			    $sql = str_replace('__'.$setting.'__', str_replace("'", "\'", $value), $sql);
-			}
-			$sql = str_replace('__loq_version__', LOQ_CUR_VERSION, $sql);
-			$statements = explode(';', $sql);
-			foreach($statements as $line){
-			    if(trim($line) !== ''){
-				$this->_db->Execute($line);
-			    }
-			}
-			$rval = true;
+				if(!is_null($charset)){
+				    $sql = str_replace('__charset__', $charset, $sql);
+				}
+				foreach($config as $setting=>$value){
+				    $sql = str_replace('__'.$setting.'__', str_replace("'", "\'", $value), $sql);
+				}
+				$sql = str_replace('__loq_version__', LOQ_CUR_VERSION, $sql);
+				$statements = explode(';', $sql);
+				foreach($statements as $line){
+				    if(trim($line) !== ''){
+						$this->_db->Execute($line);
+				    }
+				}
+				$rval = true;
 		    }
 		    else{
-			$this->errors[] = 'The database "'.htmlentities($_POST['db_database']).'" already contains tables with the same names as used by Loquacity. Perhaps you meant to select "upgrade" rather than "Fresh Install"';
+				$this->errors[] = 'The database "'.htmlentities($_POST['db_database']).'" already contains tables with the same names as used by Loquacity. Perhaps you meant to select "upgrade" rather than "Fresh Install"';
 		    }
 		}
 		else{
@@ -121,6 +121,12 @@ class mysqldriver{
 		return $rval;
 	}
 	
+	/**
+	 * Verifies all Loquacity tables are accounted for in the SQL statement. Returns True on Success and False on Failure
+	 * 
+	 * @param string $sql
+	 * @return bool
+	 */
 	function tablesDontExist($sql){
 		$rval = true;
 		$tables = '/CREATE\s+TABLE\s+IF\s+NOT\s+EXISTS\s+`(.*?)`/';
@@ -129,9 +135,8 @@ class mysqldriver{
 		if(count($matches) > 0){
 		    $db_tables = $this->_db->MetaTables("TABLES");
 		    foreach($db_tables as $dt){
-			    #echo "<pre>$dt[0]</pre>";
 			    if(in_array($dt, $matches[1])){
-				$rval = false;
+					$rval = false;
 			    }
 		    }
 		}
