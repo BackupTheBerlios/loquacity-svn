@@ -121,18 +121,18 @@ if($rs !== false && !$rs->EOF){
     }
 }
 
-$menu[$i+4]['name'] = 'Captcha';
-$menu[$i+4]['url'] = 'index.php?b=captcha';
-$menu[$i+4]['title'] = 'Configure and Enable Captcha use';
+$menu[$i+4]['name']		= 'Captcha';
+$menu[$i+4]['url']		= 'index.php?b=captcha';
+$menu[$i+4]['title']	= 'Configure and Enable Captcha use';
 
-$menu[$i]['name'] = 'Plugins';
-$menu[$i]['url']  = 'index.php?b=plugins';
-$menu[$i]['title'] = 'View information about plugins, and scan for new ones.';
+$menu[$i]['name']	= 'Plugins';
+$menu[$i]['url'] 	= 'index.php?b=plugins';
+$menu[$i]['title']	= 'View information about plugins, and scan for new ones.';
 $bindex['plugins']=$i;
 
-$menu[$i+1]['name'] = 'Options';
-$menu[$i+1]['url']  = 'index.php?b=options';
-$menu[$i+1]['title'] = 'Edit imporntant Loquacity options';
+$menu[$i+1]['name']		= 'Options';
+$menu[$i+1]['url'] 		= 'index.php?b=options';
+$menu[$i+1]['title'] 	= 'Edit imporntant Loquacity options';
 $bindex['options']=$i+1;
 
 $menu[$i+2]['name'] = 'About';

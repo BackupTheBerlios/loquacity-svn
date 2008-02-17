@@ -48,6 +48,7 @@
         <option value="100"{if $commentAmount eq 100} selected{/if}>100</option>
         <option value="150"{if $commentAmount eq 150} selected{/if}>150</option>
         <option value="200"{if $commentAmount eq 200} selected{/if}>200</option>
+		<option value="ALL"{if $commentAmount eq ALL} selected{/if}>ALL</option>
       </select>
        comments from 
        <select name="commentsPosts" id="commentsPosts">
@@ -85,7 +86,7 @@
     <tr class="{cycle values="high,low"}" style="vertical-align:top; {if $c.onhold eq 1} color: #999;{/if}">
       <td>
         <input type="checkbox" id="list" name="commentid[]" value="{$c.commentid}" />
-        <input type="hidden" name="postid[]" value="{$c.postid}" />
+        <input type="hidden" name="postid[{$c.commentid}][]" value="{$c.postid}" />
       </td>
       <td>
       {if $c.posteremail}

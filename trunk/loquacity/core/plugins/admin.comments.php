@@ -49,6 +49,15 @@ function identify_admin_comments () {
 
 function admin_plugin_comments_run(&$loq) {
     // Again, the plugin API needs work.
+	$commentAmount = 50;
+	if( isset( $_POST['commentsQuantity'] ) ) {
+		if( $_POST['commentsQuantity'] == 'ALL' ){
+			$commentAmount = 'ALL';
+		}
+		else{
+			$commentAmount = intval( $_POST['commentsQuantity'] );
+		}
+	}
     $commentAmount = (isset($_POST['commentsQuantity'])) ? intval($_POST['commentsQuantity']) : 50;
     $articles = null;
     if(isset($_POST['commentsPosts'])){
@@ -63,7 +72,7 @@ function admin_plugin_comments_run(&$loq) {
         case "delete" : // delete comments
             if(is_array($_POST['commentid'])){
                 foreach($_POST['commentid'] as $key=>$val){
-                    deleteComment($loq, $val);
+                    deleteComment($loq, $val, $_POST['postid'][$val] );
                 }
             }
             break;
@@ -91,17 +100,16 @@ function admin_plugin_comments_run(&$loq) {
 
 }
 
-function deleteComment(&$loq, $id){
+function deleteComment(&$loq, $id, $postid){
 	$id = intval($id);
-	$postid = $loq->_adb->GetOne('select postid from '.T_COMMENTS.' where commentid="'.$id.'"');
-	$childcount = $loq->_adb->GetOne('select count(*) as c from '.T_COMMENTS .' where parentid="'.$id.'" group by commentid');
+	$postid = intval( $postid );
+	$childcount = 0;
+	$childcount = $loq->_adb->GetOne('select count(*) as c from '.T_COMMENTS .' where parentid='.$id.' group by commentid');
 	if($childcount > 0) {
-		$loq->_adb->Execute('update '.T_COMMENTS.' set deleted="true", postername="", posteremail="", posterwebsite="", pubemail=0, pubwebsite=0, commenttext="Deleted Comment" where commentid="'.$id.'"');
+		$loq->_adb->Execute('update '.T_COMMENTS.' set deleted="true", postername="", posteremail="", posterwebsite="", pubemail=0, pubwebsite=0, commenttext="Deleted Comment" where commentid='. $id);
 	} else {
-		$loq->_adb->Execute('delete from '.T_COMMENTS.' where commentid="'.$id.'"');
+		$loq->_adb->Execute('delete from '.T_COMMENTS.' where commentid='.$id );
 	}
-	$newnumcomments = $loq->_adb->GetOne('SELECT count(*) as c FROM '.T_COMMENTS.' WHERE postid="'.$postid.'" and deleted="false" group by postid');
-	$loq->_adb->Execute('update '.T_POSTS.' set commentcount="'.$newnumcomments.'" where postid="'.$postid.'"');
 }
 
 function editComment(&$loq, $commentid, $postid){
@@ -148,6 +156,11 @@ function saveEdit(&$loq){
  * @param mixed  $posts		Which article to retrieve comments from; Setting to null retrieves from all articles
  */
 function retrieveComments(&$loq, $amount, $article){
+	$limit = '';
+	if( $amount != 'ALL' ) {
+		$limit = 'LIMIT 1, '.$amount;
+	}
+	
 	$filter = '';
     if(! is_null($article)){
 		$filter = ' AND '.T_COMMENTS.'.postid ='.$article;
@@ -158,7 +171,7 @@ function retrieveComments(&$loq, $amount, $article){
     LEFT JOIN '.T_POSTS.'
         ON '.T_COMMENTS.'.postid = '.T_POSTS.'.postid
     WHERE '.T_COMMENTS.'.deleted="false"'.$filter.'
-    ORDER BY '.T_COMMENTS.'.posttime DESC LIMIT 1, '.$amount;
+    ORDER BY '.T_COMMENTS.'.posttime DESC '.$limit;
     $rs = $loq->_adb->GetAll($sql);
     $loq->assign('comments',$rs);
     $loq->assign('commentAmount', $amount);
