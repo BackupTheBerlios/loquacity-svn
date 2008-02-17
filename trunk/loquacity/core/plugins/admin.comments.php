@@ -143,24 +143,22 @@ function saveEdit(&$loq){
 /**
  * Retrieve select amount of comments from the system
  *
- * @param object $loq      A reference to a loq instance
- * @param int    $amount     The number of comments to retrieve
- * @param mixed  $posts      Which article to retrieve comments from; Setting to null retrieves from all articles
+ * @param object $loq		A reference to a loq instance
+ * @param int    $amount	The number of comments to retrieve
+ * @param mixed  $posts		Which article to retrieve comments from; Setting to null retrieves from all articles
  */
 function retrieveComments(&$loq, $amount, $article){
-    if(is_null($article)){
-        $filter = ' LIKE "%"';
+	$filter = '';
+    if(! is_null($article)){
+		$filter = ' AND '.T_COMMENTS.'.postid ='.$article;
     }
-    else
-        $filter = '='.$article;
     $sql = 'SELECT
         *
     FROM '.T_COMMENTS.'
     LEFT JOIN '.T_POSTS.'
         ON '.T_COMMENTS.'.postid = '.T_POSTS.'.postid
-    WHERE deleted="false"
-    AND '.T_COMMENTS.'.postid '.$filter.'
-    ORDER BY '.T_COMMENTS.'.posttime DESC';
+    WHERE '.T_COMMENTS.'.deleted="false"'.$filter.'
+    ORDER BY '.T_COMMENTS.'.posttime DESC LIMIT 1, '.$amount;
     $rs = $loq->_adb->GetAll($sql);
     $loq->assign('comments',$rs);
     $loq->assign('commentAmount', $amount);
