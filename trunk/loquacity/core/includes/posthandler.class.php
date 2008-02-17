@@ -83,13 +83,11 @@ class posthandler {
         	$inc = $post['disallowcommentsdays'];
         	$rs['autodisabledate'] = strtotime("+$inc days");
         }
-        $sql = 'INSERT INTO `'.T_POSTS.'` VALUES(null, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)';
+        $sql = 'INSERT INTO `'.T_POSTS.'` VALUES(null, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)';
         $stmt = $this->_db->Prepare($sql);
         $this->_db->debug = true;
-        if($this->_db->Execute($stmt, array($title, $body, $posttime, $modifytime, $status, $modifier, $sections, $ownerid, $hidefromhome, $allowcomments, $autodisabledate, $commentcount)) !== false){
-            if($method === 'INSERT' ){
-                $rval = intval($this->_db->insert_id());
-            }
+        if($this->_db->Execute($stmt, array($title, $body, $posttime, $modifytime, $status, $modifier, $sections, $ownerid, $hidefromhome, $allowcomments, $autodisabledate )) !== false){
+			$rval = intval($this->_db->insert_id());
             if(isset($post['send_trackback']) && $post['send_trackback'] == true){
             	include_once(LOQ_APP_ROOT.'includes/trackbackhandler.class.php');
             	$tb = new trackbackhandler($this->_db);
