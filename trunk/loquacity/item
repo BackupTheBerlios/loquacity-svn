@@ -36,17 +36,23 @@
  *
  * @version $Revision$
  */
+ 
 include_once("core/config.php");
+include_once(LOQ_APP_ROOT.'includes/init.php');
+
 $request = trim($_SERVER['REQUEST_URI']);
 if(substr($request, -1) === '/'){
 	$request = substr($request, 0, -1);
 }
-$params = explode('/', $request);
-if($params){
-	$id = (count($params) > 0) ? end($params) : '';
-	if(ctype_digit($id) && intval($id) > 0){
-		$loq->show_post = intval($id);
-		$loq->assign('postid', intval($id));
+$params = explode( '/item/', $request);
+$params = explode( '/', $params[1]);
+
+if(count($params) > 0 ){
+	$id = intval($params[0]);
+	if( $id > 0){
+		var_dump($id);
+		$loq->show_post = $id;
+		$loq->assign('postid', $id);
 		$loq->display('post.html');
 	}
 	else{
