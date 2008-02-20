@@ -36,9 +36,8 @@
 	                  		{if $comment.type eq 'trackback'}
 	                  		<p>Trackback from <a href="{$comment.posterwebsite}">{$comment.postername}</a> {$comment.posttime|date_format:since} &#8226; <a href="replyto={$comment.id}#commentform">Reply</a></p>
 	                  		{else}
-	                  		<p>Comment #{$comment.id} &nbsp; {$comment.posttime|date_format:since} by {$comment.author} &#8226; {$comment.email} &#8226; {$comment.website} &#8226; <a href="replyto={$comment.id}#commentform">Reply</a></p>
+	                  		<p>Comment #{$comment.id} &nbsp; {$comment.posttime|date_format:since} by {$comment.author} &#8226; {$comment.email} &#8226; {$comment.website} &#8226; <a href="?replyto={$comment.id}#commentform">Reply</a></p>
 	                  		{/if}
-							<strong>Parent: {$comment.parent}</strong>
 	                  		<div class="comment-trackback">Comment Trackback URL : {$comment.url}</div>
                 		</div>
               		</div>
@@ -49,8 +48,9 @@
           </div>
           <div class="article">
           	{if $post.allowcomments}
+		{$message}
           	<h3 class="title">Add Comment</h3>
-          	<form method="post" action="{$commentformaction}">
+          	<form method="post" action="{$commentformaction}" name="commentform">
 	            {$commentformhiddenfields}
 	            <input type="hidden" name="title" value="{$post.title}" />
         	    <input type="hidden" name="email" value="worthless" />

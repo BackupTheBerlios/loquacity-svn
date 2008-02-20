@@ -50,7 +50,6 @@ $params = explode( '/', $params[1]);
 if(count($params) > 0 ){
 	$id = intval($params[0]);
 	if( $id > 0){
-		var_dump($id);
 		$loq->show_post = $id;
 		$loq->assign('postid', $id);
 		$loq->display('post.html');

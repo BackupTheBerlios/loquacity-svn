@@ -219,10 +219,10 @@ class commentHandler {
     * @param int    $replyto The ID of the parent comment
     * @param array  $post_vars $_POST
     */
-    function new_comment($post, $replyto, $post_vars) {
+	function new_comment($post, $replyto, $post_vars) {
 		$result = false;
-        if($this->canProceed($post, $post_vars['imagecode'], $post_vars['comment'])){
-            $vars = $this->prepFieldsForDB($post_vars, $post['postid'], $replyto);
+		if( $this->canProceed($post, $post_vars['imagecode'], $post_vars['comment']) ){
+			$vars = $this->prepFieldsForDB($post_vars, $post['postid'], $replyto);
             if ($post_vars['set_cookie']) {
                 $this->setCommentCookie($vars['postername'], $vars['posteremail'], $vars['posterwebsite']);
             }
@@ -254,8 +254,9 @@ class commentHandler {
      */
     function prepFieldsForDB($vars, $id, $replyto = 0){
         $rval['postername'] = stringHandler::clean($vars["name"]);
-        if (empty($rval['postername']))
+        if (empty($rval['postername'])){
             $rval['postername'] = "Anonymous";
+		}
         $rval['posteremail'] = $this->_db->qstr(stringHandler::clean($vars["email"]), get_magic_quotes_gpc());
         $rval['title'] = (strlen($vars["title"]) > 0) ? $vars['title'] : 'Title';
         $rval['posterwebsite'] = stringHandler::transformLinks(stringHandler::clean($vars["website"]));
@@ -523,5 +524,38 @@ class commentHandler {
         var_dump($msg);
         echo '</pre>';
     }
+	
+	function errors( $mode='text' ){
+		$message = '';
+		switch( $mode ){
+			case 'text':
+				foreach( $this->_errors as $err ){
+					if( is_array( $err ) ){
+							foreach( $err as $key=>$ind ){
+								$message .= '['.$key.'] '.$ind."\n";
+							}
+					}
+					else{
+						$message .= $err."\n";
+					}
+				}
+				break;
+			case 'html':
+				foreach( $this->_errors as $err ){
+					if( is_array( $err ) ){
+						foreach( $err as $key=>$ind ){
+							$message .= "<div class=\"error\">".htmlspecialchars( $key )."</div><div class=\"error_message\">".htmlspecialchars( $ind )."</div>\n";
+						}
+					}
+					else{
+						$message .= "<div class=\"error\">".htmlspecialchars( $err )."</div>\n";
+					}
+				}
+				break;
+			default:
+				break;
+		}
+		return $message;
+	}
 }
 ?>

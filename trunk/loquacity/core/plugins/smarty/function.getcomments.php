@@ -33,48 +33,52 @@ function identify_function_getcomments () {
     $help = '<p>Provides threaded comments. See the default templates for usage examples.';
 
     return array (
-        'name'           =>'getcomments',
-        'type'             =>'function',
-        'nicename'     =>'Get Comments',
-        'description'   =>'Gets Comments and trackbacks for a post and threads them',
-        'authors'        =>'Eaden McKee <eaden@eadz.co.nz>',
-        'licence'         =>'GPL',
-        'help'   => $help
+        'name'		=>'getcomments',
+        'type'		=>'function',
+        'nicename'	=>'Get Comments',
+        'description'	=>'Gets Comments and trackbacks for a post and threads them',
+        'authors'	=>'Eaden McKee <eaden@eadz.co.nz>',
+        'licence'	=>'GPL',
+        'help'		=> $help
     );
 }
 function smarty_function_getcomments($params, &$loq) {
 	$assign="comments";
 	$postid=$loq->show_post;
 	$replyto = null;
-	if(isset($_POST['replyto'])){
+	$comment = null;
+	if(isset($_POST['replyto']) && ctype_digit($_POST['replyto']) ){
 		$replyto = intval($_POST['replyto']);
 	}
 	
-    $ch = $loq->get_comment_handler();
-    if(isset($_POST['do']) && $_POST['do'] == 'submitcomment' && is_numeric($_POST['comment_postid'])) {
-        if(is_null($replyto)){
-            $replyto = false;
-        }
-        $ch->new_comment($loq->_ph->get_post($_POST['comment_postid']),$replyto, $_POST);
-    }
-    $rt = false;
-    $cs = '';
-    if(is_numeric($_GET['replyto'])) {
-        $rt = intval($_GET['replyto']);
-        $cs = $ch->getComment($rt, 'html');
-    } else {
-        $cs = $ch->getComments($postid, 'html', 'thread');
-    }
-    prep_form($loq, $postid, $_REQUEST['replyto']);
-    $loq->assign($assign, $cs);
+	$ch = $loq->get_comment_handler();
+	if(isset($_POST['do']) && $_POST['do'] == 'submitcomment' && ctype_digit($_POST['comment_postid'])) {
+		if( $ch->new_comment( $loq->_ph->get_post($_POST['comment_postid']),$replyto, $_POST) === FALSE ){
+			$loq->assign( 'message', $ch->errors('html') );
+		};
+	}
+	if( isset( $_GET['replyto'] ) && ctype_digit( $_GET['replyto'] ) ){
+		$replyto = intval($_GET['replyto']);
+		$comment = $ch->getComment($replyto, 'html');
+		$comment = $comment[0]['body'];
+	}
+	
+	$comments = $ch->getComments($postid, 'html', 'thread');
+	prep_form($loq, $postid, $replyto, $comment );
+	$loq->assign($assign, $comments);
 }
 
-function prep_form(&$loq, $postid, $replyto){
+function prep_form(&$loq, $postid, $replyto, $comment){
     //first, assign the hidden fields
-    $commentformhiddenfields = '<input type="hidden" name="do" value="submitcomment" />';
-    $commentformhiddenfields .='<input type="hidden" name="comment_postid" value="'.$postid.'" />';
-    if(is_numeric($replyto)) {
-          $commentformhiddenfields .= '<a name="commentform"></a><input type="hidden" name="replyto" value="'.$replyto.'" />';
+    $commentformhiddenfields = "<input type=\"hidden\" name=\"do\" value=\"submitcomment\" />\n";
+    $commentformhiddenfields .= "<input type=\"hidden\" name=\"comment_postid\" value=\"".$postid."\" />\n";
+    if(ctype_digit($replyto)) {
+          $commentformhiddenfields .= "<input type=\"hidden\" name=\"replyto\" value=\"".$replyto."\" />\n";
+    }
+    if( !is_null( $comment ) ){
+	    $commentformhiddenfields .= "<div id=\"parentcomment\"><strong>Replying to</strong>\n";
+	    $commentformhiddenfields .= "<blockquote>".$comment."</blockquote>\n";
+	    $commentformhiddenfields .= "</div>\n";
     }
     $ph = $loq->_ph;
     $loq->assign("commentformhiddenfields",$commentformhiddenfields);

@@ -158,7 +158,7 @@ function saveEdit(&$loq){
 function retrieveComments(&$loq, $amount, $article){
 	$limit = '';
 	if( $amount != 'ALL' ) {
-		$limit = 'LIMIT 1, '.$amount;
+		$limit = 'LIMIT 0, '.$amount;
 	}
 	
 	$filter = '';
