@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS `__pfx__comments`(
 	PRIMARY KEY  (`commentid`),
 	INDEX (`parentid`),
 	INDEX (`deleted`),
+	INDEX (`postid`),
 	FULLTEXT KEY `commenttext` (`commenttext`)
 ) TYPE=MyISAM__charset__;
 

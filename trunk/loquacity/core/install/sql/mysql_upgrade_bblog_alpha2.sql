@@ -1,6 +1,7 @@
 ALTER TABLE `__pfx__comments` CONVERT TO CHARACTER SET __charset__;
 ALTER TABLE `__pfx__comments` ADD INDEX (`deleted`);
 ALTER TABLE `__pfx__comments` ADD INDEX (`parentid`);
+ALTER TABLE `__pfx__comments` ADD INDEX (`postid`);
 ALTER TABLE `__pfx__config` CONVERT TO CHARACTER SET __charset__;
 ALTER TABLE `__pfx__plugins` CONVERT TO CHARACTER SET __charset__;
 ALTER TABLE `__pfx__posts` CONVERT TO CHARACTER SET __charset__;
