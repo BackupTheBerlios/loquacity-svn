@@ -217,13 +217,13 @@ class commentHandler {
     * @param object $authImage AuthImage instance
     * @param object $post The post receiving the comment
     * @param int    $replyto The ID of the parent comment
-    * @param array  $post_vars $_POST
+    * @param array  $form $_POST
     */
-	function new_comment($post, $replyto, $post_vars) {
+	function new_comment($post, $replyto, $form) {
 		$result = false;
-		if( $this->canProceed($post, $post_vars['imagecode'], $post_vars['comment']) ){
-			$vars = $this->prepFieldsForDB($post_vars, $post['postid'], $replyto);
-            if ($post_vars['set_cookie']) {
+		if( $this->canProceed($post, $form['imagecode'], $form['comment']) ){
+			$vars = $this->prepFieldsForDB($form, $post['postid'], $replyto);
+            if ($form['set_cookie']) {
                 $this->setCommentCookie($vars['postername'], $vars['posteremail'], $vars['posterwebsite']);
             }
             $id = $this->saveComment($vars);
