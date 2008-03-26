@@ -1,12 +1,12 @@
 <?php
 /**
  * Loquacity - A web blogging application with simplicity in mind - http://www.loquacity.info/
- * Copyright (c) 2006 Kenneth Power
+ * Copyright (c) 2006, 2008 Kenneth Power
  *
  * @package Loquacity
  * @subpackage Comments
  * @author Kenneth Power <telcor@users.berlios.de>
- * @copyright &copy; 2006 Kenneth Power
+ * @copyright &copy; 2006, 2008 Kenneth Power
  * @license    http://www.gnu.org/licenses/gpl.html GPL
  * @link http://www.loquacity.info
  * @since 0.8-alpha1
@@ -40,48 +40,48 @@ class commentHandler {
 
     var $_post = null;
     /**
-     * Constructor
-     * Supplying a postid means we are working with a saved post
-     */
+	 * Constructor
+	 * Supplying a postid means we are working with a saved post
+	 */
     function commentHandler(&$db) {
         $this->_db = $db;
     }
     
     /**
-     * Retrieve all comments for a specific post
-     * 
-     * Returns a dataset of comments for the post matching $postid. If special processing is requested, the resulting
-     * dataset is an index-based array, otherwise it's a an ADODB::Recordset object.
-     * 
-     * @param int $postid
-     * @param string $process Whether to process the resulting data for special purposes. Accepts one of the following:
-     *	<table>
-     * 		<tr>
-     * 			<td><strong>none</strong></td>
-     * 			<td>Do no further processing</td>
-     * 		</tr>
-     *		<tr>
-     * 			<td>html</td>
-     * 			<td>Apply rules to make data safe for HTML presentation</td>
-     * 		</tr>
-     * 	</table>
-     * @param string $format Apply specified formatting to comments. Only applied when $pocess does not equal 'none'. Accepts one of the following:
-     *	<table>
-     * 		<tr>
-     * 			<td><strong>none</strong></td>
-     * 			<td>Do not applying any formating</td>
-     * 		</tr>
-     * 		<tr>
-     * 			<td>flat</td>
-     * 			<td>The same as none</td>
-     * 		</tr>
-     * 		<tr>
-     * 			<td>thread</td>
-     * 			<td>Created nested comment threads</td>
-     * 		</tr>
-     * 	</table>
-     * @return mixed
-     */
+	 * Retrieve all comments for a specific post
+	 * 
+	 * Returns a dataset of comments for the post matching $postid. If special processing is requested, the resulting
+	 * dataset is an index-based array, otherwise it's a an ADODB::Recordset object.
+	 * 
+	 * @param int $postid
+	 * @param string $process Whether to process the resulting data for special purposes. Accepts one of the following:
+	 *	<table>
+	 * 		<tr>
+	 * 			<td><strong>none</strong></td>
+	 * 			<td>Do no further processing</td>
+	 * 		</tr>
+	 *		<tr>
+	 * 			<td>html</td>
+	 * 			<td>Apply rules to make data safe for HTML presentation</td>
+	 * 		</tr>
+	 * 	</table>
+	 * @param string $format Apply specified formatting to comments. Only applied when $pocess does not equal 'none'. Accepts one of the following:
+	 *	<table>
+	 * 		<tr>
+	 * 			<td><strong>none</strong></td>
+	 * 			<td>Do not applying any formating</td>
+	 * 		</tr>
+	 * 		<tr>
+	 * 			<td>flat</td>
+	 * 			<td>The same as none</td>
+	 * 		</tr>
+	 * 		<tr>
+	 * 			<td>thread</td>
+	 * 			<td>Created nested comment threads</td>
+	 * 		</tr>
+	 * 	</table>
+	 * @return mixed
+	 */
     function getComments($postid=null, $process='none', $format='none'){
     	if(is_null($postid)){
     		return false;
@@ -99,22 +99,22 @@ class commentHandler {
     	}
     }
     /**
-     * Retrieve a single comment by id
-     * 
-     * @param int $cid Id of the comment to retrieve
-     * @param string $process Apply special processing rules to resulting dataset. Accepts one of the following:
-     * <table>
-     * 		<tr>
-     * 			<td><strong>none</strong></td>
-     * 			<td>Do no further processing</td>
-     * 		</tr>
-     *		<tr>
-     * 			<td>html</td>
-     * 			<td>Apply rules to make data safe for HTML presentation</td>
-     * 		</tr>
-     * 	</table>
-     * @return array
-     */
+	 * Retrieve a single comment by id
+	 * 
+	 * @param int $cid Id of the comment to retrieve
+	 * @param string $process Apply special processing rules to resulting dataset. Accepts one of the following:
+	 * <table>
+	 * 		<tr>
+	 * 			<td><strong>none</strong></td>
+	 * 			<td>Do no further processing</td>
+	 * 		</tr>
+	 *		<tr>
+	 * 			<td>html</td>
+	 * 			<td>Apply rules to make data safe for HTML presentation</td>
+	 * 		</tr>
+	 * 	</table>
+	 * @return array
+	 */
     function getComment($cid=0, $process='none'){
     	$cid = intval($cid);
         if($cid > 0){
@@ -130,12 +130,12 @@ class commentHandler {
     }
     
     /**
-    * Process the textual elements of the comment, making fit for HTML display. This removes Javascript and other dangerous text
-    * for safety reasons.
-    *
-    * @param object ADODB_Recordset
-    * @return array
-    */
+	* Process the textual elements of the comment, making fit for HTML display. This removes Javascript and other dangerous text
+	* for safety reasons.
+	*
+	* @param object ADODB_Recordset
+	* @return array
+	*/
 	function processForHTML(&$comment){
 		return array(
 					'id' => $comment->fields[0],
@@ -155,8 +155,8 @@ class commentHandler {
 	/**
 	* Retrieves comments for a particular post and creates a threaded listing.
 	*
-    * @param int $postid
-    * @return array
+	* @param int $postid
+	* @return array
 	*/
     function threadedComments($postid){
 		$stmt = $this->_db->Prepare('SELECT * FROM `'.T_COMMENTS.'` WHERE postid=? ORDER BY commentid ASC');
@@ -174,14 +174,14 @@ class commentHandler {
     }
     
     /**
-    * Transforms list of comments into a thread suitable for display purposes. Recursive.
-    * Expects the $comments array to be in a particular format:
-    *   array[ parentid ][ commentid] = comment data 
-    *
-    * @param int $parent The current Parent ID being processed
-    * @param array $comments A 2-dimension array of comments
-    * @param int $level The current nested level
-    */
+	* Transforms list of comments into a thread suitable for display purposes. Recursive.
+	* Expects the $comments array to be in a particular format:
+	*   array[ parentid ][ commentid] = comment data 
+	*
+	* @param int $parent The current Parent ID being processed
+	* @param array $comments A 2-dimension array of comments
+	* @param int $level The current nested level
+	*/
     function _createThreading($parent, $comments, $level){
         while(list($cid, $data) = each($comments[$parent])){
             $data['level'] = $level * 25;
@@ -192,12 +192,12 @@ class commentHandler {
         }
     }
     
-    /**
-    * Retrieves comments for a particular post and creates a flat-list for display
-    *
-    * @param int $postid
-    * @return array
-    */
+	/**
+	* Retrieves comments for a particular post and creates a flat-list for display
+	*
+	* @param int $postid
+	* @return array
+	*/
     function flatComments($postid){
         $stmt = $this->_db->Prepare('SELECT * FROM `'.T_COMMENTS.'` WHERE postid=? ORDER BY commentid ASC');
    		$comments = $this->_db->Execute($stmt, array($postid));
@@ -212,13 +212,13 @@ class commentHandler {
     	}
     }
     /**
-    * Add a new comment to an article
-    *
-    * @param object $authImage AuthImage instance
-    * @param object $post The post receiving the comment
-    * @param int    $replyto The ID of the parent comment
-    * @param array  $form $_POST
-    */
+	* Add a new comment to an article
+	*
+	* @param object $authImage AuthImage instance
+	* @param object $post The post receiving the comment
+	* @param int    $replyto The ID of the parent comment
+	* @param array  $form $_POST
+	*/
 	function new_comment($post, $replyto, $form) {
 		$result = false;
 		if( $this->canProceed($post, $form['imagecode'], $form['comment']) ){
@@ -243,15 +243,15 @@ class commentHandler {
     }
 
     /**
-     * Prepare comment data for storage in the database
-     *
-     * Nothing peculiar to HTML display is done at this stage. Essentially the
-     * comment is stored raw, for later manipulation for the display purposes.
-     *
-     * @param array $vars The comment data
-     * @param int   $id The post id receiving this comment
-     * @param int   $replyto If supplied, the id of the comment being replied to
-     */
+	 * Prepare comment data for storage in the database
+	 *
+	 * Nothing peculiar to HTML display is done at this stage. Essentially the
+	 * comment is stored raw, for later manipulation for the display purposes.
+	 *
+	 * @param array $vars The comment data
+	 * @param int   $id The post id receiving this comment
+	 * @param int   $replyto If supplied, the id of the comment being replied to
+	 */
     function prepFieldsForDB($vars, $id, $replyto = 0){
         $rval['postername'] = stringHandler::clean($vars["name"]);
         if (empty($rval['postername'])){
@@ -275,17 +275,17 @@ class commentHandler {
 
 
     /**
-    * Save the comment/trackback
-    *
-    * The SQL statement for saving data is built based upon the values of
-    * `$vars`. It is an associative array where the keys are the `T_COMMENT`
-    * field names and the elements are values for the fields. On success, the
-    * row id(integer) is returned, on failure either false (boolean) or
-    * an error message (string) is returned.
-    *
-    * @param array $vars
-    * @return mixed
-    */
+	* Save the comment/trackback
+	*
+	* The SQL statement for saving data is built based upon the values of
+	* `$vars`. It is an associative array where the keys are the `T_COMMENT`
+	* field names and the elements are values for the fields. On success, the
+	* row id(integer) is returned, on failure either false (boolean) or
+	* an error message (string) is returned.
+	*
+	* @param array $vars
+	* @return mixed
+	*/
     function saveComment($vars){
         //$this->_db->debug = true;
         $rval = false;
@@ -299,11 +299,11 @@ class commentHandler {
     }
 
     /**
-    * Tests comment text against moderation criteria
-    *
-    * @param string $comment The comment text
-    * @return bool
-    */
+	* Tests comment text against moderation criteria
+	*
+	* @param string $comment The comment text
+	* @return bool
+	*/
     function needsModeration($comment){
         $rval = false;
         $comment = strtolower($comment);
@@ -318,25 +318,25 @@ class commentHandler {
     }
 
     /**
-    * Initiates a variety of tests
-    *
-    * An array is returned with the following fields
-    * and values:
-    * +=============================================+
-    * | proceed    |  true if all passed all tests  |
-    * |            |  false if failed any test      |
-    * +============+================================+
-    * | message    | An array of error messages:    |
-    * |            | array(message_title,           |
-    * |            |   message_text);               |
-    * +============+================================+
-    *
-    * @param object $post The article receiving the comment
-    * @param object $authImage AuthImage instance
-    * @param string $code Captcha code as typed by the user
-    * @param string $comment Comment text
-    * @return array
-    */
+	* Initiates a variety of tests
+	*
+	* An array is returned with the following fields
+	* and values:
+	* +=============================================+
+	* | proceed    |  true if all passed all tests  |
+	* |            |  false if failed any test      |
+	* +============+================================+
+	* | message    | An array of error messages:    |
+	* |            | array(message_title,           |
+	* |            |   message_text);               |
+	* +============+================================+
+	*
+	* @param object $post The article receiving the comment
+	* @param object $authImage AuthImage instance
+	* @param string $code Captcha code as typed by the user
+	* @param string $comment Comment text
+	* @return array
+	*/
     function canProceed($post, $code, $comment){
         $rval = true;
         if($this->isFlooding( $_SERVER['REMOTE_ADDR'], time())){
@@ -355,11 +355,11 @@ class commentHandler {
     }
 
     /**
-    * Checks whether commenting is disabled for this post
-    *
-    * @param object $post
-    * @return bool False if commetns are allowed, True if disabled
-    */
+	* Checks whether commenting is disabled for this post
+	*
+	* @param object $post
+	* @return bool False if commetns are allowed, True if disabled
+	*/
     function isDisabled($post){
         $rval = false;
         if ($post['allowcomments'] == 'disallow' || ($post['allowcomments'] == 'timed' && $post['autodisabledate'] < time())){
@@ -369,19 +369,19 @@ class commentHandler {
     }
 
     /**
-    * Performs various transformations on text. Hyperlinks have
-    * the redirector added and are wrapped in A tags (if not already wrapped).
-    * Special characters are transformed into HTML entities.
-    *
-    * @param string $comment Comment text
-    * @return string
-    */
+	* Performs various transformations on text. Hyperlinks have
+	* the redirector added and are wrapped in A tags (if not already wrapped).
+	* Special characters are transformed into HTML entities.
+	*
+	* @param string $comment Comment text
+	* @return string
+	*/
     function processCommentText($comment){
         //Policy: only a, b, i, strong, code, acrynom, blockquote, abbr are allowed
         $comment = stringHandler::removeTags($comment, '<a><b><i><strong><code><acronym><blockquote><abbr>');
-        /*if(stringHandler::containsLinks($comment)){
-            $comment = stringHandler::transformLinks($comment);
-        }*/
+		/*if(stringHandler::containsLinks($comment)){
+			$comment = stringHandler::transformLinks($comment);
+		}*/
         //Policy: translate HTML special characters to their HTML entities
         $comment = $this->encodeHTML($comment);
         //Policy: line breaks converted automatically
@@ -389,12 +389,12 @@ class commentHandler {
     }
 
     /**
-    * Checks whether an attempt at comment flooding is being made
-    *
-    * @param string $ip IP Address of commentor
-    * @param int $now Unix Timestamp of current time
-    * @return bool True if violates timespan rule, False if doesn't
-    */
+	* Checks whether an attempt at comment flooding is being made
+	*
+	* @param string $ip IP Address of commentor
+	* @param int $now Unix Timestamp of current time
+	* @return bool True if violates timespan rule, False if doesn't
+	*/
     function isFlooding($ip, $now){
         $rval = false;
         if (C_COMMENT_TIME_LIMIT > 0) {
@@ -408,13 +408,13 @@ class commentHandler {
     }
 
     /**
-    * Saves comment details in a cookie
-    *
-    * @param string $name Commentors name
-    * @param string $email Commentors email address
-    * @param string $website Commentors website
-    * @return void
-    */
+	* Saves comment details in a cookie
+	*
+	* @param string $name Commentors name
+	* @param string $email Commentors email address
+	* @param string $website Commentors website
+	* @return void
+	*/
     function setCommentCookie($name, $email, $website){
         $ctime = time()+3600*24*30;
         setcookie("postername", $name, $ctime);
@@ -425,11 +425,11 @@ class commentHandler {
     }
 
     /**
-    * Tests what user typed against the captcha
-    *
-    * @param string $code Captcha code typed by user
-    * @return bool
-    */
+	* Tests what user typed against the captcha
+	*
+	* @param string $code Captcha code typed by user
+	* @return bool
+	*/
     function failsCaptcha($code){
         $rval = true;
         return false;
@@ -442,14 +442,14 @@ class commentHandler {
     }
 
     /**
-    * Notifies blog author of new comment
-    *
-    * @param string $name Commentors name
-    * @param string $link Link to comment entry
-    * @param int    $onhold Whether or not comment requires moderation
-    * @param string $comment Text of the comment
-    * @return void
-    */
+	* Notifies blog author of new comment
+	*
+	* @param string $name Commentors name
+	* @param string $link Link to comment entry
+	* @param int    $onhold Whether or not comment requires moderation
+	* @param string $comment Text of the comment
+	* @return void
+	*/
     function notify($name, $link, $onhold, $comment){
         include_once (LOQ_APP_ROOT."includes/mail.php");
         $message = $name." has posted a comment in reply to your blog entry at ".$link."\n\nComment: ".$comment."\n\n";
@@ -459,11 +459,11 @@ class commentHandler {
     }
 
     /**
-     * Updates the number of comments for a post in the post table
-     *
-     * @deprecated This will go away soon. It can easily be obtained when by a query, removing this step
-     * @param int $postid
-     */
+	 * Updates the number of comments for a post in the post table
+	 *
+	 * @deprecated This will go away soon. It can easily be obtained when by a query, removing this step
+	 * @param int $postid
+	 */
     function updateCommentCount($postid){
         $rs = $this->_db->Execute("SELECT count(*) as c FROM ".T_COMMENTS." WHERE postid='$postid' and deleted='false' group by postid");
         if($rs !== false){
@@ -473,13 +473,13 @@ class commentHandler {
     }
 
     /**
-     * Enforces HTML Encoding policy on comment text
-     *
-     * Policy states HTML special characters (&, ", etc) be translated to
-     * their HTML entity equivalents for HTML display purposes. In doing this,
-     * we must maintain the HTML tags (a, b, i, strong, code, acrynom, blockquote,
-     * abbr) policy allows.
-     */
+	 * Enforces HTML Encoding policy on comment text
+	 *
+	 * Policy states HTML special characters (&, ", etc) be translated to
+	 * their HTML entity equivalents for HTML display purposes. In doing this,
+	 * we must maintain the HTML tags (a, b, i, strong, code, acrynom, blockquote,
+	 * abbr) policy allows.
+	 */
     function encodeHTML($comment){
         //Make certain we don't encode the allowed tags
         //Policy: only a, b, i, strong, code, acrynom, blockquote, abbr are allowed
