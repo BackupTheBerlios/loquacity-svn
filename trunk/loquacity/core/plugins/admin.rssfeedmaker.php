@@ -73,10 +73,10 @@ function admin_plugin_rssfeedmaker_run(&$loq)
 	
 	$sections = $loq->get_sections();
 	$sectionlist = '';
-	
-	foreach ($sections as $section) 
-	{
-		$sectionlist .= "<option value='{$section->sectionid}'>{$section->nicename}</option>";
+	if( is_array( $sections ) ){
+		foreach ($sections as $section){
+			$sectionlist .= "<option value='{$section->sectionid}'>{$section->nicename}</option>";
+		}
 	}
 	
 	$loq->assign('sectionlist',$sectionlist);

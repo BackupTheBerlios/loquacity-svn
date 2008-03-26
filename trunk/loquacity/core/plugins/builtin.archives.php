@@ -54,7 +54,7 @@ $loq->assign('form_type','edit');
 $loq->get_modifiers();
 $actions = array('delete', 'edit', 'postedit', 'filter', 'allowcomments');
 
-if(in_array($_POST['action'], $actions)){
+if(isset($_POST['action']) && in_array($_POST['action'], $actions)){
 	$postid = intval($_POST['postid']);
 	switch($_POST['action']){
 		case 'delete':

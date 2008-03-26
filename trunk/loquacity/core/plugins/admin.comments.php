@@ -36,14 +36,14 @@
 
 function identify_admin_comments () {
     return array (
-    'name'           =>'comments',
-    'type'             =>'admin',
-    'nicename'     =>'Comments',
-    'description'   =>'Remove, Approve or Edit comments',
-    'authors'        =>'Eaden McKee <eadz@bblog.com>',
-    'licence'         =>'GPL',
-    'template' 	=> 'comments_admin.html',
-    'help'    	=> ''
+    'name'			=>'comments',
+    'type'			=>'admin',
+    'nicename'		=>'Comments',
+    'description'	=>'Remove, Approve or Edit comments',
+    'authors'		=>'Eaden McKee <eadz@bblog.com>',
+    'licence'		=>'GPL',
+    'template'		=> 'comments_admin.html',
+    'help'			=> ''
   );
 }
 
@@ -151,9 +151,9 @@ function saveEdit(&$loq){
 /**
  * Retrieve select amount of comments from the system
  *
- * @param object $loq		A reference to a loq instance
+ * @param object $loq		A reference to a Loquacity instance
  * @param int    $amount	The number of comments to retrieve
- * @param mixed  $posts		Which article to retrieve comments from; Setting to null retrieves from all articles
+ * @param mixed  $article	Which article to retrieve comments from; Setting to null retrieves from all articles
  */
 function retrieveComments(&$loq, $amount, $article){
 	$limit = '';
@@ -168,14 +168,15 @@ function retrieveComments(&$loq, $amount, $article){
     $sql = 'SELECT
         *
     FROM '.T_COMMENTS.'
-    LEFT JOIN '.T_POSTS.'
-        ON '.T_COMMENTS.'.postid = '.T_POSTS.'.postid
-    WHERE '.T_COMMENTS.'.deleted="false"'.$filter.'
+    WHERE '.T_COMMENTS.'.n_deleted=0'.$filter.'
     ORDER BY '.T_COMMENTS.'.posttime DESC '.$limit;
     $rs = $loq->_adb->GetAll($sql);
     $loq->assign('comments',$rs);
     $loq->assign('commentAmount', $amount);
     $loq->assign('commentPosts', $article);
+	/*
+    LEFT JOIN '.T_POSTS.'
+        ON '.T_COMMENTS.'.postid = '.T_POSTS.'.postid*/
 }
 
 function populateSelectList(&$loq){
