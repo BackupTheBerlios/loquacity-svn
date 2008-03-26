@@ -94,9 +94,9 @@ class Loquacity extends Smarty {
         
         
     }
-    /**
-     * A place holder for calling $this->_ph->new_post
-     */
+	/**
+	 * A place holder for calling $this->_ph->new_post
+	 */
     function new_post($post){
         $pid = $this->_ph->new_post($post);
         if(is_int($pid) && $pid > 0)
@@ -200,11 +200,11 @@ class Loquacity extends Smarty {
 	}
 
 	/**
-     * Authenticate the user
-     * 
-     * @param string $user Username
-     * @param string $pass Password
-     * @param bool   $setcookie If true, set a cookie
+	 * Authenticate the user
+	 * 
+	 * @param string $user Username
+	 * @param string $pass Password
+	 * @param bool   $setcookie If true, set a cookie
 	 */
     function userauth($user, $pass, $setcookie = FALSE) {
         $query = "SELECT `id` FROM `".T_AUTHORS."` WHERE `nickname`='".stringHandler::removeMagicQuotes($user)."' AND `password`='".stringHandler::removeMagicQuotes(passwordManager::toSHA1($pass))."'";
@@ -249,10 +249,6 @@ class Loquacity extends Smarty {
         }
 	}
 
-    /**
-    *
-    *
-    */
     function get_sections(){
         $sh =& new sectionhandler($this->_adb);
         if(($s = $sh->getallsections()) !== false){
@@ -261,8 +257,9 @@ class Loquacity extends Smarty {
         }
 	}
 	
-    ////
-    // !gets the modifiers out of the db
+	/**
+	* gets the modifiers out of the db
+	*/
     function get_modifiers () {
          $mods = $this->_adb->GetAll('select * from `'.T_PLUGINS.'` where type="modifier" order by id');
          if($mods){
@@ -273,20 +270,23 @@ class Loquacity extends Smarty {
             return false;
          }
     }
-    ////
-    // !sets the last modified time ( $timestamp is newer )
-    // this function takes the modified times of all
-    // displayed items and decides if it's modified or not
-    // I can't think of many cases where you would use this instead of modifiednow()
+	
+	/**
+	* sets the last modified time ( $timestamp is newer )
+	* this function takes the modified times of all
+	* displayed items and decides if it's modified or not
+	* I can't think of many cases where you would use this instead of modifiednow()
+	*/
     function setmodifytime ($timestamp) {
           if($this->lastmodified < $timestamp && $timestamp <= time()) $this->lastmodified = $timestamp;
           return true;
     }
 
-    ////
-    // !modifiednow should be called in responce to a direct user action  changing data
-    // resulting in the site being modified, e.g. a new post, an editied post,
-    // new link category, new comment etc
+	/**
+	* modifiednow should be called in responce to a direct user action  changing data
+	* resulting in the site being modified, e.g. a new post, an editied post,
+	* new link category, new comment etc
+	*/
     function modified_now() {
           $now = time();
           $query ="update ".T_CONFIG." set value='$now' where name='LAST_MODIFIED'";
@@ -296,71 +296,16 @@ class Loquacity extends Smarty {
           }
     }
     /**
-    * Provides a unified method of returning a GMT timestamp
-    *
-    * There is probably a better way to do this, for those with better knowledge of date/time handling
-    *
-    * @return int
-    */
+	* Provides a unified method of returning a GMT timestamp
+	*
+	* There is probably a better way to do this, for those with better knowledge of date/time handling
+	*
+	* @return int
+	*/
     function currentTimestamp(){
         return strtotime(gmdate("M d Y H:i:s"));
     }
-
-	/*
-      All links are generated here.
-      This is handy becasue it means we can do any thing with the urls in the future,
-      even ones like /computers/my_case_mod.html
-      // hmm they should be called _get_*_url not get_*_link !
-    */
-
-    ////
-    // !Get a link for a category
-    /*function _get_section_link(&$id, &$name) {
-		
-    }*/
-
-    ////
-    // !Get a link to the rss file for a category
-    /*function _get_section_rss_link(&$sectionid) {
-         return 
-    }*/
-
-    ////
-    // !get a permalink to an entry
-    /*function _get_entry_permalink (&$postid) {
-         if(defined('CLEANURLS')) return str_replace('%postid%',$postid,URL_POST);
-	 else return BLOGURL.'?postid='.$postid;
-    }*/
-
-    ////
-    // !get a permalink to a single comment
-    /*function _get_comment_permalink (&$postid,&$commentid) {
-             if(defined('CLEANURLS')) return $this->_get_entry_permalink($postid).'#comment'.$commentid;
-	     return BLOGURL.'?postid='.$postid.'#comment'.$commentid;
-   }*/
-   
-   /*function _get_section_id($sectionname) {
- 	$sid = $this->sect_by_name[$sectionname];
-	if($sid > 0) return $sid;
-	else return false;
-   }*/
-
-    ////
-    // !gets the url to the default rss filr
-    /*function _get_rss_url($sectionid=FALSE) {
-             // in the future well actuall use $sectionid
-             // to return the rss url of just one section
-             return BLOGURL.'rss.php';
-    }*/
-    
-    /*function _get_post_trackback_url($postid) {
-		return LOQ_APP_URL.'trackback.php/'.$postid.'/';
-
-    }*/
-
-    /*function _get_comment_trackback_url($postid,$commentid) {
-               return LOQ_APP_URL.'trackback.php/'.$postid.'/'.$commentid.'/';
-    }*/
+	
     function standalone_message($message_title=FALSE,$message=FALSE,$meta_redirect=FALSE, $http_header = FALSE) {
         // THIS FUNCTION WILl KILL THE SCRIPT BEFORE ANYTHING GETS TO THE BROWSER.
         $this->template_dir = LOQ_APP_ROOT.'inc/admin_templates';
